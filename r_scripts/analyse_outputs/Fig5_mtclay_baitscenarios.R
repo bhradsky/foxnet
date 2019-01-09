@@ -15,7 +15,7 @@ setwd("C:/Users/hradskyb/FoxControlPatrol/Dropbox/personal/bron/ibm/foxnet/outpu
 data.baited <- data.frame()
 data.one <- for (i in 1:30) 
 {
-  data.one <- read.csv(paste0("mtclay/MtClay_baseline/MtClay_baseline_baited_headless", i, ".csv"))
+  data.one <- read.csv(paste0("mtclay/MtClay_baseline/MtClay_baseline_baited_custom_headless", i, "_test.csv"))
   data.one$run <- i
   data.baited <- rbind(data.baited, data.one)
 }
@@ -24,7 +24,7 @@ data.baited$bait.layout <- "baited"
 data.unbaited <- data.frame()
 data.one <- for (i in 1:30) 
 {
-  data.one <- read.csv(paste0("mtclay/MtClay_baseline/MtClay_baseline_baited_none_headless_", i, ".csv"))
+  data.one <- read.csv(paste0("mtclay/MtClay_baseline/MtClay_baseline_baited_none_headless", i, "_test.csv"))
   data.one$run <- i
   data.unbaited <- rbind(data.unbaited, data.one)
 }
@@ -35,8 +35,8 @@ data.all$year.scaled <- (data.all$X - 1)/ 26 + 1
 
 # Calculate mean, min, max values for each time point for baited and unbaited scenarios
 data.all.baseline <- tbl_df(data.all)
-summary.baseline <- data.all.baseline %>% group_by(bait.layout, year, week, year.scaled) %>%
-  summarise_at(vars(all.but.cub.density), funs(mean, min, max))
+summary.baseline <- data.all.baseline %>% group_by(bait.layout, year, week.of.year, year.scaled) %>%
+  summarise_at(vars(all.fox.but.cub.density), funs(mean, min, max))
 
 # extract data for plot
 summary.baseline.plot <- summary.baseline[summary.baseline$year.scaled > 15.96 & summary.baseline$year.scaled < 28,] 
@@ -60,17 +60,19 @@ plot.MtClay.baseline <- fox.plot +
 data.all.18.27 <- data.all.baseline[data.all.baseline$year > 17 & data.all.baseline$year < 28,]
  
 years18.27 <- data.all.18.27  %>% group_by(bait.layout, run) %>%
-  summarise_at(vars(all.but.cub.density), funs(mean, sd, min, max))
+  summarise_at(vars(all.fox.but.cub.density), funs(mean, sd, min, max))
 
+# get maximum values for paper
 years18.27$max.d <- years18.27$max
 years18.27.max <- years18.27 %>% group_by(bait.layout) %>% 
   summarise_at(vars(max.d), funs(mean, sd, min, max))
 
+# get minimum values for paper
 years18.27$min.d <- years18.27$min
 years18.27.min <- years18.27 %>% group_by(bait.layout) %>% 
   summarise_at(vars(min.d), funs(mean, sd, min, max))
 
-# perc.difference
+# get perc.difference between max density for baited and unbaited scenarios
 (years18.27.max$mean[2] - years18.27.max$mean[1]) / years18.27.max$mean[2]
 
 
