@@ -1,0 +1,194 @@
+;#############################################################
+;########## FOX BAITING RELATED ROUTINES #####################
+;#############################################################
+
+; THIS CODE IS CUSTOMISED FOR CARNARVON BAITING HISTORY
+
+
+to bait-if-applicable
+  if year = 16 and week-of-year = 33
+  [    
+    ;ask foxes [pendown ]
+    set baitsite-data gis:load-dataset "gis_layers/carnarvon/baitsites_all.shp"
+    ask patches gis:intersecting baitsite-data  
+    [ 
+      sprout-bait-stations 1
+      [
+        set color white
+        set shape "square"
+        set size 4
+       ]
+    ]
+    ask bait-stations with [available-to-foxes = false] ; removes any baitstations that might accidentally be in an ocean etc.
+        [die]
+    
+    lay-baits
+    
+    let current-foxes-in-region-of-interest turtle-set foxes-on region-of-interest
+;    if any? foxes-in-region-of-interest 
+;    [
+;    ask n-of 45 foxes-in-region-of-interest with [age > 52]
+;    [set collared true ]
+;   print count foxes with [collared = true]
+;    ]
+    
+    ]
+
+  if year = 17 and week-of-year =  21
+    [    
+    set baitsite-data gis:load-dataset "gis_layers/carnarvon/baitsites_5km.shp"
+    ask patches gis:intersecting baitsite-data 
+    [ 
+      sprout-bait-stations 1
+      [
+        set color white
+        set shape "square"
+        set size 4
+       ]
+    ]
+          ask bait-stations with [available-to-foxes = false] ; removes any baitstations that might accidentally be in an ocean etc.
+        [die]
+    lay-baits]
+
+ if year = 18 and week-of-year = 5
+    [    
+    set baitsite-data gis:load-dataset "gis_layers/carnarvon/baitsites_10km.shp"
+    ask patches gis:intersecting baitsite-data 
+    [ 
+      sprout-bait-stations 1
+      [
+        set color white
+        set shape "square"
+        set size 4
+       ]
+    ]
+            ask bait-stations with [available-to-foxes = false] ; removes any baitstations that might accidentally be in an ocean etc.
+        [die]
+    lay-baits]
+
+
+
+ if year = 18 and week-of-year = 21
+    [    
+    set baitsite-data gis:load-dataset "gis_layers/carnarvon/baitsites_10km.shp"
+    ask patches gis:intersecting baitsite-data 
+      [  
+      sprout-bait-stations 1
+      [
+        set color white
+        set shape "square"
+        set size 4
+       ]
+    ]
+            ask bait-stations with [available-to-foxes = false] ; removes any baitstations that might accidentally be in an ocean etc.
+        [die]
+    lay-baits]
+    
+end
+
+
+
+;-----------------------------------------------------
+to lay-baits
+
+ ask bait-stations
+   [
+     set color red
+     set bait-present true
+     set Pr-death-bait-scaled cell-relative-use * 100 * Pr-die-if-exposed-100ha; cell relative use is 0.01 if home range size is 100 ha; less if home range is larger, more if home range is smaller
+     ;print Pr-death-bait-scaled
+   ]
+
+ set count-baits-laid count bait-stations with [color = red]
+ ; print count-baits-laid
+ 
+ ifelse (year = commence-baiting-year and week-of-year >= commence-baiting-week) or (year > commence-baiting-year) 
+   [set baits-are-toxic true ]
+   [set baits-are-toxic false ]
+  
+ calculate-annual-cost
+   
+ ask bait-stations with [bait-present = true and fox-family-owner != nobody]
+   [
+     let baited-family [family-members] of fox-family-owner
+     let at-risk-family baited-family with [age >= age-at-independence] 
+     repeat count at-risk-family
+     [
+       ifelse bait-present = false
+       [;print "bait already eaten"
+         stop]
+       [ if random-float 1 < Pr-death-bait-scaled 
+         [
+           set bait-present false
+           set color white
+           if baits-are-toxic = true 
+           [ 
+             ask one-of at-risk-family 
+             [ ;type who print " died"
+               die]
+           ]
+         ]
+       ]
+     ]
+   ]
+     
+end
+
+;--------------------------------------------------------------
+
+to disperser-check-for-baits
+  
+  if any? bait-stations with [bait-present = true]
+  [   
+    let this-cell patch-here
+    let area-explored patches in-radius (territory-perception-radius * kms-to-cells ) 
+    let area-explored-km2 count area-explored * cells-to-km2
+   ; type "disperser"  type area-explored type area-explored-km2 type " " 
+    let baited-patches bait-stations-on area-explored
+    let poison baited-patches with [bait-present = true]
+
+    if any? poison
+    [
+      ; ask poison [ask patches in-radius 10 [set pcolor pink]]
+      
+      let Pr-death-disperser-scaled (1 / area-explored-km2 ) * Pr-die-if-exposed-100ha ; scale by 100 ha (i.e. 1 km2) 
+      ;print (1 - (1 - Pr-death-disperser-scaled) ^ count poison)
+      if random-float 1 < (1 - (1 - Pr-death-disperser-scaled) ^ count poison)
+        [
+          move-to one-of poison
+          ask bait-stations-here [set bait-present false set color white]
+         
+          ifelse baits-are-toxic = true 
+          [ ; type " Disperser " type who print " ate a bait"
+            die]
+          [move-to this-cell]
+        ]
+    ]
+  ]
+end
+
+;---------------------------------------------------------
+
+to remove-all-baits
+
+  ifelse ((year = 16 and week-of-year = 37) or (year = 17 and week-of-year = 25) or (year = 18 and week-of-year = 9) or (year = 18 and week-of-year = 25)) ;# adjusted for carnavon scenario
+  ;ifelse ((year = 5 and week-of-year = 33) or (year = 6 and week-of-year = 21) or (year = 7 and week-of-year = 5) or (year = 7 and week-of-year = 21)) ;# adjusted for carnavon scenario
+  [  ] ;print count foxes with [ collared = true ]]
+  [
+  ask bait-stations [die]; remove all poison baits at end of month
+  set count-baits-laid 0
+
+  ]
+
+end
+
+;---------------------------------------------------------
+
+to calculate-annual-cost
+  
+  if week-of-year = 1
+  [set bait-cost 0]
+  
+  set bait-cost ( bait-cost + count-baits-laid * price-per-bait + person-days-per-baiting-round * cost-per-person-day + km-per-baiting-round * cost-per-km-travel)
+  
+end

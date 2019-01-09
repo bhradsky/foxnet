@@ -1,0 +1,444 @@
+; ################################################################
+; ########## CORE FOX TERRITORY-RELATED ROUTINES #################
+; ################################################################
+
+to foxes-disperse; disperser routine for foxes 
+  
+  ask foxes with [status = "disperser"]
+  [
+    set my-dispersal-duration my-dispersal-duration + weeks-per-timestep; foxes track how many weeks they have been looking for a new territory
+      
+    if my-dispersal-duration = weeks-per-timestep ; i.e. on first dispersal attempt
+    [ 
+      leave-natal-family; leave the original fox-family
+      
+      make-first-dispersal-move; move a distance drawn from the appropriate exponential distribution
+    ]
+    
+    disperser-check-for-baits
+
+    check-for-alpha-vacancy ; look for nearby families that lack an alpha of the appropriate sex
+    
+    if status = "disperser" ; if there weren't any suitable families (i.e. fox hasn't become an alpha)
+     [
+       try-to-establish-new-territory 
+     ]
+
+    set distance-from-natal ((distance natal-cell * cell-dimension) / 1000); calculate distance from natal cell (in km)
+    
+  ]
+
+end
+
+to leave-natal-family
+  
+  let former-family-id [natal-id] of self
+  let me [who] of self
+  
+  if former-family-id != nobody 
+    [
+      let former-family fox-family former-family-id  
+      if former-family != nobody; this is necessary for the rare occasion when a family dies before disperser leaves it
+        [
+          ask former-family
+          [ 
+            ;type [who] of family-members
+            set family-members (family-members with [who != me])
+            ; type " " print [who] of family-members]
+          ]
+        ]
+    ]
+end
+
+to make-first-dispersal-move
+  
+  ;calculate dispersal distance
+  let my-range-size 1
+  
+  ifelse natal-id = nobody
+    [set my-range-size home-range-100perc * km2-to-cells]
+    [
+      let my-original-family fox-family natal-id
+      ifelse my-original-family = nobody 
+      [set my-range-size home-range-100perc * km2-to-cells]
+      [set my-range-size count [my-territory] of fox-family natal-id]
+    ]
+  
+;  print my-range-size
+  let my-range-size-km2 my-range-size * cells-to-km2
+ ; print my-range-size-km2
+  
+  if sex = "female" 
+  [
+    let mean-female-dispersal ( 3.853 + 2.659 * my-range-size-km2) ; (in km) uses equation from Trewhella et al 1988
+    set my-dispersal-distance random-exponential mean-female-dispersal 
+  ]
+  
+  if sex = "male" [
+    let mean-male-dispersal ( 2.778 + 4.038 * my-range-size-km2); (in km) uses equation from Trewhella et al 1988
+    set my-dispersal-distance random-exponential mean-male-dispersal
+  ]
+  
+ ; type who type sex print my-dispersal-distance
+  
+  ifelse can-move? (my-dispersal-distance * kms-to-cells) and [available-to-foxes] of patch-ahead (my-dispersal-distance * kms-to-cells) = true
+  [ 
+    jump (my-dispersal-distance * kms-to-cells) 
+  ]
+  
+  [ ; if that location wasn't available (e.g. off edge of world), choose another vector and try again
+    rt random-float 360  
+    make-first-dispersal-move 
+  ] 
+  
+end
+
+to check-for-alpha-vacancy  
+    
+  let former-family-id [natal-id] of self
+  let recent-failed-territory-id [failed-territory-id] of self
+  let my-sex [sex] of self
+  
+  let families-with-alpha-vacancy fox-families in-radius (territory-perception-radius * kms-to-cells) with
+   [
+   ; who != former-family-id and; so that the fox can't rejoin its natal family
+    not (member? who recent-failed-territory-id) and; so that the the fox can't rejoin a new territory it just attempted 
+    (not any? family-members with [status = "alpha" and sex = my-sex]); and have an appropriate vacancy
+   ]
+
+  if any? families-with-alpha-vacancy; if such family(s) exist, join the nearest one
+  [
+   ; type who print " found a family"
+    let chosen-family min-one-of families-with-alpha-vacancy [distance myself]
+    move-to chosen-family
+    
+    set family-id [who] of chosen-family
+    
+    ask chosen-family
+      [ set family-members (turtle-set myself family-members) ]
+    
+    set status "alpha"
+          
+    ifelse my-sex = "female" 
+      [set color red]
+      [set color blue]    
+
+  ]
+
+end
+
+to try-to-establish-new-territory
+
+ let my-temporary-home patch-here
+    
+ let potential-home-bases patches in-radius (territory-perception-radius * kms-to-cells) with [fox-family-owner = nobody and available-to-foxes = true]
+
+ if any? potential-home-bases
+ [
+   move-to one-of potential-home-bases   ; type who print " is trying a new territory"
+ 
+   hatch-fox-families 1
+   [
+     set size 3
+     set shape "circle"
+     set color orange; one-of base-colors + random 4
+     set family-members turtle-set myself
+     
+     set my-territory patch-set patch-here
+     set territory-productivity current-productivity
+     set vacancy-score 0
+
+     
+     ask my-territory
+       [
+         set pcolor ([color] of myself) + 2
+         set checked-already "no"
+         set fox-family-owner myself       
+       ]
+
+     make-vacancies
+     move-to-centroid
+     
+     repeat (maximum-territory-update-area * km2-to-cells * 10) [update-territory]
+
+     remove-lonely-territory 
+     
+     ifelse territory-productivity < min-productivity-for-metabolic-rate 
+     
+     [
+       territory-fail ; territory will fail if it can't acquire sufficent food, fox goes back to being a disperser
+     ]
+     
+     [
+       finalise-territory
+                       
+       ask family-members
+       [
+         set status "alpha"
+         ifelse sex = "female" [set color red][set color blue]
+         set family-id [who] of myself
+          
+       ]
+     ] 
+   
+   ]
+   
+   if status = "disperser" [ move-to my-temporary-home ] ; i.e. if territory didn't succeed, move back to original dispersal location
+ 
+ ]
+ 
+end
+
+to fox-families-check-territories
+
+ ask fox-families
+  [
+    move-to-centroid
+     
+    remove-any-excess-territory   
+    
+    make-vacancies
+    
+    move-to-centroid 
+      
+    let new-vacancy-score (sum [relative-productivity] of vacancies)
+    ;type "old vacancy score "type precision vacancy-score 5   type " new vacancy score "  type precision new-vacancy-score 5 print " " 
+    if precision new-vacancy-score 5 != precision vacancy-score 5      ; check whether there are any changes to available territory (this speeds up the model - only fox-families that have new options bother upgrading their territory) 
+    [ 
+     ; type who print "is going to update"
+      ask my-territory
+      [ set checked-already "no"]
+      repeat (maximum-territory-update-area * km2-to-cells) [update-territory]
+    ]
+  
+  remove-lonely-territory  
+  
+  ifelse territory-productivity < min-productivity-for-metabolic-rate 
+    [ territory-fail ]; territory will fail if it can't acquire sufficent food, adult foxes goes back to being dispersers, cubs die
+    [ finalise-territory ]
+
+  ]
+
+
+end
+
+to update-territory; run by fox-familiies
+
+;  let counter-acquire 0
+;  let counter-swap 0
+
+  if any? vacancies
+  
+    [  ifelse territory-productivity < adult-fox-timestep-food
+      [ acquire-best-available-vacancy ];    set counter-acquire (counter-acquire + 1) ]
+      [ swap-poor-territory-for-better ];  set counter-swap (counter-swap + 1) ]   
+    ]
+
+  ; type "productivity " type territory-productivity type " acquire " type counter-acquire type " swap " type counter-swap type " territory-size " print count my-territory
+
+end
+
+to territory-fail
+
+; type "fox family " type who type "'s territory failed as productivity is only " print territory-productivity
+  let my-number who
+  ask my-territory
+  [
+    set pcolor true-color
+    set fox-family-owner nobody
+    set cell-relative-productivity 0
+    set cell-relative-use 0
+    set checked-already "no"
+  ]
+  ask family-members with [status = "alpha" or status = "subordinate" or status = "disperser"] 
+  [
+    set failed-territory-id fput my-number failed-territory-id
+    set status "disperser"
+    set family-id nobody
+    ifelse sex = "female" [set color yellow + 4 ][set color yellow]
+  ]
+  
+  ask family-members with [status = "cub"] [die]
+  ask vacancies [die]
+  die
+
+end
+
+
+to make-vacancies
+  
+  ask my-territory
+    [
+      ask neighbors4 with [fox-family-owner = nobody and not any? vacancies-here and current-productivity > 0]
+        [ sprout-vacancies 1  ]
+    ]
+end
+
+to move-to-centroid
+
+ let meanX mean [pxcor] of my-territory 
+ let meanY mean [pycor] of my-territory 
+ let meanXY patch meanX meanY ; Centroid patch of territory
+ move-to meanXY; note that this is sometimes outside the family's territory
+
+ ask family-members [move-to myself ]
+  
+ ask vacancies 
+   [
+     let distance-from-centroid (distance myself) * cell-dimension
+     if distance-from-centroid = 0 [set distance-from-centroid 1]
+     set relative-productivity (1 / distance-from-centroid) * current-productivity * 100
+   ]
+   
+ ask my-territory
+   [
+     let distance-from-centroid (distance myself) * cell-dimension
+     if distance-from-centroid = 0 [set distance-from-centroid 1]
+     set cell-relative-productivity (1 / distance-from-centroid) * current-productivity * 100
+   ]
+
+end
+
+to acquire-best-available-vacancy
+
+  let acquired-territory no-patches
+  let best-vacancy (max-one-of vacancies [relative-productivity])
+
+  ask best-vacancy
+    [
+      set fox-family-owner myself
+      set acquired-territory (patch-set acquired-territory patch-here)
+      ask acquired-territory 
+      [
+        set checked-already "no"
+        ask neighbors4 with [(fox-family-owner = nobody) and (not any? vacancies-here) and current-productivity > 0]
+        [ sprout-vacancies 1 ]
+      ]
+      die
+    ]
+  
+  set my-territory (patch-set my-territory acquired-territory)
+  ask my-territory [set pcolor ([color] of myself) - 2]
+  set territory-productivity (sum [current-productivity] of my-territory)
+
+  move-to-centroid
+
+end
+
+to swap-poor-territory-for-better
+
+; these first lines speed up routine by aborting if option already considered and discarded
+
+  let worst-swappable-territory (min-one-of my-territory [cell-relative-productivity] )
+ 
+  if [checked-already] of worst-swappable-territory = "yes"
+  [ ;print "stopping cos checked already"
+    stop
+  ]
+  
+  ask worst-swappable-territory [set checked-already "yes"]
+  
+  let swappables-neighbors4 [neighbors4] of worst-swappable-territory
+
+  let best-vacancy (max-one-of vacancies [relative-productivity])
+  
+  if best-vacancy != nobody
+  [
+    
+    if ([relative-productivity] of best-vacancy > [cell-relative-productivity] of worst-swappable-territory) and (best-vacancy != swappables-neighbors4)
+    [
+     ;print "going ahead"
+      ask worst-swappable-territory
+      [
+        set fox-family-owner nobody
+        set pcolor true-color
+        set cell-relative-productivity 0
+        set checked-already "no"
+        set cell-relative-use 0
+      ]
+
+      ;type count my-territory type " "
+      set my-territory my-territory with [fox-family-owner = myself]
+      ;type count my-territory type " "
+      set territory-productivity (sum [current-productivity] of my-territory)
+
+    ;  print count my-territory
+      acquire-best-available-vacancy
+     ; print count my-territory
+    ]
+  ]
+
+end
+
+to remove-lonely-territory
+
+  let prior-territory-productivity territory-productivity
+  let this-family self
+  let lonely-territory my-territory with [count (neighbors4 with [fox-family-owner = this-family]) = 0]
+  if any? lonely-territory
+    [
+      ask lonely-territory
+        [
+          set fox-family-owner nobody
+          set pcolor true-color
+          set cell-relative-productivity 0
+          set checked-already "no"
+          ;type "fox " type myself type "removing isolated territory " type pxcor print pycor; print current-productivity
+          
+       ]
+
+  ;print count my-territory
+  set my-territory my-territory with [fox-family-owner = myself]
+  ;print count my-territory
+      set territory-productivity (sum [current-productivity] of my-territory)
+      ;type prior-territory-productivity type " " type territory-productivity print " "
+      if (prior-territory-productivity >= min-productivity-for-metabolic-rate) and (territory-productivity < min-productivity-for-metabolic-rate)
+      [print "uh-oh!"]
+      
+    ]    
+
+end
+
+to remove-any-excess-territory
+   
+  set territory-productivity (sum [current-productivity] of my-territory)
+  
+  if territory-productivity > (1.1 * adult-fox-timestep-food)
+  [ 
+        
+    let worst-territory-cell (min-one-of my-territory [cell-relative-productivity] )
+    
+    ask worst-territory-cell
+    [
+      set fox-family-owner nobody
+      set pcolor true-color
+      set cell-relative-productivity 0
+      set checked-already "no"
+    ]
+    
+    set my-territory my-territory with [fox-family-owner = myself]
+    
+    move-to-centroid
+    
+    remove-any-excess-territory
+  ]
+    
+end
+
+to finalise-territory
+  
+  move-to-centroid
+  
+  set vacancy-score (sum [relative-productivity] of vacancies)
+  ask vacancies [die]
+  
+  ask my-territory 
+       [
+         set cell-relative-use current-productivity / [territory-productivity] of myself 
+       ]
+end
+
+
+
+
+

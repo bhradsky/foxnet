@@ -1,0 +1,154 @@
+; TESTER CODES TO ILLUSTRATE KEY MECHANISMS
+
+to habitat-fox-territory
+
+  set weeks-per-timestep	1
+  set cell-dimension		100
+  set landscape-source		"generate"
+  set landscape-size		16
+  set region-size 		16
+  set initial-fox-density 	0.00001
+  
+  set range-calculation	"1 kernel, 1 mean" 
+  set home-range-area		"[2]"
+  set kernel-percent		"[100]"
+
+  set fox-mortality	false
+
+  set cub-birth-season		53 ; so that breeding doesn't occur
+  set bait-layout "none"
+
+  set plot? false
+
+  setup
+
+  set-patch-size 10
+  
+; higher productivity option
+  ask patches [set current-productivity true-productivity * 4]
+  
+; central patch option
+;  ask patch 19 19 [ask patches in-radius 8 [set current-productivity true-productivity * 4] ]
+  
+; for heterogeneous random option
+;  ask patches [set current-productivity true-productivity + random (true-productivity * 4)]
+
+; for smoothed option
+; ask patches [set current-productivity true-productivity + random (true-productivity * 4) ]  
+; ask patches [set current-productivity mean [current-productivity] of neighbors] 
+ 
+; for gradient option
+;  ask patches [set current-productivity true-productivity + pxcor * (true-productivity * 3 / world-width)]
+
+  ask patches [set true-color scale-color grey current-productivity 0 70 ]
+  ask patches [set pcolor true-color]
+
+  create-foxes 4
+    [
+    set status "disperser"; 'disperser' refers to a fox that is not a cub and is looking for a territory
+    set size 6
+    set age (36 + random 130 ) ; initial foxes are given an age between 9 months and 3 years
+    set sex "female" set color yellow
+    set family-id nobody
+    set natal-id nobody
+    set failed-territory-id [0]
+    setxy random-xcor random-ycor
+    set natal-cell patch-here
+
+    ]
+
+  foxes-disperse
+
+  repeat 52 [go]
+  
+  ask fox-families [type "my territory size is " type count my-territory * cells-to-km2 print " km2"]
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to bait-demo
+
+  repeat 30
+
+  [
+    let death-tally 0 
+  
+    repeat 100
+    [
+      set weeks-per-timestep	1
+      set cell-dimension		100
+      set landscape-source		"generate"
+      set landscape-size		16
+      set region-size 		16
+      set initial-fox-density 	0.00001
+  
+      set range-calculation	"1 kernel, 1 mean" 
+      set home-range-area		"[1]" ; varied for home range size demo
+      set kernel-percent		"[100]"
+
+      set fox-mortality	false
+      set cub-birth-season 53 ; so that breeding doesn't occur in this demo routine
+      
+      set bait-layout "grid"
+      set bait-density 0.5; varied for bait density demo     
+      set Pr-die-if-exposed-100ha 0.2; varied for bait efficacy demo
+      set commence-baiting-year 1
+      set commence-baiting-week 1
+      set bait-frequency "weekly*"
+      
+      set plot? false
+
+      setup
+   ;   ask bait-stations with [pxcor != 17]  [die] ;for home range size demo where need to make sure only 1 baitstation in territory
+   ;  ask bait-stations with [pycor != 18]  [die]
+      set-patch-size 10
+
+      create-foxes 1
+      [
+        set status "disperser"
+        set size 6
+        set age (36 + random 130 ) 
+        set sex "female" set color yellow + 4
+        set family-id nobody
+        set natal-id nobody
+        set failed-territory-id [0]
+        setxy 19 19
+        set natal-cell patch-here
+        set territory-perception-radius 0
+        try-to-establish-new-territory
+      ]
+
+      foxes-disperse
+      
+      ask fox-families
+      [ hatch-foxes 1 ; varied for family size demo
+       [
+        set status "suboordinate"
+        set size 4
+        set age 36
+        set natal-cell patch-here
+               
+        ifelse random-float 1 < propn-cubs-female 
+        [set sex "female" set color yellow + 4 ]
+        [set sex "male" set color yellow]
+
+        set family-id [who] of myself
+        set natal-id family-id
+        set failed-territory-id [0]
+        ask fox-families-here
+        [
+          set family-members (turtle-set myself family-members)
+        ]
+      ]
+      ]
+      
+      go
+  
+      if fox 9 = nobody [ set death-tally death-tally + 1]   
+    
+    ]  
+  
+    print death-tally
+  ]
+  
+end

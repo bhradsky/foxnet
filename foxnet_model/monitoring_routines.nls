@@ -1,0 +1,359 @@
+
+; #################################################################
+; ############ MONITORING RELATED ROUTINES ########################
+; #################################################################
+
+to update-monitors
+
+  set foxes-in-region-of-interest turtle-set foxes-on region-of-interest
+
+  if age-structure = true [calculate-fox-age]
+  if bait-consumption = true [calculate-bait-take]
+  if count-neighbours = true [check-how-many-neighbours]
+  if density  = true [calculate-fox-density ]
+  if dispersal-distances = true  [calculate-fox-dispersal]
+  if family-density = true  [calculate-fox-family-density]
+  if foxes-on-transect = true  and landscape-source = "import raster" and survey-transect-shp != "" [count-foxes-overlapping-transect]  
+  if popn-structure  = true  [calculate-fox-demography]
+  
+;  if "range size" = true and week-of-year MOD 52 = 1 [calc-MCP]
+ 
+ ; print count foxes with [collared = true]
+
+ 
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to calculate-fox-age
+  
+  set no-foxes count foxes-in-region-of-interest
+  set foxes.less1 count foxes-in-region-of-interest with [age < 52] 
+  set foxes.1.2 count foxes-in-region-of-interest with [age >= 52 and age < (52 * 2)]
+  set foxes.2.3 count foxes-in-region-of-interest with [age >= (52 * 2) and age < (52 * 3)] 
+  set foxes.3.4 count foxes-in-region-of-interest with [age >= (52 * 3) and age < (52 * 4)]
+  set foxes.4.5 count foxes-in-region-of-interest with [age >= (52 * 4) and age < (52 * 5)]
+  set foxes.5.6 count foxes-in-region-of-interest with [age >= (52 * 5) and age < (52 * 6)]
+  set foxes.6.7 count foxes-in-region-of-interest with [age >= (52 * 6) and age < (52 * 7)] 
+  set foxes.more7 count foxes-in-region-of-interest with [age >= (52 * 7)]
+  
+  if plot? = true
+  [
+    set-current-plot "age structure"
+    clear-plot
+    set-plot-x-range 0 8
+    
+    if no-foxes > 0
+    [
+      plot foxes.less1 / no-foxes
+      plot foxes.1.2 / no-foxes
+      plot foxes.2.3 / no-foxes
+      plot foxes.3.4 / no-foxes
+      plot foxes.4.5 / no-foxes
+      plot foxes.5.6 / no-foxes
+      plot foxes.6.7 / no-foxes
+      plot foxes.more7 / no-foxes
+    ]
+  ]
+ 
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to calculate-fox-demography
+
+  set no-foxes count foxes-in-region-of-interest
+  set no-cub-foxes count foxes-in-region-of-interest with [status = "cub"]
+  set no-breeding-females count foxes-in-region-of-interest with [status = "alpha" and sex = "female"]
+  set no-suboordinate-females count foxes-in-region-of-interest with [status = "subordinate" and sex = "female"]
+  set no-disperser-females count foxes-in-region-of-interest with [status = "disperser" and sex = "female"]
+  set no-alpha-males count foxes-in-region-of-interest with [status = "alpha" and sex = "male"]
+  set no-suboordinate-males count foxes-in-region-of-interest with [status = "subordinate" and sex = "male"]
+  set no-disperser-males count foxes-in-region-of-interest with [status = "disperser" and sex = "male"]
+  set no-fox-families count fox-families-on region-of-interest
+  
+  if plot? = true
+  [
+    set-current-plot "population structure"
+    clear-plot
+    
+   if no-foxes > 0
+    [
+;    set-plot-x-range 0 7
+
+    set-current-plot-pen "cubs" set-plot-pen-color black  plot no-cub-foxes / no-foxes
+    set-plot-pen-color 15 plot no-breeding-females / no-foxes
+    set-plot-pen-color 25 plot no-suboordinate-females / no-foxes
+    set-plot-pen-color 45 plot no-disperser-females / no-foxes
+    set-plot-pen-color 105  plot no-alpha-males / no-foxes
+    set-plot-pen-color 85  plot no-suboordinate-males / no-foxes
+    set-plot-pen-color 65  plot no-disperser-males / no-foxes
+    ]
+  ]
+
+
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to calculate-bait-take
+
+  ifelse count-baits-laid > 0 
+    [set bait-take count bait-stations with [bait-present = false] / count-baits-laid]
+    [set bait-take 0]
+   
+  if plot? = true
+    [
+      set-current-plot "bait take"
+      plot bait-take
+    ]
+  
+end
+
+;;;;;;;;;;;;;;;;;;
+  
+  
+to calculate-fox-dispersal
+  
+  let dispersers foxes-in-region-of-interest with [my-dispersal-duration > 0 ] ; this will not include foxes that have not attempted to disperse (i.e. who are suboordinates or alphas in their natal territory)
+  let dispersal-dists [distance-from-natal] of dispersers
+   
+  let female-disperser-foxes dispersers with [sex = "female"]
+  if any? female-disperser-foxes
+  [
+    set female-dispersal-dist [distance-from-natal] of female-disperser-foxes
+    set max-all-female-dispersal-dist max female-dispersal-dist
+    set mean-no-sub-female-dispersal-dist mean female-dispersal-dist; != "cub" and status != "suboordinate"]
+  ]
+   
+  let male-disperser-foxes dispersers with [sex = "male"]
+  if any? male-disperser-foxes 
+  [
+    set male-dispersal-dist [distance-from-natal] of male-disperser-foxes 
+    set max-all-male-dispersal-dist max male-dispersal-dist
+    set mean-no-sub-male-dispersal-dist mean male-dispersal-dist; != "cub" and status != "suboordinate"]
+  ]
+  
+   if plot? = true
+   [
+    set-current-plot "fox dispersal"
+    set-histogram-num-bars 10
+    ifelse empty? dispersal-dists
+    [clear-plot]
+    [
+      set-plot-x-range 0 ceiling (max dispersal-dists + 1)
+      histogram dispersal-dists
+    ]
+    ]
+
+  
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  
+to calculate-fox-density
+  
+  ; for Region 1
+  ask region-of-interest
+  [
+    set cell-relative-use-foxes 0
+    if fox-family-owner != nobody 
+    [
+      set cell-relative-use-foxes cell-relative-use * count [family-members ] of fox-family-owner 
+    ]
+  ]
+
+ let current-use-families sum [cell-relative-use-foxes] of region-of-interest
+  
+ let disperser-fox-abundance count foxes-in-region-of-interest with [status = "disperser"] 
+ let total-fox-use current-use-families + disperser-fox-abundance
+ set total-fox-density total-fox-use / region-of-interest-size
+  
+;  set total-fox-density count foxes-in-region-of-interest / region-of-interest-size
+  set alpha-fox-density count foxes-in-region-of-interest with [status = "alpha"] / region-of-interest-size
+  set disperser-fox-density count foxes-in-region-of-interest with [status = "disperser"] / region-of-interest-size
+  set subordinate-fox-density count foxes-in-region-of-interest with [status = "subordinate"] / region-of-interest-size
+  set cub-fox-density count foxes-in-region-of-interest with [status = "cub"] / region-of-interest-size
+  set all-fox-but-cub-density count foxes-in-region-of-interest with [status != "cub"] / region-of-interest-size
+  set fox-family-density count fox-families-on region-of-interest / region-of-interest-size
+ 
+  ; for Region 2 (if applicable)
+ 
+  if landscape-source = "import raster" and region2-shp != "" 
+  
+  [ask region-of-interest2
+    [ 
+      set cell-relative-use-foxes2 0
+      if fox-family-owner != nobody 
+      [ set cell-relative-use-foxes2 cell-relative-use * count [family-members ] of fox-family-owner ]
+    ]
+    let current-use-families2 sum [cell-relative-use-foxes2] of region-of-interest2
+    let foxes-in-region-of-interest2 turtle-set foxes-on region-of-interest2
+    let disperser-fox-abundance2 count foxes-in-region-of-interest2 with [status = "disperser"] 
+    let total-fox-use2 current-use-families2 + disperser-fox-abundance2
+    set total-fox-density2 total-fox-use2 / region-of-interest2-size
+    
+    set fox-family-density2 count fox-families-on region-of-interest2 / region-of-interest2-size
+
+;    set total-fox-density2 count foxes-in-region-of-interest2 / region-of-interest2-size
+    set alpha-fox-density2 count foxes-in-region-of-interest2 with [status = "alpha"] / region-of-interest2-size
+    set disperser-fox-density2 count foxes-in-region-of-interest2 with [status = "disperser"] / region-of-interest2-size
+    set subordinate-fox-density2 count foxes-in-region-of-interest2 with [status = "subordinate"] / region-of-interest2-size
+    set cub-fox-density2 count foxes-in-region-of-interest2 with [status = "cub"] / region-of-interest2-size
+    set all-fox-but-cub-density2 count foxes-in-region-of-interest2 with [status != "cub"] / region-of-interest2-size
+    set fox-family-density2 count fox-families-on region-of-interest2 / region-of-interest2-size
+  ]
+  
+  if plot? = true
+  [
+    set-current-plot "fox density"
+    set-current-plot-pen "Fox density - region 1" plot total-fox-density
+    set-current-plot-pen "Fox density - region 2" plot total-fox-density2
+    set-current-plot-pen "Fox-family density" plot fox-family-density
+  ]
+  
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  
+to calculate-fox-family-density
+  if  density  = false
+  [ 
+  set fox-family-density count fox-families-on region-of-interest / region-of-interest-size
+  if plot? = true
+  
+  [
+    set-current-plot "fox density"
+    set-current-plot-pen "Fox-family density" plot fox-family-density
+  ]
+  ]
+  
+end
+  
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to check-how-many-neighbours
+
+  set number-of-neighbours []
+  let interesting-fox-families fox-families-on region-of-interest
+  
+  ifelse any? interesting-fox-families
+  
+  [
+    ask interesting-fox-families
+    [
+      let me [fox-family-owner] of my-territory
+      let me2 first me ; remove-duplicates me
+
+      ask my-territory
+      [     
+        ask neighbors with [fox-family-owner != me2]
+         [ sprout-vacancies 1]
+      ]
+      let neighbouring-owners [fox-family-owner] of vacancies
+      let neighbouring-owners2 remove-duplicates neighbouring-owners
+      let neighbouring-owners3 remove nobody neighbouring-owners2
+      set number-of-neighbours lput length neighbouring-owners3 number-of-neighbours
+      ask vacancies [die]
+    ]
+  ]
+  
+ [set number-of-neighbours  [0]]
+  
+  if plot? = true
+  [
+    set-current-plot "number of neighbouring territories"
+    set-plot-y-range 0 max number-of-neighbours + 2
+    set-current-plot-pen "min" plot min number-of-neighbours
+    set-current-plot-pen "mean"plot mean number-of-neighbours
+    set-current-plot-pen "max" plot max number-of-neighbours
+  ]
+  
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to count-foxes-overlapping-transect
+
+  let family-owners turtle-set [fox-family-owner] of my-survey-transect
+  ifelse any? family-owners 
+  [set foxes-overlapping-transect sum [count family-members with [status != "cub"]] of family-owners]
+  [set foxes-overlapping-transect 0]
+  
+ if plot? = true
+  [
+    set-current-plot "foxes overlapping transect"
+    set-current-plot-pen "transect1"
+    plot foxes-overlapping-transect
+  ]
+
+  if  survey-transect2-shp != ""
+  [
+  let family-owners2 turtle-set [fox-family-owner] of my-survey-transect2
+  ifelse any? family-owners2
+  [set foxes-overlapping-transect2 sum [count family-members with [status != "cub"]] of family-owners2]
+  [set foxes-overlapping-transect2 0]
+  
+ if plot? = true
+  [
+    set-current-plot "foxes overlapping transect"
+    set-current-plot-pen "transect2"
+    plot foxes-overlapping-transect2
+  ]
+  ]
+
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;to calc-MCP ; adapted from Carter
+; 
+; if count fox-families-on region-of-interest > 1
+; [
+;    ; create an empty data.frame"
+;    r:eval "families <- data.frame()"
+;
+;    r:eval ".libPaths(c(\"C:/Rlib\",.libPaths()))"; this will need to be adjusted, depending where your R library is stored.
+;    r:eval "library(sp)"
+;    r:eval "library(adehabitatHR)"
+;
+;    ask fox-families-on region-of-interest
+;    [
+;      ; extract the name, and x- and y coordinates of each fox family's territory
+;      let x-coords [pxcor] of my-territory
+;      set x-coords map [x -> x * cell-dimension] x-coords; get into appropriate scale (unit = m)
+;      let y-coords [pycor] of my-territory
+;      set y-coords map [y ->  y * cell-dimension] y-coords;
+;      let myname (word who)
+;      (r:putdataframe "family" "X" x-coords "Y" y-coords "name" myname)
+;     
+;      r:eval "family$name <- family$name[1]"; get 'name' to repeat in every row
+;      let testX r:get "family$X"
+;      let testY r:get "family$Y"
+;      let testname r:get "family$name"
+;      print testX
+;      print testY
+;      print testname
+;   
+;     r:eval "families <- rbind(families, family)"; when looping, this creates a big data frame with data for all fox-families
+;
+;    ]
+;       
+;      r:eval "spdf <- sp::SpatialPointsDataFrame(families[1:2], families[3])" 
+;      r:eval "homerange <- mcp(spdf, percent = 95, unin = c('m'), unout = c('ha'))"; calculates 95% MCP area in ha
+;      r:eval "hr.sizes <- as.data.frame(homerange)"
+;      set home-range-sizes r:get "hr.sizes$area"
+;      set-current-plot "fox home range area (95% MCP)"
+;      set-histogram-num-bars 20
+;      histogram home-range-sizes 
+;     ;r:eval "write.csv(hr.sizes, \"C:/Users/hradskyb/Dropbox/FIPTH/Predator_IBM/FoxModel_forpaper/Results/hr.csv\" ) "
+;    ]
+;
+;end
+
+
+
+; SOME OTHER TESTS TO RUN IN WINDOW:
+
+; any? patches with [pcolor = black and fox-family-owner != nobody] ;should be false

@@ -1,0 +1,204 @@
+; FOX AGE, STATUS, REPRODUCTION and DEATH
+
+to update-fox-age-and-status
+
+  ask foxes
+  [
+    ; update age (in weeks)
+    set age age + weeks-per-timestep; all foxes get older each time step
+    
+    ; promote 'cubs' to 'subordinates' if they are old enough 
+    if status = "cub" and age >= age-at-independence; Cubs can't survive if both their parents die, whereas subordinate survival is independent
+      [
+        set status "subordinate" 
+        set size 6
+      ] 
+    
+    ; promote some 'subordinates' to 'dispersers', if it is dispersal season 
+    ifelse dispersal-season-begins < dispersal-season-ends
+    [
+      if (week-of-year >= dispersal-season-begins) and (week-of-year < dispersal-season-ends ); for dispersal seasons that occur within one year
+      [update-some-subordinates-to-dispersers]
+    ]
+    [ 
+      if (week-of-year >= dispersal-season-begins) or (week-of-year < dispersal-season-ends); for dispersal seasons that overlap two years e.g. Dec - Jan
+      [update-some-subordinates-to-dispersers]
+    ]
+  ]
+
+end
+
+to update-some-subordinates-to-dispersers
+ 
+  if status = "subordinate"
+    [ifelse sex = "female"
+        [ifelse random-float 1 < ((1 - female-dispersers) ^ (1 / dispersal-duration ))
+          [  set status "subordinate"]
+          [  set status "disperser"  ]
+        ]
+        
+        [ifelse random-float 1 < ((1 - male-dispersers) ^ (1 / dispersal-duration))
+          [  set status "subordinate"]
+          [  set status "disperser" ]
+        ]
+    ]
+    
+end
+
+to fox-natal-succession
+  
+  ask foxes with [status = "subordinate" and age >= 24]
+    [
+      let my-sex [sex] of self
+      let my-family-members [family-members] of fox-family family-id
+      if not any? my-family-members with [status = "alpha" and sex = my-sex]
+      
+        [ ; type age type " " type who print " is taking parent's shoes"
+          set status "alpha"
+          ifelse my-sex = "female" 
+            [set color red]
+            [set color blue]   
+          
+        ]
+      ;ask fox-families-here [print [sex] of family-members with [status = "alpha"]]
+    ]
+
+end
+
+to fox-families-breed
+
+ask fox-families
+  [
+   ifelse count family-members with [status = "alpha"] = 2 
+     [
+      let litter-size random-poisson number-of-cubs
+      
+      hatch-foxes litter-size
+      [
+        rt random-float 360 
+        set status "cub"
+        set size 4
+        set age 0
+        set natal-cell patch-here
+               
+        ifelse random-float 1 < propn-cubs-female ; set sex ratio of population
+        [set sex "female" set color yellow + 4 ]
+        [set sex "male" set color yellow]
+
+        set family-id [who] of myself
+        set natal-id family-id
+        set failed-territory-id [0]
+        ask fox-families-here
+        [
+          set family-members (turtle-set myself family-members)
+        ]
+      ]
+    ]
+    
+    [ ; foxes who don't have a mate become dispersers
+      
+      ;type [who] of family-members type [status] of family-members  type [age] of family-members type [sex] of family-members type " "
+      
+      let my-number who
+      ask my-territory
+      [
+        set pcolor true-color
+        set fox-family-owner nobody
+        set cell-relative-productivity 0
+        set cell-relative-use 0
+        set checked-already "no"
+      ]
+      
+      ask family-members 
+        [
+        set failed-territory-id fput my-number failed-territory-id
+        set status "disperser"
+        set family-id nobody
+        ifelse sex = "female" [set color yellow + 4 ][set color yellow]
+        check-for-alpha-vacancy
+        ;print status
+      ]
+  
+      ask vacancies [die]
+      die
+    ]
+  ]
+    
+end
+
+to foxes-die
+
+if fox-mortality = TRUE 
+[
+  ask foxes
+  [
+ ;if status = "disperser" and attempts >= 140 [die]
+  
+ ifelse age < 52 ;(1 year old)
+ [
+   let m random-float 1
+   let time-step-fox-survival (less1y-survival ^ (1 / (52 / weeks-per-timestep)))
+   if m < (1 - time-step-fox-survival)
+     [ 
+       die
+     ]
+
+ ]
+ [ifelse age < 104 ;(2 years old)
+    [
+   let m random-float 1
+   let time-step-fox-survival (from1yto2y-survival ^ (1 / (52 / weeks-per-timestep)))
+   if m < (1 - time-step-fox-survival)
+     [
+       die
+     ]
+
+ ]
+ [ifelse age < 156 ;(3 years old)
+       [
+   let m random-float 1
+   let time-step-fox-survival (from2yto3y-survival ^ (1 / (52 / weeks-per-timestep)))
+   if m < (1 - time-step-fox-survival)
+     [ 
+       die
+     ]
+
+ ]
+ [ let m random-float 1
+   let time-step-fox-survival (more3y-survival ^ (1 / (52 / weeks-per-timestep)))
+   if m < (1 - time-step-fox-survival)
+     [ 
+       die
+     ]
+ ]]]
+]
+ 
+  
+]
+
+end
+
+to remove-defunct-fox-families
+
+ ask fox-families with [not any? family-members with [status = "alpha" or status = "subordinate"]];
+       ;type count family-members
+       ;type " " type [status] of family-members print count my-territory
+       [ask family-members with [status = "cub"]
+       [ ;print " cub died - there was no-one to look after me!"
+         die
+       ]
+     ]
+
+ ask fox-families with [count family-members = 0]  ; remove territories with no foxes
+  [
+    ask my-territory 
+    [
+      set pcolor true-color
+      set fox-family-owner nobody
+      set cell-relative-productivity 0
+      set checked-already "no"
+    ]
+    die
+   ]
+
+end

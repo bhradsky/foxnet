@@ -1,0 +1,7 @@
+Parameter,Value
+`bait-layout`,grid
+`bait-density (km^-2^)`,1
+`bait-frequency`,4-weeks
+`Pr-die-if-exposed-100ha (propn.)`,0.3
+`commence-baiting-year`,3
+`commence-baiting-week`,13

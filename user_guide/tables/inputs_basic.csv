@@ -1,0 +1,26 @@
+Parameter,Value
+`weeks-per-timestep`,1
+`cell-dimension (m)`,100
+`landscape-source`,generate
+`landscape-size (km^2^)`,400
+`region-size (km^2^)`,110
+`initial-fox-density  (foxes km^-2^) `,0
+`range-calculation`,"1 kernel, 1 mean"
+`home-range-area  (km^2^)`,[0.454] **make sure to include the brackets
+`kernel-percent (%)`,[95] **make sure to include the brackets
+`fox-mortality`,on
+`less1y-survival (propn.)`,0.48
+`from1yto2y-survival (propn.)`,0.54
+`from2yto3y-survival (propn.)`,0.53
+`more3y-survival (propn.)`,0.51
+`breeding-season (week)`,13
+`number-of-cubs`,4.72
+`propn-cubs-female (propn.)`,0.5
+`age-at-independence (weeks)`,12
+`dispersal-season-begins (week)`,37
+`dispersal-season-ends (week)`,9
+`female-dispersers (propn.)`,0.378
+`male-dispersers (propn.)`,0.758
+`bait-layout`,none
+`plot? `,"""on"""
+`density`,"""on"""

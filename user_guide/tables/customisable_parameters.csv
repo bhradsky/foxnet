@@ -1,0 +1,54 @@
+Parameter,Unit,Explanation
+`working-directory`,—,"Location of FoxNet folder, e.g. `C:/Users/hradsky/FoxNet`"
+`weeks-per-timestep`,weeks ,"Number of weeks for each model timestep (""1"", ""2"" or ""4"")"
+`cell-dimension`,m,Distance along one edge of a *habitat-cell*
+`landscape-source`,“generate” or “import raster”,Whether the landscape is generated within the model or imported as a raster
+`landscape-size`,km^2^,"The size of the landscape, if it is generated within the model"
+`region-size`,km^2^,"The size of the region-of-interest (where the *fox* population is monitored), if it is generated within the model"
+`landscape-raster`,.asc file,"The raster (ascii) file describing the landscape layout (e.g. `GIS_layers/Glenelg/ mtclay_landscape.asc`), if the landscape is imported"
+`uninhabitable-raster-value`,integer,The value used in the raster layer to specify *habitat-cells* that can’t be inhabited by *foxes* (e.g. ocean)
+`second-habitat-raster-value`,integer,The value used in the raster layer to specify *habitat-cells* that are a secondary type of habitat (e.g. farmland rather than forest)
+`hab2:hab1`,ratio,The productivity of the secondary habitat type relative to the primary habitat type
+`region-shp`,.shp file,A shapefile (polygon) describing a region-of-interest (where *fox* populations are monitored) if the landscape is imported
+`region2-shp`,.shp file,A shapefile (polygon) describing a second region-of-interest (where *fox* populations are monitored) if the landscape is imported – optional.
+`survey-transect-shp`,.shp file,A shapefile (line) describing a transect for surveying *fox* populations
+`survey-transect2-shp`,.shp file,A shapefile (line) describing a second transect for surveying *fox* populations
+`initial-fox-density`,individuals km^-2^,The number of *foxes* per square kilometre when the model is initiated
+`range-calculation`,"` “1 kernel, 1 mean” ` or “1 kernel, min and max”",The method used for calculating the productivity of the landscape from the fox home range data
+`home-range-area`,km^2^,The area of an average fox home range in this landscape
+`kernel-percent`,%,The proportion of the home range kernel included in the % area (e.g. 90 for a 90% MCP)
+`fox-mortality`,"""true""/""false""","Whether natural mortality of *foxes* occurs.  Usually set to ""on""."
+`less1-survival`,propn.,Annual survival rate for *foxes* < 1 year old
+`from1yto2y-survival`,propn.,Annual survival rate for *foxes* 1 - 2 years old
+`from2yto3y-survival`,propn.,Annual survival rate for *foxes* 2 -  3 years old
+`more3y-survival`,propn.,Annual survival rate for *foxes* > 3 years old
+`cub-birth-season`,week of year,Time of year when *fox* cubs are born
+`number-of-cubs`,cubs fox-family^-1^,Average number of cubs born to a *fox-family*
+`propn-cubs-female`,propn,Proportion of cubs that are female when born
+`age-at-independence`,weeks,Age of cubs when they can survive the death of all adults in their *fox-family*
+`dispersal-season-begins`,week of year,Start of dispersal season
+`dispersal-season-ends`,week of year,End of dispersal season
+`female-dispersers`,propn.,Female dispersal rate
+`male-dispersers`,propn.,Male dispersal rate
+`bait-layout`,"“none”, “grid”, “random-scatter”, “custom”","The layout of *bait-stations*.  A shapefile must be imported for the ""custom"" option."
+`bait-density`,baits-stations km^-2^,The density of *bait-stations*. This only affects the “grid” and “random-scatter” `bait-layout` options
+`bait-layout-shp`,.shp file,"A shapefile (points) describing the locations of the *bait-stations*, if `bait-layout` is “custom”"
+`bait-frequency`,"“weekly*”, “fortnightly*, “4-weeks” or “custom*”",The frequency with which baits are laid at baitstations.  Check that * options are compatible with `weeks-per-timestep`.
+`custom-bait-weeks`,week(s) of year,Weeks-of-year when baits will be deployed at *bait-stations* if a “custom*” bait-frequency is chosen
+`Pr-die-if-exposed-100ha`,index,The efficacy of the poison baits when they are deployed at *bait-stations*
+`commence-baiting-year`,year,"The first year when baits at *bait-stations* will be poisonous (until then, baits are deployed and eaten but don’t kill *foxes*)"
+`commence-baiting-week`,week of year,The first week of the first year when baits at *bait-stations* will be poisonous
+`price-per-bait`,$,The cost of a single bait
+`person-days-per-baiting-round`,days,The number of person-days it takes to deploy a bait at each *bait-station*
+`cost-per-person-day`,$,The cost per person-day while deploying baits
+`km-per-baiting-round`,km,Total distance travelled to deploy a bait at each *bait-station*
+`cost-per-km-travel`,$,The per-kilometre cost of travel while deploying baits 
+`plot`,"""true""/""false""",Whether you want monitored variables to be shown in the beige plot(s)
+`age-structure`,"""true""/""false""",The number of *foxes* in each age class within the `region-of-interest` 
+`count-neighbours`,"""true""/""false""",The number of neighbouring territories for each *fox-family* within the `region-of-interest`
+`density`,"""true""/""false""","The density of *foxes*, various classes of *foxes*, and *fox-families* within the `region-of-interest` (and `region-of-interest2` if applicable)"
+`dispersal-distances`,"""true""/""false""",The distance that *foxes* within the `region-of-interest` have dispersed (excludes cubs & individuals that have not attempted to disperse)
+`family-density`,"""true""/""false""",The density of *fox-families* within the `region-of-interest`
+`foxes-on-transect`,"""true""/""false""","The number of *foxes* (excluding cubs) who have a territory that overlaps `survey-transect` (and `survey-transect2`, if applicable)"
+`popn-structure`,"""true""/""false""",The number of *foxes* in various status/sex classes within the `region-of-interest`
+`range-size`,"""true""/""false""",Not currently activated

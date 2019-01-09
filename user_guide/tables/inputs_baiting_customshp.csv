@@ -1,0 +1,5 @@
+Parameter,Value
+`bait-layout`,custom
+`bait-layout-shp`,gis_layers/glenelg/mtclay_baits.shp
+`bait-frequency`,4-weeks
+`Pr-die-if-exposed-100-ha`,0.3

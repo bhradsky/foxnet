@@ -1,0 +1,6 @@
+Parameter,Value
+`price-per-bait ($)`,2
+`person-days-per-baiting-round (days)`,3
+`cost-per-person-day ($)`,250
+`km-per-baiting-round (km)`,420
+`cost-per-km-travel ($)`,0.67

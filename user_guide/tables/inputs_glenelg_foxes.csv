@@ -1,0 +1,16 @@
+Parameter,Value
+`initial-fox-density (km^-2^)`,0.5
+`home-range-area (km^2^)`,[2.14]
+`kernel-percent (%)`,[95]
+`less1y-survival`,0.39
+`from1yto2y-survival`,0.65
+`from2yto3y-survival`,0.92
+`more3y-survival`,0.18
+`breeding-season`,37
+`number-of-cubs`,3.2
+`propn-cubs-female`,0.5
+`age-at-independence`,12
+`dispersal-season-begins`,9
+`dispersal-season-ends`,21
+`female-dispersers`,0.7
+`male-dispersers`,0.999

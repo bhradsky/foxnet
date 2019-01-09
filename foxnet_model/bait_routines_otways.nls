@@ -1,0 +1,126 @@
+;#############################################################
+;########## FOX BAITING RELATED ROUTINES #####################
+;#############################################################
+
+
+to bait-if-applicable
+  
+  if bait-frequency = "weekly*"
+    [lay-baits ]
+   
+  if bait-frequency = "fortnightly*" and weeks-per-timestep = 1
+    [if week-of-year MOD 2 = 1 [lay-baits] ]
+    
+  if bait-frequency = "fortnightly*" and weeks-per-timestep = 2
+      [lay-baits ]
+  
+  if bait-frequency = "4-weeks" and (week-of-year MOD 4 = 1)
+  [lay-baits ]
+   
+  if bait-frequency = "custom*"
+  [
+    let bait-weeks read-from-string custom-bait-weeks 
+    if  member? week-of-year bait-weeks 
+      [lay-baits]
+  ]
+
+
+end
+
+
+to lay-baits
+
+ ask bait-stations
+   [
+     set color red
+     set bait-present true
+     set Pr-death-bait-scaled cell-relative-use * 100 * Pr-die-if-exposed-100ha; cell relative use is 0.01 if home range size is 100 ha; less if home range is larger, more if home range is smaller
+     ;print Pr-death-bait-scaled
+   ]
+
+ set count-baits-laid count bait-stations with [color = red]
+;  print count-baits-laid
+ 
+ ifelse (year = commence-baiting-year and week-of-year >= commence-baiting-week and week-of-year <= 51) or (year > commence-baiting-year and week-of-year MOD 4 = 1)
+  [set baits-are-toxic true]
+  [set baits-are-toxic false]
+
+ calculate-annual-cost
+   
+ ask bait-stations with [bait-present = true and fox-family-owner != nobody]
+   [
+     let baited-family [family-members] of fox-family-owner
+     let at-risk-family baited-family with [age >= age-at-independence] 
+     repeat count at-risk-family
+     [
+       ifelse bait-present = false
+       [;print "bait already eaten"
+         stop]
+       [ if random-float 1 < Pr-death-bait-scaled 
+         [
+           set bait-present false
+           set color white
+           if baits-are-toxic = true 
+           [ 
+             ask one-of at-risk-family 
+             [ ;type who print " died"
+               die]
+           ]
+         ]
+       ]
+     ]
+   ]
+     
+end
+
+
+to disperser-check-for-baits
+  
+  if any? bait-stations with [bait-present = true]
+  [   
+    let this-cell patch-here
+    let area-explored patches in-radius (territory-perception-radius * kms-to-cells ) 
+    let area-explored-km2 count area-explored * cells-to-km2
+   ; type "disperser"  type area-explored type area-explored-km2 type " " 
+    let baited-patches bait-stations-on area-explored
+    let poison baited-patches with [bait-present = true]
+
+    if any? poison
+    [
+      ; ask poison [ask patches in-radius 10 [set pcolor pink]]
+      
+      let Pr-death-disperser-scaled (1 / area-explored-km2 ) * Pr-die-if-exposed-100ha ; scale by 100 ha (i.e. 1 km2) 
+      ;print (1 - (1 - Pr-death-disperser-scaled) ^ count poison)
+      if random-float 1 < (1 - (1 - Pr-death-disperser-scaled) ^ count poison)
+        [
+          move-to one-of poison
+          ask bait-stations-here [set bait-present false set color white]
+         
+          ifelse baits-are-toxic = true 
+          [ ; type " Disperser " type who print " ate a bait"
+            die]
+          [move-to this-cell]
+        ]
+    ]
+  ]
+end
+
+
+to remove-all-baits
+
+  ask bait-stations [set bait-present false set color white set Pr-death-bait-scaled 0] ; remove all poison baits at end of month
+  set count-baits-laid 0
+  
+
+end
+
+
+
+to calculate-annual-cost
+  if week-of-year = 1
+  [set bait-cost 0]
+  
+  set bait-cost ( bait-cost + count-baits-laid * price-per-bait + person-days-per-baiting-round * cost-per-person-day + km-per-baiting-round * cost-per-km-travel)
+  
+end
+

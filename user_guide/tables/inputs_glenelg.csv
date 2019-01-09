@@ -1,0 +1,10 @@
+Parameter,Value
+`working-directory`,"Location of FoxNet folder, e.g. C:/Users/hradsky/foxnet"
+`cell-dimension (m)`,100
+`landscape-source`,import raster
+`landscape-raster (.asc)`,gis_layers/glenelg/mtclay_landscape.asc
+`uninhabitable-raster-value `,2
+`second-habitat-raster-value`,0
+`hab2:hab1`,1.00 x
+`initial-fox-density (km^-2^)`,0
+`bait-layout`,none
