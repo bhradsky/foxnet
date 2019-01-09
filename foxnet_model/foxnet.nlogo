@@ -1,7 +1,7 @@
 ; ## FOX NET MODEL V1.0
 ; ## BRONWYN HRADSKY
 ; ## UNIVERSITY OF MELBOURNE
-; ## last updated 2019/01/09
+; ## last updated 2019/01/02
 
 
 ;##################################################################
