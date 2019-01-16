@@ -137,7 +137,7 @@ modelrun <-function(corename)
                         df.col.names=output.parameters,
                         nl.obj = corename)
    
-   output$uufferwidth <- i
+   output$bufferwidth <- i
 
    write.csv(output, paste0(foxnet.path, "/outputs/mtclay/mtclay_baiting_buffer_", i, "_", corename,".csv"))
    
