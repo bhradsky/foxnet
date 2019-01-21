@@ -90,7 +90,7 @@ for (w in baitfreq)
 {
   data.one <- for (i in 1:30) 
   {
-    data.one <- read.csv(paste0("mtclay/MtClay_baiting/frequency/MtClay_baiting_freq_", w, "_headless_", i, ".csv"))
+    data.one <- read.csv(paste0("mtclay/MtClay_baiting/frequency/MtClay_baiting_frequency_", w, "_headless", i, ".csv"))
     data.one$run <- i
     data.freq <- rbind(data.freq, data.one)
   }
@@ -106,12 +106,12 @@ data.freq$year.scaled <- (data.freq$X - 1)/ 26 + 1
 # calculate summary statistics for 10 years of baiting
 data.freq.18.27 <- data.freq[data.freq$year > 17 & data.freq$year < 28,]
 
-freq.years18.27 <- data.freq.18.27  %>% group_by(baitfreq, run) %>%
-  summarise_at(vars(all.but.cub.density), funs(mean, sd, min, max))
+freq.years18.27 <- data.freq.18.27  %>% group_by(baitfrequency, run) %>%
+  summarise_at(vars(all.fox.but.cub.density), funs(mean, sd, min, max))
 
 freq.years18.27$max.d <- freq.years18.27$max
 
-freq.years18.27.max <- freq.years18.27 %>% group_by(baitfreq) %>% 
+freq.years18.27.max <- freq.years18.27 %>% group_by(baitfrequency) %>% 
   summarise_at(vars(max.d), funs(mean, sd, min, max))
 
 # perc diff to current baiting scenario
@@ -122,12 +122,12 @@ freq.years18.27.max$diff.unbaited <- 1 - (years18.27.max$mean[2] - freq.years18.
 freq.years18.27.max$diff.unbaited2 <- freq.years18.27.max$mean  / years18.27.max$mean[2]
 
 
-freq.years18.27.max$freq <- ifelse(freq.years18.27.max$baitfreq == "monthly", "13",
-                                (ifelse(freq.years18.27.max$baitfreq == "quarterly", "4",
-                                        (ifelse(freq.years18.27.max$baitfreq == "summer", "1(Jan)",
-                                                (ifelse(freq.years18.27.max$baitfreq == "autumn", "1(Apr)",
-                                                        (ifelse(freq.years18.27.max$baitfreq == "winter", "1(Jul)",
-                                                                (ifelse(freq.years18.27.max$baitfreq == "spring", "1(Sep)", "XXX")))))))))))
+freq.years18.27.max$freq <- ifelse(freq.years18.27.max$baitfrequency == "monthly", "13",
+                                (ifelse(freq.years18.27.max$baitfrequency== "quarterly", "4",
+                                        (ifelse(freq.years18.27.max$baitfrequency== "summer", "1(Jan)",
+                                                (ifelse(freq.years18.27.max$baitfrequency== "autumn", "1(Apr)",
+                                                        (ifelse(freq.years18.27.max$baitfrequency== "winter", "1(Jul)",
+                                                                (ifelse(freq.years18.27.max$baitfrequency== "spring", "1(Sep)", "XXX")))))))))))
 
 freq.years18.27.max$freq <- factor(freq.years18.27.max$freq,
                                            levels = c("13", "4", "1(Jan)", "1(Apr)", "1(Jul)", "1(Sep)"))
@@ -156,26 +156,13 @@ plot.baitfreq <- ggplot(freq.years18.27.max, aes(x = freq, y = mean)) +
 
 data.density <- data.frame()
 
-baitdensity <- c("0.5", "1")
+baitdensity <- c("0.5", "1", "2", "4", "6", "8")
 
 for (w in baitdensity)
 {
   data.one <- for (i in 1:30) 
   {
-    data.one <- read.csv(paste0("mtclay/MtClay_baiting/density/MtClay_baiting_density_", w, "_headless2_", i, ".csv"))
-    data.one$run <- i
-    data.density <- rbind(data.density, data.one)
-  }
-}
-
-
-baitdensity <- c("2", "4", "6", "8")
-
-for (w in baitdensity)
-{
-  data.one <- for (i in 1:30) 
-  {
-    data.one <- read.csv(paste0("mtclay/MtClay_baiting/density/MtClay_baiting_density_", w, "_headless_", i, ".csv"))
+    data.one <- read.csv(paste0("mtclay/MtClay_baiting/density/MtClay_baiting_density_", w, "_headless", i, ".csv"))
     data.one$run <- i
     data.density <- rbind(data.density, data.one)
   }
@@ -191,7 +178,7 @@ data.density$year.scaled <- (data.density$X - 1)/ 26 + 1
 data.density.18.27 <- data.density[data.density$year > 17 & data.density$year < 28,]
 
 density.years18.27 <- data.density.18.27  %>% group_by(baitdensity, run) %>%
-  summarise_at(vars(all.but.cub.density), funs(mean, sd, min, max))
+  summarise_at(vars(all.fox.but.cub.density), funs(mean, sd, min, max))
 
 density.years18.27$max.d <- density.years18.27$max
 
@@ -212,7 +199,7 @@ plot.baitdensity <- ggplot(density.years18.27.max, aes(x = baitdensity, y = mean
   geom_hline(yintercept = years18.27.max$max[2], col = "darkgrey", linetype = "dotted") +
   geom_point(size = 2) + 
   geom_errorbar(aes(ymin=min, ymax=max), width=.1) +
-  labs(title="c)", y=expression("Max fox density (individuals km "^-{2}* ")"), x=expression("Bait density (baits km "^-{2}* ")")) +   
+  labs(title="c)", y=expression("Max fox density (individuals km "^-{2}* ")"), x=expression("Bait density (baits km"^-{2}* ")")) +   
   theme_classic() +
   scale_y_continuous(limits = c(0,3.1), expand = c(0, 0), breaks=seq(0, 3, 0.5)) +
   scale_x_continuous(limits = c(0,8.2), expand = c(0, 0), breaks=seq(0, 8, 1))
@@ -224,13 +211,13 @@ plot.baitdensity <- ggplot(density.years18.27.max, aes(x = baitdensity, y = mean
 
 data.buffer <- data.frame()
 
-bufferwidths <- c(1000, 2000, 4000, 6000, 8000, 10000)
+bufferwidths <- c(1000, 2000, 4000, 6000) #, , 8000, 10000
 
 for (w in bufferwidths)
 {
-  data.one <- for (i in 1:30) 
+  data.one <- for (i in seq(1, 30, 2)) 
   {
-    data.one <- read.csv(paste0("mtclay/MtClay_baiting/buffer/MtClay_baiting_buffer_", w, "_headless_", i, ".csv"))
+    data.one <- read.csv(paste0("mtclay/MtClay_baiting/buffer/MtClay_baiting_buffer_", w, "_headless", i, ".csv"))
     data.one$run <- i
     data.buffer <- rbind(data.buffer, data.one)
   }
@@ -246,7 +233,7 @@ data.buffer$year.scaled <- (data.buffer$X - 1)/ 26 + 1
 data.buffer.18.27 <- data.buffer[data.buffer$year > 17 & data.buffer$year < 28,]
 
 buffer.years18.27 <- data.buffer.18.27  %>% group_by(bufferwidth, run) %>%
-  summarise_at(vars(all.but.cub.density), funs(mean, sd, min, max))
+  summarise_at(vars(all.fox.but.cub.density), funs(mean, sd, min, max))
 
 buffer.years18.27$max.d <- buffer.years18.27$max
 
