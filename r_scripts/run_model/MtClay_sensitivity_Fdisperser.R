@@ -35,7 +35,7 @@ modelrun <-function(corename)
     # corename <- "headless1"
     
     # LOAD NETLOGO (make sure version number is correct)
-    NLStart(netlogo.path, gui = TRUE, nl.jarname = "netlogo-6.0.2.jar", 
+    NLStart(netlogo.path, gui = FALSE, nl.jarname = "netlogo-6.0.2.jar", 
             nl.obj = corename)
     # ignore the Warning about error code 5 and "Unable to locate empty model: /system/empty.nlogo"
     # it only occurs when gui (the visual interface) = TRUE and doesn't affect anything

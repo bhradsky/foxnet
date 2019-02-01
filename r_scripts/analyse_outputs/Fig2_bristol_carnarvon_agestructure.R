@@ -105,7 +105,7 @@ for (i in variables)
   output <- rbind(output, i.output)
 }
 
-output$model <- "FoxNet (extra mortality)"
+output$model <- "FoxNet (emigration)"
 
 bristol.extramort <- output
 
@@ -125,9 +125,6 @@ final.bristol$cat <- c(0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 
 #final.bristol$model <- factor(final.bristol$model, levels = c("Harris & Smith (1987)", "FoxNet" )) #"FoxNet (extra mortality)"
 
 library(ggplot2)
-
-
-
 
 bristol <- ggplot(data = final.bristol, aes(x = cat, y = i.mean, group = model)) +
   geom_line(aes(linetype = model), color = "black") +
@@ -222,7 +219,8 @@ carnarvon <- ggplot(data = final.carnarvon, aes(x = cat, y = i.mean, group = mod
   theme(legend.position = c(0.7, 0.9)) +
   theme(legend.title=element_blank()) +
   scale_y_continuous(expand = c(0, 0), breaks=seq(0, 50, 10)) +
-  scale_x_continuous(expand = c(0, 0), breaks=seq(0, 8, 1))
+  scale_x_continuous(expand = c(0, 0), breaks=seq(0, 8, 1)) + 
+  coord_cartesian(ylim = c(0, 55)) 
 
 
 # COMPILE PLOT

@@ -73,7 +73,7 @@ years18.27.min <- years18.27 %>% group_by(bait.layout) %>%
   summarise_at(vars(min.d), funs(mean, sd, min, max))
 
 # get perc.difference between max density for baited and unbaited scenarios
-(years18.27.max$mean[2] - years18.27.max$mean[1]) / years18.27.max$mean[2]
+(years18.27.max$mean[1] - years18.27.max$mean[2]) / years18.27.max$mean[2]
 
 
 ###################
@@ -211,7 +211,7 @@ plot.baitdensity <- ggplot(density.years18.27.max, aes(x = baitdensity, y = mean
 
 data.buffer <- data.frame()
 
-bufferwidths <- c(1000, 2000, 4000, 6000) #, , 8000, 10000
+bufferwidths <- c(1000, 2000, 4000, 6000, 8000, 10000) #, , 
 
 for (w in bufferwidths)
 {
@@ -249,7 +249,6 @@ buffer.years18.27.max <- rbind(buffer.none, buffer.years18.27.max)
 # perc diff to current baiting scenario
 buffer.years18.27.max$diff <- (years18.27.max$mean[1] - buffer.years18.27.max$mean) / years18.27.max$mean[1]
 buffer.years18.27.max$diff2 <- buffer.years18.27.max$mean / years18.27.max$mean[1]
-
 
 plot.baitbuffer <- ggplot(buffer.years18.27.max, aes(x = bufferwidth / 1000, y = mean)) +
   geom_hline(yintercept = years18.27.max$mean[1], col = "darkgrey") +
