@@ -9,17 +9,26 @@ options(scipen=999)
 setwd("C:/Users/hradskyb/FoxControlPatrol/Dropbox/personal/bron/ibm/foxnet/outputs")
 
 #load the output files
-data.1 <- read.csv("carnarvon_bait/Carnarvon_bait-table_0305death_15rep.csv", skip = 6)
-data.2 <- read.csv("carnarvon_bait/Carnarvon_bait-table_07death_15rep.csv", skip = 6)
-data.3 <- read.csv("carnarvon_bait/Carnarvon_bait-table_030507death_15rep.csv", skip = 6)
-data.all <- rbind(data.1, data.2, data.3)
+
+data.all<- data.frame()
+
+for (b in c(0.3, 0.5, 0.7))
+{
+  for (i in c(1:30) )
+  {
+    data.one <- read.csv(paste0("carnarvon_bait/Carnarvon_baited_", b, "_headless", i, ".csv"))
+    data.one$run <- i
+    data.one$Pr.die.if.exposed.100ha <- b
+    data.all <- rbind(data.all, data.one)
+  }
+}
 
 data.all.baseline <- tbl_df(data.all)
 
-summary.baseline <- data.all.baseline %>% group_by(Pr.die.if.exposed.100ha, X.step., year, week.of.year) %>%
+summary.baseline <- data.all.baseline %>% group_by(Pr.die.if.exposed.100ha, X, year, week.of.year) %>%
   summarise_at(vars(all.fox.but.cub.density), funs(mean, median, sd, min, max, n()))
 summary.baseline$step <- paste0(summary.baseline$year, "_", summary.baseline$week.of.year)
-summary.baseline$step2 <- ((summary.baseline$X.step. - 1) / 13 ) + 1
+summary.baseline$step2 <- ((summary.baseline$X - 1) / 13 ) + 1
 
 prebait.density <- summary.baseline[summary.baseline$step == "16_29",]
 prebait.density.0.3 <- prebait.density[prebait.density$Pr.die.if.exposed.100ha == 0.3,]
@@ -91,3 +100,15 @@ tiff(paste0("figures/Fig4_Carnarvon_bait.tiff"),
 Fig4.Carnavon.bait
 
 dev.off()
+
+#--------------------------------------------
+# calculate difference between Thompson et al and FoxNet outputs for week 42
+# this involves averaging FoxNet outputs between week 40 (row 64) and week 44 (row 65)
+
+calculate.difference <- function(x,y) {
+  round(1 - (((x + y) / 2) * 100 / thomson.core[7,"t.y"]), 2)
+}
+
+calculate.difference(summary.baiting[64, "plot.mean"], summary.baiting[65, "plot.mean"]) # mean
+calculate.difference(summary.baiting[64, "plot.min"], summary.baiting[65, "plot.min"]) # min
+calculate.difference(summary.baiting[64, "plot.max"], summary.baiting[65, "plot.max"]) # min

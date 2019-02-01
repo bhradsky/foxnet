@@ -2128,9 +2128,6 @@ NetLogo 6.0.2
     <enumeratedValueSet variable="from1yto2y-survival">
       <value value="0.54"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="duration-fire-effect">
-      <value value="0"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="range-calculation">
       <value value="&quot;1 kernel, 1 mean&quot;"/>
     </enumeratedValueSet>
@@ -2212,9 +2209,6 @@ NetLogo 6.0.2
     <enumeratedValueSet variable="range-size">
       <value value="false"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="commence-fire">
-      <value value="0"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="region-shp">
       <value value="&quot;&quot;"/>
     </enumeratedValueSet>
@@ -2245,20 +2239,11 @@ NetLogo 6.0.2
     <enumeratedValueSet variable="cell-dimension">
       <value value="100"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="fire-shp">
-      <value value="&quot;0&quot;"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="include-fire">
-      <value value="false"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="cost-per-person-day">
       <value value="0"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="number-of-cubs">
       <value value="4.72"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="effect-on-productivity">
-      <value value="0"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="bait-frequency">
       <value value="&quot;4-weeks&quot;"/>

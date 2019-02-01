@@ -20,7 +20,7 @@ setwd("C:/Users/hradskyb/FoxControlPatrol/Dropbox/personal/bron/ibm/foxnet/outpu
 data.currentbait <- data.frame()
 data.one <- for (i in 1:30) 
 {
-  data.one <- read.csv(paste0("mtclay/MtClay_baseline/MtClay_baseline_baited_headless", i, ".csv"))
+  data.one <- read.csv(paste0("mtclay/MtClay_baseline/MtClay_baseline_baited_custom_headless", i, "_test.csv"))
   data.one$run <- i
   data.currentbait<- rbind(data.currentbait, data.one)
 }
@@ -33,7 +33,7 @@ data.one <- for (n in experiment)
 {
   for (i in 1:30) 
   {
-  data.one <- read.csv(paste0("mtclay/MtClay_sensitivity/Littersize/MtClay_sensitivity_litter_", n, "_headless_", i, ".csv"))
+  data.one <- read.csv(paste0("mtclay/MtClay_sensitivity/Littersize/MtClay_sensitivity_litter_", n, "_headless", i, ".csv"))
   data.one$run <- i
   data.fecundity <- rbind(data.fecundity, data.one)
   }
@@ -41,60 +41,32 @@ data.one <- for (n in experiment)
 
 # home range size
 data.hr <- data.frame()
-experiment <- c(321 ) # 171, 257, 
+experiment <- c(107, 171, 257, 321 ) # , 
 data.one <- for (n in experiment)
 {
   for (i in 1:30) 
   {
-    data.one <- read.csv(paste0("mtclay/MtClay_sensitivity/HRsize/MtClay_HR_", n, "ha_headless", i, ".csv"))
+    data.one <- read.csv(paste0("mtclay/MtClay_sensitivity/HRsize/MtClay_sensitivity_HR_", n, "_headless", i, ".csv"))
     data.one$run <- i
     data.one$HRsize <- n
     data.hr <- rbind(data.hr, data.one)
   }
 }
 
-experiment <- c(107 ) # 171, 257, 
-data.one <- for (n in experiment)
-{
-  for (i in 1:30) 
-  {
-    data.one <- read.csv(paste0("mtclay/MtClay_sensitivity/HRsize/MtClay_HR_", n, "_headless", i, ".csv"))
-    data.one$run <- i
-    data.one$HRsize <- n
-    data.hr <- rbind(data.hr, data.one)
-  }
-}
-
-
-
-experiment <- c(171, 257) 
-data.one <- for (n in experiment)
-{
-  for (i in 1:30) 
-  {
-    data.one <- read.csv(paste0("mtclay/MtClay_sensitivity/HRsize/MtClay_HR_", n, "_headless2", i, ".csv"))
-    data.one$run <- i
-    data.one$HRsize <- n
-    data.hr <- rbind(data.hr, data.one)
-  }
-}
 #xtabs(~data.hr$HRsize)
 
 #female dispersers
 data.fdisperser <- data.frame()
-experiment <- c(0.35, 0.56, 0.84, 0.99999 )
+experiment <- c(0.35, 0.56, 0.84, 0.999 )
 data.one <- for (n in experiment)
 {
   for (i in 1:30) 
   {
-    data.one <- read.csv(paste0("mtclay/MtClay_sensitivity/fdispersers/MtClay_sensitivity_fdisp_", n, "_headless_", i, ".csv"))
+    data.one <- read.csv(paste0("mtclay/MtClay_sensitivity/fdispersers/MtClay_sensitivity_fdisp_", n, "_headless", i, ".csv"))
     data.one$run <- i
     data.fdisperser <- rbind(data.fdisperser, data.one)
   }
 }
-#rename incorrectly labelled column
-names(data.fdisperser)[names(data.fdisperser) == 'littersize'] <- 'fdispersers'
-
 
 #bait efficacy
 data.efficacy <- data.frame()
@@ -103,7 +75,7 @@ data.one <- for (n in experiment)
 {
   for (i in 1:30) 
   {
-    data.one <- read.csv(paste0("mtclay/MtClay_sensitivity/efficacy/MtClay_sensitivity_baitefficacy_", n, "_headless_", i, ".csv"))
+    data.one <- read.csv(paste0("mtclay/MtClay_sensitivity/efficacy/MtClay_sensitivity_baitefficacy_", n, "_headless", i, ".csv"))
     data.one$run <- i
     data.efficacy <- rbind(data.efficacy, data.one)
   }
@@ -111,12 +83,12 @@ data.one <- for (n in experiment)
 
 #productivity
 data.productivity <- data.frame()
-experiment <- c(50, 80, 120, 150)
+experiment <- c(0.5, 0.8, 1.2, 1.5)
 data.one <- for (n in experiment)
 {
   for (i in 1:30) 
   {
-    data.one <- read.csv(paste0("mtclay/MtClay_sensitivity/productivity/MtClay_sensitivity_farmforest_", n, "_headless_", i, ".csv"))
+    data.one <- read.csv(paste0("mtclay/MtClay_sensitivity/productivity/MtClay_sensitivity_farmforest_", n, "_headless", i, ".csv"))
     data.one$run <- i
     data.productivity <- rbind(data.productivity, data.one)
   }
@@ -126,7 +98,7 @@ data.one <- for (n in experiment)
 data.current.18.27 <- data.currentbait[data.currentbait$year > 17 & data.currentbait$year < 28,]
 
 years18.27.current <- data.current.18.27  %>% group_by(current, run) %>%
-  summarise_at(vars(all.but.cub.density), funs(mean, sd, min, max))
+  summarise_at(vars(all.fox.but.cub.density), funs(mean, sd, min, max))
 
 years18.27.current$max.d <- years18.27.current$max
 years18.27.current.max <- years18.27.current %>% group_by(current) %>% 
@@ -138,7 +110,7 @@ meanfoxdensity <- years18.27.current.max$mean[1] # average max fox density post-
 
 output.table <- data.frame()
 
-variable <- c("current", "littersize", "HRsize", "baitefficacy", "fdispersers", "farmforest")
+variable <- c("current", "littersize", "HRsize", "baitefficacy", "fdisperse", "farmforest")
 
 for (v in variable)
 {
@@ -159,8 +131,8 @@ for (v in variable)
   if (v == "farmforest") {mydata <- data.productivity}
   if (v == "farmforest") {baseline.value <- 100}
   
-  if (v == "fdispersers") {mydata <- data.fdisperser}
-  if (v == "fdispersers") {baseline.value <- 0.7}
+  if (v == "fdisperse") {mydata <- data.fdisperser}
+  if (v == "fdisperse") {baseline.value <- 0.7}
 
   
 postbaiting.treatment <- mydata[mydata$year > 17 &mydata$year < 28,]
@@ -173,7 +145,7 @@ treatment <- tbl_df(postbaiting.treatment)
 #summary.treatment.df <- as.data.frame(summary.treatment)
 
 summary.treatment <- treatment %>% group_by_("run", .dots = v) %>%
-  summarise_at(vars(all.but.cub.density), funs(mean, median, sd, min, max))
+  summarise_at(vars(all.fox.but.cub.density), funs(mean, median, sd, min, max))
 
 summary.treatment$max.d <- summary.treatment$max
 summary.treatment.max <- summary.treatment %>% group_by_(.dots = v) %>% 
@@ -203,7 +175,7 @@ plot.data$variable <- ifelse(plot.data$variable == "littersize", "litter size", 
 plot.data$variable <- ifelse(plot.data$variable == "HRsize", "range area", as.character(plot.data$variable))
 plot.data$variable <- ifelse(plot.data$variable == "baitefficacy", "bait efficacy", as.character(plot.data$variable))
 plot.data$variable <- ifelse(plot.data$variable == "farmforest", "farm:forest", as.character(plot.data$variable))
-plot.data$variable <- ifelse(plot.data$variable == "fdispersers", "female dispersers", as.character(plot.data$variable))
+plot.data$variable <- ifelse(plot.data$variable == "fdisperse", "female dispersers", as.character(plot.data$variable))
 
 plot.data$variable <- factor(plot.data$variable, levels = c("baseline", "litter size", "female dispersers", "range area", "farm:forest", "bait efficacy"))
 
@@ -244,7 +216,7 @@ data.fecundity$year.scaled <- (data.fecundity$X - 1)/ 26 + 1
 data.fecundity.15 <- data.fecundity[data.fecundity$year == 15,]
 
 data.fecundity.15 <- data.fecundity.15  %>% group_by(littersize, run) %>%
-  summarise_at(vars(all.but.cub.density), funs(mean, sd, min, max))
+  summarise_at(vars(all.fox.but.cub.density), funs(mean, sd, min, max))
 
 data.fecundity.15$max.d <- data.fecundity.15$max
 
@@ -260,7 +232,7 @@ data.hr$year.scaled <- (data.hr$X - 1)/ 26 + 1
 data.hr.15 <- data.hr[data.hr$year == 15,]
 
 data.hr.15 <- data.hr.15  %>% group_by(HRsize, run) %>%
-  summarise_at(vars(all.but.cub.density), funs(mean, sd, min, max))
+  summarise_at(vars(all.fox.but.cub.density), funs(mean, sd, min, max))
 
 data.hr.15$max.d <- data.hr.15$max
 

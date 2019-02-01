@@ -13,17 +13,17 @@ data.one <- for (n in experiment)
 {
   for (i in 1:30) 
   {
-    data.one <- read.csv(paste0("hr_density/HR_", n, "_headless_", i, ".csv"))
+    data.one <- read.csv(paste0("hr_density/HR_", n, "_headless", i, ".csv"))
     mydata <- rbind(mydata, data.one)
   }
 }
 
 #calculate average (min, max) density
-density.final <- mydata[mydata$year == 5 & mydata$week == 49,]
-data.mean <- aggregate(mydata$family.density~mydata$HR, FUN=max)
+density.final <- mydata[mydata$year == 5 & mydata$week.of.year == 49,]
+data.mean <- aggregate(mydata$fox.family.density~mydata$HR, FUN=max)
 
 data.mean <- density.final %>% group_by(HRsize) %>%
-  summarise_at(vars(family.density), funs(mean, min, max))
+  summarise_at(vars(fox.family.density), funs(mean, min, max))
 
 names(data.mean) <- c("HR", "family.density", "density.min", "density.max")
 mine <- subset(data.mean, select =c("family.density", "HR", "density.min", "density.max") )

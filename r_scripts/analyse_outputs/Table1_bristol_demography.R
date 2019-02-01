@@ -19,12 +19,12 @@ data.y16w13 <- data.demog[data.demog$year == 16,]
 data.y16w13 <- data.y16w13[data.y16w13$week == 13,]
 
 
-variables <- c("no.fox.families", "no.cub.foxes", "no.breeding.females", "no.suboordinate.females",
-               "no.alpha.males", "no.suboordinate.males", "no.disperser.females", "no.disperser.males",
+variables <- c("no.fox.families", "no.breeding.females", "no.suboordinate.females",
+               "no.alpha.males", "no.suboordinate.males", "no.cub.foxes", "no.disperser.females", "no.disperser.males",
                "no.foxes")
 
 Harrisdata <- setNames(data.frame(matrix(ncol = 9, nrow = 1)), variables)
-Harrisdata[1,] <- c(211, 897, 190, 143, 211, 44, 0, 128, 1613)
+Harrisdata[1,] <- c(211, 190, 143, 211, 44, 897, 0, 128, 1613)
 
 output <- data.frame()
 
@@ -41,7 +41,7 @@ for (i in variables)
   i.output <- as.data.frame(i.output)
   i.output$year <- i 
   
-  i.output$p.means<- format(round (t.test(data.y16w13[[i]] * correction.factor, mu = Harrisdata[[i]])$p.value, 3), nsmall = 3)
+ # i.output$p.means<- format(round (t.test(data.y16w13[[i]] * correction.factor, mu = Harrisdata[[i]])$p.value, 3), nsmall = 3)
   i.output$p.observ <- format(round (pnorm(Harrisdata[[i]], mean = mean(data.y16w13[[i]])* correction.factor, sd(data.y16w13[[i]])* correction.factor), 3), nsmall = 3)
   
   output <- rbind(output, i.output)
