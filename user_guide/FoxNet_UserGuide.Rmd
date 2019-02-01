@@ -1,5 +1,5 @@
 ---
-title: "FoxNet User Guide V1.0"
+title: "FoxNet User Guide V0.1.0"
 author: "Bronwyn Hradsky, Quantitative and Applied Ecology, University of Melbourne"
 output:
   pdf_document:
@@ -45,14 +45,15 @@ The names of *agent-sets* are *italicised*.  An *agent-set* is a group of the sa
    
 \vspace*{\fill}
 
+This project is licensed under the GNU General Public License v3.0 - see the LICENSE.md file for details.
 
 ### To cite this User Guide {-}
 Hradsky B, Kelly L, Robley A, Wintle B (in review) FoxNet: an individual-based modelling framework to support red fox management. <i>Journal of Applied Ecology</i>.
 
 ### Software source {-}
-The original code and data are available via Zenodo `doi-to-be-lodged-upon-acceptance`.  
+The original code and data are available via <https://www.comses.net/users/2413/>.  
 
-A current version of FoxNet is maintained at <https://github.com/bhradsky/foxnet>
+A current version of FoxNet is also maintained at this site.
 
 ### For further information or help with customising model code{-}
 Email <hradskyb@unimelb.edu.au> or <bhradsky@gmail.com>  
