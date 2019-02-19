@@ -30,7 +30,7 @@ Netlogo can be freely downloaded from https://ccl.northwestern.edu/netlogo/.
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE.md](https://github.com/bhradsky/foxnet/blob/master/LICENCE.md) file for details
 
 ## Acknowledgments
 
