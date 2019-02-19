@@ -51,9 +51,8 @@ This project is licensed under the GNU General Public License v3.0 - see the LIC
 Hradsky B, Kelly L, Robley A, Wintle B (2019) FoxNet: an individual-based modelling framework to support red fox management *Journal of Applied Ecology*.
 
 ### Software source {-}
-Data and FoxNet models available via the Zenodo repository. 
 
-A current version of FoxNet is maintained at <https://www.comses.net/users/2413/>.  
+Data available via Zenodo http://doi.org/10.5281/zenodo.2572045 (Hradsky et al. 2019).  A current version of FoxNet and the User Guide is also maintained at this location. 
 
 ### For further information or help with customising model code{-}
 Email <hradskyb@unimelb.edu.au> or <bhradsky@gmail.com>  
@@ -1339,23 +1338,25 @@ knitr::kable(weeks.table) %>%
 ```
 
 # References
-Baker, P.J., Robertson, C.P.J. et al. (1998) Potential fitness benefits of group living in the red fox, *Vulpes vulpes*. *Animal Behaviour*, 56, 1411-1424.  
+Baker, P.J., Robertson, C.P.J., Funk, S.M. & Harris, S. (1998) Potential fitness benefits of group living in the red fox, *Vulpes vulpes*. *Animal Behaviour*, 56, 1411-1424.  
 
-Bino, G., Dolev, A. et al. (2010) Abrupt spatial and numerical responses of overabundant foxes to a reduction in anthropogenic resources. *Journal of Applied Ecology*, 47, 1262-1271.  
+Bino, G., Dolev, A., Yosha, D., Guter, A., King, R., Saltz, D. & Kark, S. (2010) Abrupt spatial and numerical responses of overabundant foxes to a reduction in anthropogenic resources. *Journal of Applied Ecology*, 47, 1262-1271.  
 
 Carter, N., Levin, S. et al. (2015) Modeling tiger population and territory dynamics using an agent-based approach. *Ecological Modelling*, 312, 347-362.  
 
-Devenish-Nelson, E.S., Harris, S. et al. (2013) Demography of a carnivore, the red fox, *Vulpes vulpes*: what have we learnt from 70 years of published studies? *Oikos*, 122, 705-716.  
+Devenish-Nelson, E.S., Harris, S., Soulsbury, C.D., Richards, S.A. & Stephens, P.A. (2013) Demography of a carnivore, the red fox, *Vulpes vulpes*: what have we learnt from 70 years of published studies? *Oikos*, 122, 705-716.  
 
-Hradsky, B.A., Mildwaters, C.A. et al. (2017a) Responses of invasive predators and native prey to a prescribed forest fire. *Journal of Mammalogy*, 98, 835-847.  
+Hradsky, B.A., Kelly, L., Robley, A. & Wintle, B.A. (2019) Data from: FoxNet: an individual-based model framework to support management of an invasive predator, the red fox. Zenodo. http://doi.org/10.5281/zenodo.2572045.
 
-Hradsky, B.A., Robley, A. et al. (2017b) Human-modified habitats facilitate forest-dwelling populations of an invasive predator, *Vulpes vulpes*. *Scientific Reports*, 7, 12291.  
+Hradsky, B.A., Mildwaters, C.A., Ritchie, E.G., Christie, F. & Di Stefano, J. (2017a) Responses of invasive predators and native prey to a prescribed forest fire. *Journal of Mammalogy*, 98, 835-847.
+
+Hradsky, B.A., Robley, A., Alexander, R., Ritchie, E.G., York, A. & Di Stefano, J. (2017b) Human-modified habitats facilitate forest-dwelling populations of an invasive predator, *Vulpes vulpes*. *Scientific Reports*, 7, 12291.
 
 Larivière, S. & Pasitschniak-Arts, M. (1996) *Vulpes vulpes*. *Mammalian Species*, 537, 1-11.  
 
 Lockie, J.D. (1959) The estimation of the food of foxes. *The Journal of Wildlife Management*, 23, 224-227.  
 
-Pech, R.P., Sinclair, A. et al. (1992) Limits to predator regulation of rabbits in Australia: evidence from predator-removal experiments. *Oecologia*, 89, 102-112.  
+Pech, R.P., Sinclair, A., Newsome, A. & Catling, P. (1992) Limits to predator regulation of rabbits in Australia: evidence from predator-removal experiments. *Oecologia*, 89, 102-112.  
 
 Šálek, M., Drahnikova, L. & Tkadlec, E. (2015) Changes in home range sizes and population densities of carnivore species along the natural to urban habitat gradient.* Mammal Review*, 45, 1-14.  
 
@@ -1363,7 +1364,7 @@ Sargeant, A.B. (1972) Red fox spatial characteristics in relation to waterfowl p
 
 Saunders, G., McLeod, S. & Kay, B. (2000) Degradation of sodium monofluoroacetate (1080) in buried fox baits. *Wildlife Research*, 27, 129-135.  
 
-Soulsbury, C.D., Iossa, G. et al. (2011) Behavioral and spatial analysis of extraterritorial movements in red foxes (*Vulpes vulpes*). *Journal of Mammalogy*, 92, 190-199.  
+Soulsbury, C.D., Iossa, G., Baker, P.J., White, P.C. & Harris, S. (2011) Behavioral and spatial analysis of extraterritorial movements in red foxes (*Vulpes vulpes*). *Journal of Mammalogy*, 92, 190-199.  
 
 Thiele, J.C. (2014) R Marries NetLogo: Introduction to the RNetLogo Package. *Journal of Statistical Software*, 58, 1-41.  
 

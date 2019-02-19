@@ -8,11 +8,11 @@ If you use FoxNet, please cite:
 
 and
 
-> Hradsky BA, Kelly L, Robley A, Wintle BA (2019). Data from: FoxNet: an individual-based model framework to support management of an invasive predator, the red fox. *Zenodo Repository*.
+> Hradsky BA, Kelly L, Robley A, Wintle BA (2019). Data from: FoxNet: an individual-based model framework to support management of an invasive predator, the red fox. *Zenodo*. https://doi.org/10.5281/zenodo.2572045
 
 ## Getting Started
 
-You can download the latest release of FoxNet from <https://www.comses.net/users/2413/> .  The release package includes a User Guide.
+You can download the latest release of FoxNet from https://doi.org/10.5281/zenodo.2572045.  The release package includes a User Guide.
 
 ### Prerequisites
 
@@ -27,6 +27,9 @@ Netlogo can be freely downloaded from https://ccl.northwestern.edu/netlogo/.
 ## Authors
 
 * [**Bronwyn Hradsky**](https://github.com/bhradsky), University of Melbourne.
+* Luke Kelly, University of Melbourne.
+* Alan Robley, Arthur Rylah Institute.
+* Brendan Wintle, University of Melbourne.
 
 ## License
 
@@ -34,7 +37,6 @@ This project is licensed under the GNU General Public License v3.0 - see the LIC
 
 ## Acknowledgments
 
-* Brendan Wintle, Alan Robley and Luke Kelly for conceptual input into FoxNet design.
 * Neil Carter for early discussions on IBM structure.
 * Casey Visintin, Jian Yen, Nick Golding and Saras Windecker for help with parallel computing and Git.
 * Volker Grimm, Michael Bode, Marie-Josée Fortin and an anonymous reviewer for constructive reviews and editorial guidance.
