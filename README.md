@@ -1,6 +1,6 @@
 # FoxNet
 
-FoxNet is an individual-based modelling framework that can be customised to generate high-resolution red fox *Vulpes vulpes* population models for both northern and southern hemispheres.  FoxNet can be used to predict red fox population density, age structure, composition and responses to management across an entire landscape or within customised region(s) of interest. Model landscapes (up to ~15,000 km<sup>2</sup> and bait layouts can be generated within FoxNet or imported as GIS layers. 
+FoxNet is an individual-based modelling framework that can be customised to generate high-resolution red fox *Vulpes vulpes* population models for both northern and southern hemispheres.  FoxNet can be used to predict red fox population density, age structure, composition and responses to management across an entire landscape or within customised region(s) of interest. Model landscapes (up to ~15,000 km<sup>2</sup>) and bait layouts can be generated within FoxNet or imported as GIS layers. 
 
 If you use FoxNet, please cite:
 
