@@ -1,14 +1,17 @@
 # FoxNet
 
-FoxNet is an individual-based modelling framework that can be customised to generate high-resolution fox population models for both northern and southern hemispheres.  FoxNet predicts red fox population dynamics, including responses to control and landscape productivity. Model landscapes (up to ~15,000 km<sup>2</sup> and bait layouts can be generated within FoxNet or imported as GIS layers. 
+FoxNet is an individual-based modelling framework that can be customised to generate high-resolution fox population models for both northern and southern hemispheres.  FoxNet predicts red fox population dynamics, including responses to control and landscape productivity. Model landscapes (up to ~15,000 km<sup>2</sup>) and bait layouts can be generated within FoxNet or imported as GIS layers. 
 
 If you use FoxNet, please cite
 
-Hradsky BA, Kelly L, Robley A, Wintle BA (in review). FoxNet: an individual-based modelling framework to support red fox management. *Journal of Applied Ecology*.
+Hradsky BA, Kelly L, Robley A, Wintle BA (in press). FoxNet: an individual-based modelling framework to support red fox management. *Journal of Applied Ecology*.
+
+and the Zenodo repository
+
 
 ## Getting Started
 
-You can download the latest release of FoxNet from .  The release package includes a User Guide.
+You can download the latest release of FoxNet from https://www.comses.net/users/2413/.  The release package includes a User Guide.
 
 ### Prerequisites
 
@@ -22,8 +25,9 @@ You will need to install Netlogo v 6.0.2.  Netlogo can be freely downloaded from
 ## Authors
 
 * [**Bronwyn Hradsky**](https://github.com/bhradsky), University of Melbourne
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* Luke Kelly
+* Alan Robley
+* Brendan Wintle
 
 ## License
 
