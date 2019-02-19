@@ -1,5 +1,5 @@
 ---
-title: "FoxNet User Guide V0.1.0"
+title: "FoxNet User Guide V1.0.0"
 author: "Bronwyn Hradsky, Quantitative and Applied Ecology, University of Melbourne"
 output:
   pdf_document:
@@ -48,12 +48,12 @@ The names of *agent-sets* are *italicised*.  An *agent-set* is a group of the sa
 This project is licensed under the GNU General Public License v3.0 - see the LICENSE.md file for details.
 
 ### To cite this User Guide {-}
-Hradsky B, Kelly L, Robley A, Wintle B (in review) FoxNet: an individual-based modelling framework to support red fox management. <i>Journal of Applied Ecology</i>.
+Hradsky B, Kelly L, Robley A, Wintle B (2019) FoxNet: an individual-based modelling framework to support red fox management *Journal of Applied Ecology*.
 
 ### Software source {-}
-The original code and data are available via <https://www.comses.net/users/2413/>.  
+Data and FoxNet models available via the Zenodo repository. 
 
-A current version of FoxNet is also maintained at this site.
+A current version of FoxNet is maintained at <https://www.comses.net/users/2413/>.  
 
 ### For further information or help with customising model code{-}
 Email <hradskyb@unimelb.edu.au> or <bhradsky@gmail.com>  
@@ -857,7 +857,7 @@ You can then setup a new experiment or run an existing script.
 
 Information on how to use BehaviourSpace can be found at `<https://ccl.northwestern.edu/netlogo/docs/behaviorspace.html>`.
 
-Example BehaviourSpace scripts for each of the FoxNet models described in Hradsky et al. (in review) *J. Applied Ecology* are saved within FoxNet.  Note that you must set the `working-directory` within the BehaviourSpace experiment to the correct file path (the location of your FoxNet folder e.g. `C:/Users/hradskyb/foxnet`) for any script that involves importing a raster layer.
+Example BehaviourSpace scripts for each of the FoxNet models described in Hradsky et al. (2019) *J. Applied Ecology* are saved within FoxNet.  Note that you must set the `working-directory` within the BehaviourSpace experiment to the correct file path (the location of your FoxNet folder e.g. `C:/Users/hradskyb/foxnet`) for any script that involves importing a raster layer.
 
 ## From R using the RNetLogo package
 
@@ -869,7 +869,7 @@ See:
 
 - Thiele J, Kurth W, Grimm V (2012). RNetLogo: An R Package for Running and Exploring Individual-Based Models Implemented in NetLogo. *Methods in Ecology and Evolution* 3 (3), 480-483. <http://onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2011.00180.x/abstract/>
 
-Example R scripts for running each of the FoxNet models described in Hradsky et al. (in review) *J. Applied Ecology* in parallel are provided within the FoxNet folder - see `foxnet/r_scripts/run_model`. Note again that you must set the `working-directory` within the script to the correct file path (the location of your FoxNet folder e.g. `C:/Users/hradskyb/foxnet`) for any model that involves importing a raster layer.
+Example R scripts for running each of the FoxNet models described in Hradsky et al. (2019) *J. Applied Ecology* in parallel are provided within the FoxNet folder - see `foxnet/r_scripts/run_model`. Note again that you must set the `working-directory` within the script to the correct file path (the location of your FoxNet folder e.g. `C:/Users/hradskyb/foxnet`) for any model that involves importing a raster layer.
 
 An example for running a single version of FoxNet from R is provided here: 
 

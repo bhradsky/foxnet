@@ -4,8 +4,11 @@ FoxNet is an individual-based modelling framework that can be customised to gene
 
 If you use FoxNet, please cite:
 
-> Hradsky BA, Kelly L, Robley A, Wintle BA (in review). FoxNet: an individual-based modelling framework to support red fox management. *Journal of Applied Ecology*.
->
+> Hradsky BA, Kelly L, Robley A, Wintle BA (2019). FoxNet: an individual-based model framework to support management of an invasive predator, the red fox. *Journal of Applied Ecology*.
+
+and
+
+> Hradsky BA, Kelly L, Robley A, Wintle BA (2019). Data from: FoxNet: an individual-based model framework to support management of an invasive predator, the red fox. *Zenodo Repository*.
 
 ## Getting Started
 
@@ -24,8 +27,6 @@ Netlogo can be freely downloaded from https://ccl.northwestern.edu/netlogo/.
 ## Authors
 
 * [**Bronwyn Hradsky**](https://github.com/bhradsky), University of Melbourne
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
 ## License
 
