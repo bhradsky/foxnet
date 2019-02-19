@@ -21,22 +21,22 @@ Netlogo can be freely downloaded from https://ccl.northwestern.edu/netlogo/.
 
 ## Built With
 
-* [Netlogo v 6.0.2](https://ccl.northwestern.edu/netlogo/) - used to write the FoxNet model
-* [R v 3.5.1](https://www.rstudio.com/) - used to run batch scripts and analyse outputs
+* [Netlogo v 6.0.2](https://ccl.northwestern.edu/netlogo/) - used to write the FoxNet model.
+* [R v 3.5.1](https://www.rstudio.com/) - used to run batch scripts and analyse outputs.
 
 ## Authors
 
-* [**Bronwyn Hradsky**](https://github.com/bhradsky), University of Melbourne
+* [**Bronwyn Hradsky**](https://github.com/bhradsky), University of Melbourne.
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE.md](https://github.com/bhradsky/foxnet/blob/master/LICENCE.md) file for details
+This project is licensed under the GNU General Public License v3.0 - see the LICENSE.md file for details.
 
 ## Acknowledgments
 
 * Brendan Wintle, Alan Robley and Luke Kelly for conceptual input into FoxNet design.
 * Neil Carter for early discussions on IBM structure.
-* Casey Visintin, Jian Yen, Nick Golding for help with parallel computing and Git.
+* Casey Visintin, Jian Yen, Nick Golding and Saras Windecker for help with parallel computing and Git.
 * Volker Grimm, Michael Bode and an anonymous reviewer for constructive reviews and suggestions.
 * Funding: 
   * The Australian Government’s National Environmental Science Program through the Threatened Species Recovery Hub
