@@ -52,7 +52,7 @@ Hradsky B, Kelly L, Robley A, Wintle B (2019) FoxNet: an individual-based modell
 
 ### Software source {-}
 
-Data available via Zenodo http://doi.org/10.5281/zenodo.2572045 (Hradsky et al. 2019).  A current version of FoxNet and the User Guide is also maintained at this location. 
+Data available via Zenodo http://doi.org/10.5281/zenodo.2572045 (Hradsky et al. 2019b).  A current version of FoxNet and the User Guide is also maintained at this location. 
 
 ### For further information or help with customising model code{-}
 Email <hradskyb@unimelb.edu.au> or <bhradsky@gmail.com>  
@@ -164,7 +164,7 @@ The key processes are as follows:
 
 
 
-```{r, echo = FALSE, fig.show='hold', out.width = "50%"}
+```{r, echo = FALSE, fig.show='hold', out.width = "50%", fig.align='center'}
 
 include_graphics("figures/flowchart.png")
 
@@ -381,7 +381,7 @@ kableExtra::kable(inputs.basic.table) %>%
 
 
 
-These parameters are based on a fox population in Bristol, United Kingdom, with survival data from Devenish-Nelson et al. (2013), and breeding and dispersal data from Trewhella and Harris (1988). See Hradsky et al. (in review) Appendix A2 for a full list of citations.
+These parameters are based on a fox population in Bristol, United Kingdom, with survival data from Devenish-Nelson et al. (2013), and breeding and dispersal data from Trewhella and Harris (1988). See Hradsky et al. (2019a) Table S1 for a full list of citations.
 
 Whichever approach you chose, you should now see a black landscape with a central grey square in the world-view.  The entire landscape is 400 km^2^. The central grey square is your 'region-of-interest' where the *fox* population is monitored, and is 110.25 km^2^ ^[ Because FoxNet is generating a square lnadscape with 1 ha pixels (as specified by `cell-dimension`), it has had to adjust the size of the region-of-interest slightly]. These values are shown in the beige output boxes.
 
@@ -398,7 +398,7 @@ Now change `initial-fox-density` to "0.5" foxes km^-2^ by sliding or clicking th
 Click **setup** again.  A scattering of white and yellow triangles should appear - these are "female" and "male" *foxes* without territories (i.e. their `status` is "disperser").  Each *fox* should attempt to establish or join a circular brown territory. A *fox* with a territory acquires "alpha" `status`, becomes red ("female") or blue ("male"), and sits beneath an orange-coloured *fox-family* in the centre of its territory.  A "female" and "male" *fox* can share a territory.
 
 
-```{r, echo = FALSE, fig.show='hold', out.width = "30%"}
+```{r, echo = FALSE, fig.show='hold', out.width = "33%"}
 
 include_graphics("figures/FoxNet_basic_fox1.png")
 include_graphics("figures/FoxNet_basic_fox2.png")
@@ -856,7 +856,7 @@ You can then setup a new experiment or run an existing script.
 
 Information on how to use BehaviourSpace can be found at `<https://ccl.northwestern.edu/netlogo/docs/behaviorspace.html>`.
 
-Example BehaviourSpace scripts for each of the FoxNet models described in Hradsky et al. (2019) *J. Applied Ecology* are saved within FoxNet.  Note that you must set the `working-directory` within the BehaviourSpace experiment to the correct file path (the location of your FoxNet folder e.g. `C:/Users/hradskyb/foxnet`) for any script that involves importing a raster layer.
+Example BehaviourSpace scripts for each of the FoxNet models described in Hradsky et al. (2019a) *J. Applied Ecology* are saved within FoxNet.  Note that you must set the `working-directory` within the BehaviourSpace experiment to the correct file path (the location of your FoxNet folder e.g. `C:/Users/hradskyb/foxnet`) for any script that involves importing a raster layer.
 
 ## From R using the RNetLogo package
 
@@ -868,7 +868,7 @@ See:
 
 - Thiele J, Kurth W, Grimm V (2012). RNetLogo: An R Package for Running and Exploring Individual-Based Models Implemented in NetLogo. *Methods in Ecology and Evolution* 3 (3), 480-483. <http://onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2011.00180.x/abstract/>
 
-Example R scripts for running each of the FoxNet models described in Hradsky et al. (2019) *J. Applied Ecology* in parallel are provided within the FoxNet folder - see `foxnet/r_scripts/run_model`. Note again that you must set the `working-directory` within the script to the correct file path (the location of your FoxNet folder e.g. `C:/Users/hradskyb/foxnet`) for any model that involves importing a raster layer.
+Example R scripts for running each of the FoxNet models described in Hradsky et al. (2019a) *J. Applied Ecology* in parallel are provided within the FoxNet folder - see `foxnet/r_scripts/run_model`. Note again that you must set the `working-directory` within the script to the correct file path (the location of your FoxNet folder e.g. `C:/Users/hradskyb/foxnet`) for any model that involves importing a raster layer.
 
 An example for running a single version of FoxNet from R is provided here: 
 
@@ -1007,7 +1007,7 @@ An example for running a single version of FoxNet from R is provided here:
 
 # Implementation verification
 
-These FoxNet outputs illustrate key model behaviours at an individual-level, and are intended to supplement the population-level output verifications provided in Hradsky et al (in review). Netlogo code for these testing procedures can be found in the demo_routines.nls file within FoxNet.
+These FoxNet outputs illustrate key model behaviours at an individual-level, and are intended to supplement the population-level output verifications provided in Hradsky et al (2019a). Netlogo code for these testing procedures can be found in the demo_routines.nls file within FoxNet.
 
 ## Effect of productivity on fox-family territories
 
@@ -1076,10 +1076,10 @@ These outputs show that territory size scales inversely with *habitat-cell* prod
 
 Fox density in FoxNet models stabilises at a carrying capacity determined by the productivity of the *habitat-cells*. 
 
-To demonstrate this, we simulated a landscape as per the Bristol, UK model described in Hradsky et al (in review).  We populated the model with `initial-fox-density` inputs ranging from 0.5 to 12 foxes km^-2^ and `home-range-area` inputs of (a) 0.454 km^2^ (small home range, i.e. high productivity and high carrying capacity) and (b) 2.14 km^2^ (large home range, i.e. low productivity and low carrying capacity).  We tracked the density of foxes for 20 years.
+To demonstrate this, we simulated a landscape as per the Bristol, UK model described in Hradsky et al (2019a).  We populated the model with `initial-fox-density` inputs ranging from 0.5 to 12 foxes km^-2^ and `home-range-area` inputs of (a) 0.454 km^2^ (small home range, i.e. high productivity and high carrying capacity) and (b) 2.14 km^2^ (large home range, i.e. low productivity and low carrying capacity).  We tracked the density of foxes for 20 years.
 
 
-```{r, echo = FALSE, fig.align='centre', fig.show='hold', out.width = "60%"}
+```{r, echo = FALSE, fig.align='centre', fig.show='hold', out.width = "60%", fig.align='center'}
 
 include_graphics("figures/demo/carryingcapacity_demo.png")
 
@@ -1346,7 +1346,9 @@ Carter, N., Levin, S. et al. (2015) Modeling tiger population and territory dyna
 
 Devenish-Nelson, E.S., Harris, S., Soulsbury, C.D., Richards, S.A. & Stephens, P.A. (2013) Demography of a carnivore, the red fox, *Vulpes vulpes*: what have we learnt from 70 years of published studies? *Oikos*, 122, 705-716.  
 
-Hradsky, B.A., Kelly, L., Robley, A. & Wintle, B.A. (2019) Data from: FoxNet: an individual-based model framework to support management of an invasive predator, the red fox. Zenodo. http://doi.org/10.5281/zenodo.2572045.
+Hradsky, B.A., Kelly, L.T., Robley, A. & Wintle, B.A. (2019a) FoxNet: an individual-based model framework to support management of an invasive predator, the red fox. *Journal of Applied Ecology*.
+
+Hradsky, B.A., Kelly, L.T., Robley, A. & Wintle, B.A. (2019b) Data from: FoxNet: an individual-based model framework to support management of an invasive predator, the red fox. Zenodo. http://doi.org/10.5281/zenodo.2572045.
 
 Hradsky, B.A., Mildwaters, C.A., Ritchie, E.G., Christie, F. & Di Stefano, J. (2017a) Responses of invasive predators and native prey to a prescribed forest fire. *Journal of Mammalogy*, 98, 835-847.
 
