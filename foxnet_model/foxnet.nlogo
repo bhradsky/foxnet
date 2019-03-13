@@ -236,6 +236,11 @@ to go
 
    if bait-layout != "none" [bait-if-applicable] ; see 'bait_routines'. Baits are laid at bait-stations if it's the correct timestep
 
+   if week-of-year = (cub-birth-season - 8); i.e. mating season
+   [
+     lone-alphas-disperse; alpha foxes that lack a mate, give up on their territory and become a "disperser"
+   ]
+
    foxes-disperse; see 'fox_territory_routines'. Dispersers try to join a family.  If not successful, they try to found an new territory
 
    if week-of-year = cub-birth-season
@@ -620,11 +625,11 @@ end
 GRAPHICS-WINDOW
 810
 70
-1271
-424
+1214
+475
 -1
 -1
-0.5
+1.0
 1
 10
 1
@@ -635,9 +640,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-905
+199
 0
-690
+199
 0
 0
 1
@@ -754,7 +759,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-0.1
+0.5
 0.5
 1
 /km2
@@ -784,7 +789,7 @@ Pr-die-if-exposed-100ha
 Pr-die-if-exposed-100ha
 0
 1
-0.3
+0.9
 0.05
 1
 NIL
@@ -798,7 +803,7 @@ CHOOSER
 bait-layout
 bait-layout
 "none" "grid" "random-scatter" "custom"
-3
+0
 
 TEXTBOX
 405
@@ -847,7 +852,7 @@ INPUTBOX
 395
 245
 home-range-area
-[2.14]
+[0.454]
 1
 0
 String (reporter)
@@ -902,7 +907,7 @@ CHOOSER
 landscape-source
 landscape-source
 "generate" "import raster"
-1
+0
 
 TEXTBOX
 10
@@ -950,7 +955,7 @@ INPUTBOX
 170
 410
 landscape-raster
-gis_layers/glenelg/mtclay_landscape.asc
+NIL
 1
 1
 String
@@ -974,7 +979,7 @@ less1y-survival
 less1y-survival
 0
 1
-0.39
+0.48
 0.01
 1
 propn.
@@ -989,7 +994,7 @@ from1yto2y-survival
 from1yto2y-survival
 0
 1
-0.65
+0.54
 0.01
 1
 propn.
@@ -1004,7 +1009,7 @@ from2yto3y-survival
 from2yto3y-survival
 0
 1
-0.92
+0.53
 0.01
 1
 propn.
@@ -1019,7 +1024,7 @@ more3y-survival
 more3y-survival
 0
 1
-0.18
+0.51
 0.01
 1
 propn.
@@ -1054,7 +1059,7 @@ cub-birth-season
 cub-birth-season
 1
 52
-37.0
+13.0
 1
 1
 week
@@ -1084,7 +1089,7 @@ number-of-cubs
 number-of-cubs
 0
 8
-3.2
+4.72
 0.01
 1
 NIL
@@ -1114,7 +1119,7 @@ dispersal-season-begins
 dispersal-season-begins
 1
 52
-9.0
+37.0
 1
 1
 week
@@ -1129,7 +1134,7 @@ dispersal-season-ends
 dispersal-season-ends
 1
 52
-21.0
+9.0
 1
 1
 week
@@ -1144,7 +1149,7 @@ female-dispersers
 female-dispersers
 0
 0.999
-0.7
+0.378
 0.001
 1
 propn.
@@ -1159,7 +1164,7 @@ male-dispersers
 male-dispersers
 0
 0.999
-0.999
+0.758
 0.001
 1
 propn.
@@ -1171,7 +1176,7 @@ INPUTBOX
 610
 300
 bait-layout-shp
-gis_layers/glenelg/mtclay_baits.shp
+NIL
 1
 1
 String
@@ -1196,7 +1201,7 @@ commence-baiting-year
 commence-baiting-year
 1
 50
-3.0
+5.0
 1
 1
 year
@@ -1211,7 +1216,7 @@ commence-baiting-week
 commence-baiting-week
 1
 52
-13.0
+1.0
 1
 1
 week
@@ -1223,7 +1228,7 @@ INPUTBOX
 170
 655
 region-shp
-gis_layers/glenelg/mtclay_region.shp
+NIL
 1
 1
 String
@@ -1293,7 +1298,7 @@ region-size
 region-size
 10
 6000
-200.0
+110.0
 10
 1
 km2
@@ -1308,7 +1313,7 @@ hab2:hab1
 hab2:hab1
 0
 10
-3.0
+1.0
 0.05
 1
 x
@@ -1331,7 +1336,7 @@ INPUTBOX
 170
 475
 uninhabitable-raster-value
-2.0
+0.0
 1
 0
 Number
@@ -1360,7 +1365,7 @@ INPUTBOX
 170
 805
 survey-transect-shp
-gis_layers/glenelg/mtclay_transect.shp
+NIL
 1
 1
 String
@@ -1404,7 +1409,7 @@ INPUTBOX
 610
 585
 price-per-bait
-2.0
+0.0
 1
 0
 Number
@@ -1425,7 +1430,7 @@ INPUTBOX
 610
 650
 person-days-per-baiting-round
-3.0
+0.0
 1
 0
 Number
@@ -1436,7 +1441,7 @@ INPUTBOX
 610
 780
 km-per-baiting-round
-420.0
+0.0
 1
 0
 Number
@@ -1447,7 +1452,7 @@ INPUTBOX
 610
 845
 cost-per-km-travel
-0.67
+0.0
 1
 0
 Number
@@ -1458,7 +1463,7 @@ INPUTBOX
 610
 715
 cost-per-person-day
-250.0
+0.0
 1
 0
 Number
@@ -1469,7 +1474,7 @@ INPUTBOX
 170
 730
 region2-shp
-gis_layers/glenelg/annya_region.shp
+NIL
 1
 1
 String
@@ -1743,7 +1748,7 @@ SWITCH
 408
 bait-consumption
 bait-consumption
-0
+1
 1
 -1000
 

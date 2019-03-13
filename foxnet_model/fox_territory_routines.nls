@@ -438,6 +438,37 @@ to finalise-territory
        ]
 end
 
+to lone-alphas-disperse ; foxes who don't have a mate become dispersers
+  
+   ask fox-families with [count family-members with [status = "alpha"] < 2]
+   
+  [  ;type [who] of family-members type [status] of family-members  type [age] of family-members type [sex] of family-members type " "
+      
+      let my-number who
+      ask my-territory
+      [
+        set pcolor true-color
+        set fox-family-owner nobody
+        set cell-relative-productivity 0
+        set cell-relative-use 0
+        set checked-already "no"
+      ]
+      
+      ask family-members 
+        [
+        set failed-territory-id fput my-number failed-territory-id
+        set status "disperser"
+        set family-id nobody
+        ifelse sex = "female" [set color yellow + 4 ][set color yellow]
+        check-for-alpha-vacancy
+        
+        ;print status
+      ]
+  
+      ask vacancies [die]
+      die
+    ]
+end
 
 
 
