@@ -158,50 +158,59 @@ to calculate-fox-density
   ask region-of-interest
   [
     set cell-relative-use-foxes 0
+    set cell-relative-use-foxes-no-cubs 0
     if fox-family-owner != nobody 
     [
       set cell-relative-use-foxes cell-relative-use * count [family-members ] of fox-family-owner 
+      set cell-relative-use-foxes-no-cubs cell-relative-use * count [family-members with [status != "cub"]] of fox-family-owner 
     ]
   ]
 
- let current-use-families sum [cell-relative-use-foxes] of region-of-interest
-  
+ let current-use-foxes-in-families sum [cell-relative-use-foxes] of region-of-interest
+ let current-use-foxes-in-families-no-cubs sum [cell-relative-use-foxes-no-cubs] of region-of-interest
  let disperser-fox-abundance count foxes-in-region-of-interest with [status = "disperser"] 
- let total-fox-use current-use-families + disperser-fox-abundance
- set total-fox-density total-fox-use / region-of-interest-size
-  
-;  set total-fox-density count foxes-in-region-of-interest / region-of-interest-size
-  set alpha-fox-density count foxes-in-region-of-interest with [status = "alpha"] / region-of-interest-size
-  set disperser-fox-density count foxes-in-region-of-interest with [status = "disperser"] / region-of-interest-size
-  set subordinate-fox-density count foxes-in-region-of-interest with [status = "subordinate"] / region-of-interest-size
-  set cub-fox-density count foxes-in-region-of-interest with [status = "cub"] / region-of-interest-size
-  set all-fox-but-cub-density count foxes-in-region-of-interest with [status != "cub"] / region-of-interest-size
-  set fox-family-density count fox-families-on region-of-interest / region-of-interest-size
+
+ ;  set total-fox-density count foxes-in-region-of-interest / region-of-interest-size 
+ set total-fox-density (current-use-foxes-in-families + disperser-fox-abundance) / region-of-interest-size
+ ;  set all-fox-but-cub-density count foxes-in-region-of-interest with [status != "cub"] / region-of-interest-size 
+ set all-fox-but-cub-density (current-use-foxes-in-families-no-cubs + disperser-fox-abundance) / region-of-interest-size
+ set alpha-fox-density count foxes-in-region-of-interest with [status = "alpha"] / region-of-interest-size
+ set disperser-fox-density count foxes-in-region-of-interest with [status = "disperser"] / region-of-interest-size
+ set subordinate-fox-density count foxes-in-region-of-interest with [status = "subordinate"] / region-of-interest-size
+ set cub-fox-density count foxes-in-region-of-interest with [status = "cub"] / region-of-interest-size
+ set fox-family-density count fox-families-on region-of-interest / region-of-interest-size
  
   ; for Region 2 (if applicable)
  
   if landscape-source = "import raster" and region2-shp != "" 
   
-  [ask region-of-interest2
+  [ 
+    let foxes-in-region-of-interest2 turtle-set foxes-on region-of-interest
+  
+    ask region-of-interest2
     [ 
       set cell-relative-use-foxes2 0
+      set cell-relative-use-foxes-no-cubs2 0
       if fox-family-owner != nobody 
-      [ set cell-relative-use-foxes2 cell-relative-use * count [family-members ] of fox-family-owner ]
+      [ 
+        set cell-relative-use-foxes2 cell-relative-use * count [family-members ] of fox-family-owner 
+        set cell-relative-use-foxes-no-cubs2 cell-relative-use * count [family-members with [status != "cub"]] of fox-family-owner 
+      ]
     ]
-    let current-use-families2 sum [cell-relative-use-foxes2] of region-of-interest2
-    let foxes-in-region-of-interest2 turtle-set foxes-on region-of-interest2
-    let disperser-fox-abundance2 count foxes-in-region-of-interest2 with [status = "disperser"] 
-    let total-fox-use2 current-use-families2 + disperser-fox-abundance2
-    set total-fox-density2 total-fox-use2 / region-of-interest2-size
     
+    let current-use-foxes-in-families2 sum [cell-relative-use-foxes2] of region-of-interest2
+    let current-use-foxes-in-families-no-cubs2 sum [cell-relative-use-foxes-no-cubs2] of region-of-interest2
+    let disperser-fox-abundance2 count foxes-in-region-of-interest2 with [status = "disperser"] 
+
+    set total-fox-density2 (current-use-foxes-in-families2 + disperser-fox-abundance2) / region-of-interest2-size
+    set all-fox-but-cub-density2 (current-use-foxes-in-families-no-cubs2 + disperser-fox-abundance2) / region-of-interest2-size
+       
     set fox-family-density2 count fox-families-on region-of-interest2 / region-of-interest2-size
 
-;    set total-fox-density2 count foxes-in-region-of-interest2 / region-of-interest2-size
     set alpha-fox-density2 count foxes-in-region-of-interest2 with [status = "alpha"] / region-of-interest2-size
     set disperser-fox-density2 count foxes-in-region-of-interest2 with [status = "disperser"] / region-of-interest2-size
     set subordinate-fox-density2 count foxes-in-region-of-interest2 with [status = "subordinate"] / region-of-interest2-size
     set cub-fox-density2 count foxes-in-region-of-interest2 with [status = "cub"] / region-of-interest2-size
-    set all-fox-but-cub-density2 count foxes-in-region-of-interest2 with [status != "cub"] / region-of-interest2-size
     set fox-family-density2 count fox-families-on region-of-interest2 / region-of-interest2-size
   ]
   

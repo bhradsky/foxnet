@@ -196,6 +196,7 @@ to remove-defunct-fox-families
       set pcolor true-color
       set fox-family-owner nobody
       set cell-relative-productivity 0
+      set cell-relative-use 0
       set checked-already "no"
     ]
     die
