@@ -763,7 +763,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-0.5
+0.0
 0.5
 1
 /km2
@@ -1228,9 +1228,9 @@ HORIZONTAL
 
 INPUTBOX
 5
-585
+845
 170
-655
+915
 region-shp
 NIL
 1
@@ -1365,9 +1365,9 @@ PENS
 
 INPUTBOX
 5
-735
+685
 170
-805
+755
 survey-transect-shp
 NIL
 1
@@ -1474,9 +1474,9 @@ Number
 
 INPUTBOX
 5
-660
+920
 170
-730
+990
 region2-shp
 NIL
 1
@@ -1736,9 +1736,9 @@ count-neighbours
 
 INPUTBOX
 5
-810
+760
 170
-890
+840
 survey-transect2-shp
 NIL
 1
@@ -1789,10 +1789,36 @@ INPUTBOX
 580
 70
 output-file-path
-outputs/mtclay
+outputs
 1
 0
 String
+
+INPUTBOX
+5
+580
+170
+640
+third-habitat-raster-value
+4.0
+1
+0
+Number
+
+SLIDER
+5
+645
+170
+678
+hab3:hab1
+hab3:hab1
+0
+10
+0.75
+0.05
+1
+x
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?

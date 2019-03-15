@@ -239,6 +239,11 @@ to set-landscape-productivity
         set true-color true-color + 2
       ]
       
+      if habitat-type = third-habitat-raster-value  
+      [
+        set true-productivity true-productivity * hab3:hab1
+        set true-color true-color - 2
+      ]
     ]
   ]
   
