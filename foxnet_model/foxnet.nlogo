@@ -91,6 +91,8 @@ globals
   disperser-fox-density2
   all-fox-but-cub-density2
 
+  density-map
+
   home-range-sizes
 
   no-fox-families
@@ -140,6 +142,8 @@ patches-own
   cell-relative-use-foxes-no-cubs
   cell-relative-use-foxes2
   cell-relative-use-foxes-no-cubs2
+
+  fox-density-no-cubs
 
  ]
 
@@ -625,8 +629,8 @@ end
 GRAPHICS-WINDOW
 810
 70
-1214
-475
+1018
+279
 -1
 -1
 1.0
@@ -774,7 +778,7 @@ bait-density
 bait-density
 0
 5
-1.0
+0.0
 0.5
 1
 /km2
@@ -789,7 +793,7 @@ Pr-die-if-exposed-100ha
 Pr-die-if-exposed-100ha
 0
 1
-0.9
+0.0
 0.05
 1
 NIL
@@ -865,7 +869,7 @@ CHOOSER
 weeks-per-timestep
 weeks-per-timestep
 1 2 4
-2
+0
 
 CHOOSER
 405
@@ -1201,7 +1205,7 @@ commence-baiting-year
 commence-baiting-year
 1
 50
-5.0
+1.0
 1
 1
 year
@@ -1395,7 +1399,7 @@ region (km2)
 INPUTBOX
 5
 10
-560
+410
 70
 working-directory
 C:/Users/hradskyb/FoxControlPatrol/Dropbox/personal/bron/ibm/foxnet
@@ -1416,9 +1420,9 @@ Number
 
 TEXTBOX
 620
-285
+325
 770
-303
+343
 MONITORING
 13
 0.0
@@ -1574,9 +1578,9 @@ PENS
 
 SWITCH
 620
-305
+345
 723
-338
+378
 plot?
 plot?
 0
@@ -1644,9 +1648,9 @@ NIL
 
 SWITCH
 620
-445
+485
 785
-478
+518
 density
 density
 0
@@ -1655,9 +1659,9 @@ density
 
 SWITCH
 620
-340
+380
 785
-373
+413
 age-structure
 age-structure
 1
@@ -1666,9 +1670,9 @@ age-structure
 
 SWITCH
 620
-515
+555
 785
-548
+588
 family-density
 family-density
 1
@@ -1677,9 +1681,9 @@ family-density
 
 SWITCH
 620
-585
+625
 785
-618
+658
 popn-structure
 popn-structure
 1
@@ -1688,9 +1692,9 @@ popn-structure
 
 SWITCH
 620
-480
+520
 785
-513
+553
 dispersal-distances
 dispersal-distances
 1
@@ -1699,9 +1703,9 @@ dispersal-distances
 
 SWITCH
 620
-550
+590
 785
-583
+623
 foxes-on-transect
 foxes-on-transect
 1
@@ -1710,9 +1714,9 @@ foxes-on-transect
 
 SWITCH
 620
-620
+660
 785
-653
+693
 range-size
 range-size
 1
@@ -1721,9 +1725,9 @@ range-size
 
 SWITCH
 620
-410
+450
 785
-443
+483
 count-neighbours
 count-neighbours
 1
@@ -1743,9 +1747,9 @@ String
 
 SWITCH
 620
-375
+415
 785
-408
+448
 bait-consumption
 bait-consumption
 1
@@ -1761,6 +1765,34 @@ range-calculation
 range-calculation
 "1 kernel, 1 mean" "1 kernel, min and max" "multiple kernels, means"
 0
+
+BUTTON
+620
+165
+685
+198
+export
+export-fox-density-map
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+INPUTBOX
+415
+10
+580
+70
+output-file-path
+outputs/mtclay
+1
+0
+String
 
 @#$#@#$#@
 ## WHAT IS IT?

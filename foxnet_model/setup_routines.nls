@@ -107,6 +107,7 @@ to create-world
     resize-world 0 (world-side - 1 ) 0 (world-side - 1)
     ask patches 
     [ set available-to-foxes true  ]    
+    gis:set-transformation (list min-pxcor max-pxcor min-pycor max-pycor) (list min-pxcor max-pxcor min-pycor max-pycor) ; needed so that density map can be exported
   ]
   
    ;;;;;; if the landscape is imported as a raster  ;;;;;;

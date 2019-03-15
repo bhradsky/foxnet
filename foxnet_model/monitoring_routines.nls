@@ -313,6 +313,21 @@ to count-foxes-overlapping-transect
   ]
 
 end
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to export-fox-density-map
+  
+  ask available-landscape 
+  [
+    ifelse fox-family-owner != nobody 
+    [set fox-density-no-cubs cell-relative-use * count [family-members with [status != "cub"]] of fox-family-owner ]
+    [set fox-density-no-cubs 0]
+     ]
+  
+  ask one-of patches [set density-map gis:patch-dataset fox-density-no-cubs]
+  
+  gis:store-dataset density-map (word outputs-file-path "/fox_density_Y" year "_W" week-of-year "_" my-seed ".asc")
+end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
