@@ -99,13 +99,32 @@ end
 to calculate-bait-take
 
   ifelse count-baits-laid > 0 
-    [set bait-take count bait-stations with [bait-present = false] / count-baits-laid]
-    [set bait-take 0]
+  [
+    let i.baits bait-stations-on region-of-interest ifelse any? i.baits [set bait-take count i.baits with [bait-present = false] / count i.baits ] [set bait-take 0]
+    if region2-shp != "" [let i.baits2 bait-stations-on region-of-interest2 ifelse any? i.baits2 [set bait-take2 count i.baits2 with [bait-present = false] / count i.baits2 ] [set bait-take2 0]]
+    if region3-shp != "" [let i.baits3 bait-stations-on region-of-interest3 ifelse any? i.baits3 [set bait-take3 count i.baits3 with [bait-present = false] / count i.baits3 ] [set bait-take3 0]]
+    if region4-shp != "" [let i.baits4 bait-stations-on region-of-interest4 ifelse any? i.baits4 [set bait-take4 count i.baits4 with [bait-present = false] / count i.baits4 ] [set bait-take4 0]]
+    if region5-shp != "" [let i.baits5 bait-stations-on region-of-interest5 ifelse any? i.baits5 [set bait-take5 count i.baits5 with [bait-present = false] / count i.baits5 ] [set bait-take5 0]]
+    if region6-shp != "" [let i.baits6 bait-stations-on region-of-interest6 ifelse any? i.baits6 [set bait-take6 count i.baits6 with [bait-present = false] / count i.baits6 ] [set bait-take6 0]]
+  ]
+  [
+    set bait-take 0
+    set bait-take2 0
+    set bait-take3 0
+    set bait-take4 0
+    set bait-take5 0
+    set bait-take6 0
+  ]
    
   if plot? = true
     [
       set-current-plot "bait take"
-      plot bait-take
+      set-current-plot-pen "bait-take 1" plot bait-take
+      set-current-plot-pen "bait-take 2" plot bait-take2
+      set-current-plot-pen "bait-take 3" plot bait-take3
+      set-current-plot-pen "bait-take 4" plot bait-take4
+      set-current-plot-pen "bait-take 5" plot bait-take5
+      set-current-plot-pen "bait-take 6" plot bait-take6
     ]
   
 end
@@ -154,52 +173,43 @@ end
   
 to calculate-fox-density
   
-  ; for Region 1
-  ask region-of-interest
+  ask available-landscape 
   [
-    set cell-relative-use-foxes 0
-    set cell-relative-use-foxes-no-cubs 0
-    if fox-family-owner != nobody 
-    [
-      set cell-relative-use-foxes cell-relative-use * count [family-members ] of fox-family-owner 
-      set cell-relative-use-foxes-no-cubs cell-relative-use * count [family-members with [status != "cub"]] of fox-family-owner 
+    ifelse fox-family-owner != nobody 
+    [ 
+      set cell-fox-density cell-relative-use * [count family-members] of fox-family-owner 
+      set cell-fox-density-no-cubs cell-relative-use * count [family-members with [status != "cub"]] of fox-family-owner 
     ]
+    [
+      set cell-fox-density 0
+      set cell-fox-density-no-cubs 0 
+    ]   
   ]
 
- let current-use-foxes-in-families sum [cell-relative-use-foxes] of region-of-interest
- let current-use-foxes-in-families-no-cubs sum [cell-relative-use-foxes-no-cubs] of region-of-interest
- let disperser-fox-abundance count foxes-in-region-of-interest with [status = "disperser"] 
+  ; REGION 1
 
- ;  set total-fox-density count foxes-in-region-of-interest / region-of-interest-size 
- set total-fox-density (current-use-foxes-in-families + disperser-fox-abundance) / region-of-interest-size
- ;  set all-fox-but-cub-density count foxes-in-region-of-interest with [status != "cub"] / region-of-interest-size 
- set all-fox-but-cub-density (current-use-foxes-in-families-no-cubs + disperser-fox-abundance) / region-of-interest-size
- set alpha-fox-density count foxes-in-region-of-interest with [status = "alpha"] / region-of-interest-size
- set disperser-fox-density count foxes-in-region-of-interest with [status = "disperser"] / region-of-interest-size
- set subordinate-fox-density count foxes-in-region-of-interest with [status = "subordinate"] / region-of-interest-size
- set cub-fox-density count foxes-in-region-of-interest with [status = "cub"] / region-of-interest-size
- set fox-family-density count fox-families-on region-of-interest / region-of-interest-size
+  let current-use-foxes-in-families sum [cell-fox-density] of region-of-interest
+  let current-use-foxes-in-families-no-cubs sum [cell-fox-density-no-cubs] of region-of-interest
+  let disperser-fox-abundance count foxes-in-region-of-interest with [status = "disperser"] 
+
+  set total-fox-density (current-use-foxes-in-families + disperser-fox-abundance) / region-of-interest-size
+  set all-fox-but-cub-density (current-use-foxes-in-families-no-cubs + disperser-fox-abundance) / region-of-interest-size
+  
+  set alpha-fox-density count foxes-in-region-of-interest with [status = "alpha"] / region-of-interest-size
+  set disperser-fox-density count foxes-in-region-of-interest with [status = "disperser"] / region-of-interest-size
+  set subordinate-fox-density count foxes-in-region-of-interest with [status = "subordinate"] / region-of-interest-size
+  set cub-fox-density count foxes-in-region-of-interest with [status = "cub"] / region-of-interest-size
+  set fox-family-density count fox-families-on region-of-interest / region-of-interest-size
  
-  ; for Region 2 (if applicable)
+ ; REGION 2 (if applicable)
  
   if landscape-source = "import raster" and region2-shp != "" 
   
-  [ 
-    let foxes-in-region-of-interest2 turtle-set foxes-on region-of-interest
-  
-    ask region-of-interest2
-    [ 
-      set cell-relative-use-foxes2 0
-      set cell-relative-use-foxes-no-cubs2 0
-      if fox-family-owner != nobody 
-      [ 
-        set cell-relative-use-foxes2 cell-relative-use * count [family-members ] of fox-family-owner 
-        set cell-relative-use-foxes-no-cubs2 cell-relative-use * count [family-members with [status != "cub"]] of fox-family-owner 
-      ]
-    ]
-    
-    let current-use-foxes-in-families2 sum [cell-relative-use-foxes2] of region-of-interest2
-    let current-use-foxes-in-families-no-cubs2 sum [cell-relative-use-foxes-no-cubs2] of region-of-interest2
+  [
+    let foxes-in-region-of-interest2 turtle-set foxes-on region-of-interest2
+     
+    let current-use-foxes-in-families2 sum [cell-fox-density] of region-of-interest2
+    let current-use-foxes-in-families-no-cubs2 sum [cell-fox-density-no-cubs] of region-of-interest2
     let disperser-fox-abundance2 count foxes-in-region-of-interest2 with [status = "disperser"] 
 
     set total-fox-density2 (current-use-foxes-in-families2 + disperser-fox-abundance2) / region-of-interest2-size
@@ -214,12 +224,98 @@ to calculate-fox-density
     set fox-family-density2 count fox-families-on region-of-interest2 / region-of-interest2-size
   ]
   
+  if landscape-source = "import raster" and region3-shp != "" 
+  [
+    let foxes-in-region-of-interest3 turtle-set foxes-on region-of-interest3
+     
+    let current-use-foxes-in-families3 sum [cell-fox-density] of region-of-interest3
+    let current-use-foxes-in-families-no-cubs3 sum [cell-fox-density-no-cubs] of region-of-interest3
+    let disperser-fox-abundance3 count foxes-in-region-of-interest3 with [status = "disperser"] 
+
+    set total-fox-density3 (current-use-foxes-in-families3 + disperser-fox-abundance3) / region-of-interest3-size
+    set all-fox-but-cub-density3 (current-use-foxes-in-families-no-cubs3 + disperser-fox-abundance3) / region-of-interest3-size
+       
+    set fox-family-density3 count fox-families-on region-of-interest3 / region-of-interest3-size
+    set disperser-fox-density3 disperser-fox-abundance3 / region-of-interest3-size
+    
+    set alpha-fox-density3 count foxes-in-region-of-interest3 with [status = "alpha"] / region-of-interest3-size
+    set subordinate-fox-density3 count foxes-in-region-of-interest3 with [status = "subordinate"] / region-of-interest3-size
+    set cub-fox-density3 count foxes-in-region-of-interest3 with [status = "cub"] / region-of-interest3-size
+    set fox-family-density3 count fox-families-on region-of-interest3 / region-of-interest3-size
+  ]
+  
+  if landscape-source = "import raster" and region4-shp != "" 
+  [
+    let foxes-in-region-of-interest4 turtle-set foxes-on region-of-interest4
+     
+    let current-use-foxes-in-families4 sum [cell-fox-density] of region-of-interest4
+    let current-use-foxes-in-families-no-cubs4 sum [cell-fox-density-no-cubs] of region-of-interest4
+    let disperser-fox-abundance4 count foxes-in-region-of-interest4 with [status = "disperser"] 
+
+    set total-fox-density4 (current-use-foxes-in-families4 + disperser-fox-abundance4) / region-of-interest4-size
+    set all-fox-but-cub-density4 (current-use-foxes-in-families-no-cubs4 + disperser-fox-abundance4) / region-of-interest4-size
+       
+    set fox-family-density4 count fox-families-on region-of-interest4 / region-of-interest4-size
+    set disperser-fox-density4 disperser-fox-abundance4 / region-of-interest4-size
+    
+    set alpha-fox-density4 count foxes-in-region-of-interest4 with [status = "alpha"] / region-of-interest4-size
+    set subordinate-fox-density4 count foxes-in-region-of-interest4 with [status = "subordinate"] / region-of-interest4-size
+    set cub-fox-density4 count foxes-in-region-of-interest4 with [status = "cub"] / region-of-interest4-size
+    set fox-family-density4 count fox-families-on region-of-interest4 / region-of-interest4-size
+  ]
+  
+  if landscape-source = "import raster" and region5-shp != "" 
+  [
+    let foxes-in-region-of-interest5 turtle-set foxes-on region-of-interest5
+     
+    let current-use-foxes-in-families5 sum [cell-fox-density] of region-of-interest5
+    let current-use-foxes-in-families-no-cubs5 sum [cell-fox-density-no-cubs] of region-of-interest5
+    let disperser-fox-abundance5 count foxes-in-region-of-interest5 with [status = "disperser"] 
+
+    set total-fox-density5 (current-use-foxes-in-families5 + disperser-fox-abundance5) / region-of-interest5-size
+    set all-fox-but-cub-density5 (current-use-foxes-in-families-no-cubs5 + disperser-fox-abundance5) / region-of-interest5-size
+       
+    set fox-family-density5 count fox-families-on region-of-interest5 / region-of-interest5-size
+    set disperser-fox-density5 disperser-fox-abundance5 / region-of-interest5-size
+    
+    set alpha-fox-density5 count foxes-in-region-of-interest5 with [status = "alpha"] / region-of-interest5-size
+    set subordinate-fox-density5 count foxes-in-region-of-interest5 with [status = "subordinate"] / region-of-interest5-size
+    set cub-fox-density5 count foxes-in-region-of-interest5 with [status = "cub"] / region-of-interest5-size
+    set fox-family-density5 count fox-families-on region-of-interest5 / region-of-interest5-size
+  ]
+  
+  if landscape-source = "import raster" and region6-shp != "" 
+  [
+    let foxes-in-region-of-interest6 turtle-set foxes-on region-of-interest6
+     
+    let current-use-foxes-in-families6 sum [cell-fox-density] of region-of-interest6
+    let current-use-foxes-in-families-no-cubs6 sum [cell-fox-density-no-cubs] of region-of-interest6
+    let disperser-fox-abundance6 count foxes-in-region-of-interest6 with [status = "disperser"] 
+
+    set total-fox-density6 (current-use-foxes-in-families6 + disperser-fox-abundance6) / region-of-interest6-size
+    set all-fox-but-cub-density6 (current-use-foxes-in-families-no-cubs6 + disperser-fox-abundance6) / region-of-interest6-size
+       
+    set fox-family-density6 count fox-families-on region-of-interest6 / region-of-interest6-size
+    set disperser-fox-density6 disperser-fox-abundance6 / region-of-interest6-size
+    
+    set alpha-fox-density6 count foxes-in-region-of-interest6 with [status = "alpha"] / region-of-interest6-size
+    set subordinate-fox-density6 count foxes-in-region-of-interest6 with [status = "subordinate"] / region-of-interest6-size
+    set cub-fox-density6 count foxes-in-region-of-interest6 with [status = "cub"] / region-of-interest6-size
+    set fox-family-density6 count fox-families-on region-of-interest6 / region-of-interest6-size
+  ]
+  
+  
+  
   if plot? = true
   [
     set-current-plot "fox density"
     set-current-plot-pen "Fox density - region 1" plot total-fox-density
     set-current-plot-pen "Fox density - region 2" plot total-fox-density2
-    set-current-plot-pen "Fox-family density" plot fox-family-density
+    set-current-plot-pen "Fox density - region 3" plot total-fox-density3
+    set-current-plot-pen "Fox density - region 4" plot total-fox-density4
+    set-current-plot-pen "Fox density - region 5" plot total-fox-density5
+    set-current-plot-pen "Fox density - region 6" plot total-fox-density6
+    set-current-plot-pen "Fox-family - region 1" plot fox-family-density
   ]
   
 end
@@ -317,16 +413,12 @@ end
 
 to export-fox-density-map
   
-  ask available-landscape 
-  [
-    ifelse fox-family-owner != nobody 
-    [set fox-density-no-cubs cell-relative-use * count [family-members with [status != "cub"]] of fox-family-owner ]
-    [set fox-density-no-cubs 0]
-     ]
+  calculate-fox-density
   
-  ask one-of patches [set density-map gis:patch-dataset fox-density-no-cubs]
+  ask one-of patches [set density-map gis:patch-dataset cell-fox-density-no-cubs]
   
-  gis:store-dataset density-map (word outputs-file-path "/fox_density_Y" year "_W" week-of-year "_" my-seed ".asc")
+  gis:store-dataset density-map (word working-directory "/" output-file-path "/fox_density_Y" year "_W" week-of-year "_" my-seed ".asc")
+  
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

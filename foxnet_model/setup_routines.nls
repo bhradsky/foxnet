@@ -142,6 +142,9 @@ to create-world
     set part-of-region-of-interest false
     set part-of-region-of-interest2 false
     set cell-relative-productivity 0
+    set cell-relative-use 0
+    set cell-fox-density 0
+    set cell-fox-density-no-cubs 0
     set checked-already "no"
     set true-color 0
   ]

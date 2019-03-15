@@ -33,9 +33,26 @@ globals
   region-of-interest-data
   region-of-interest
   region-of-interest-size
+
   region-of-interest2-data
   region-of-interest2
   region-of-interest2-size
+
+  region-of-interest3-data
+  region-of-interest3
+  region-of-interest3-size
+
+  region-of-interest4-data
+  region-of-interest4
+  region-of-interest4-size
+
+  region-of-interest5-data
+  region-of-interest5
+  region-of-interest5-size
+
+  region-of-interest6-data
+  region-of-interest6
+  region-of-interest6-size
 
   baitsite-data
   baits-are-toxic
@@ -72,9 +89,16 @@ globals
   my-seed
   number-of-neighbours; the number of neighbouring territories surround a fox territory
   territory-size; the number of cells in a fox's territory
+
+  bait-cost
   count-baits-laid
   bait-take
-  bait-cost
+  bait-take2
+  bait-take3
+  bait-take4
+  bait-take5
+  bait-take6
+
   foxes-in-region-of-interest
   fox-family-density
   total-fox-density
@@ -83,6 +107,7 @@ globals
   subordinate-fox-density
   disperser-fox-density
   all-fox-but-cub-density
+
   fox-family-density2
   total-fox-density2
   alpha-fox-density2
@@ -90,6 +115,38 @@ globals
   subordinate-fox-density2
   disperser-fox-density2
   all-fox-but-cub-density2
+
+  fox-family-density3
+  total-fox-density3
+  alpha-fox-density3
+  cub-fox-density3
+  subordinate-fox-density3
+  disperser-fox-density3
+  all-fox-but-cub-density3
+
+  fox-family-density4
+  total-fox-density4
+  alpha-fox-density4
+  cub-fox-density4
+  subordinate-fox-density4
+  disperser-fox-density4
+  all-fox-but-cub-density4
+
+  fox-family-density5
+  total-fox-density5
+  alpha-fox-density5
+  cub-fox-density5
+  subordinate-fox-density5
+  disperser-fox-density5
+  all-fox-but-cub-density5
+
+  fox-family-density6
+  total-fox-density6
+  alpha-fox-density6
+  cub-fox-density6
+  subordinate-fox-density6
+  disperser-fox-density6
+  all-fox-but-cub-density6
 
   density-map
 
@@ -127,8 +184,13 @@ patches-own
 [
   habitat-type
   available-to-foxes
+
   part-of-region-of-interest
   part-of-region-of-interest2
+  part-of-region-of-interest3
+  part-of-region-of-interest4
+  part-of-region-of-interest5
+  part-of-region-of-interest6
 
   true-productivity
   current-productivity
@@ -138,13 +200,8 @@ patches-own
   fox-family-owner
   cell-relative-productivity
   cell-relative-use
-  cell-relative-use-foxes
-  cell-relative-use-foxes-no-cubs
-  cell-relative-use-foxes2
-  cell-relative-use-foxes-no-cubs2
-
-  fox-density-no-cubs
-
+  cell-fox-density
+  cell-fox-density-no-cubs
  ]
 
 foxes-own
@@ -303,13 +360,20 @@ to territory-demo
   set male-dispersers		0.758
   set bait-layout		"none"
 
-  set landscape-raster ""
+ set landscape-raster ""
   set uninhabitable-raster-value 0
   set second-habitat-raster-value 0
+  set third-habitat-raster-value 0
   set hab2:hab1 1
+  set hab3:hab1 1
   set region-shp ""
   set region2-shp ""
+  set region3-shp ""
+  set region4-shp ""
+  set region5-shp ""
+  set region6-shp ""
   set survey-transect-shp ""
+  set survey-transect2-shp ""
 
   set bait-layout "none"
 
@@ -525,10 +589,17 @@ to basic-model
   set landscape-raster ""
   set uninhabitable-raster-value 0
   set second-habitat-raster-value 0
+  set third-habitat-raster-value 0
   set hab2:hab1 1
+  set hab3:hab1 1
   set region-shp ""
   set region2-shp ""
+  set region3-shp ""
+  set region4-shp ""
+  set region5-shp ""
+  set region6-shp ""
   set survey-transect-shp ""
+  set survey-transect2-shp ""
 
   set bait-layout "none"
   set bait-density 0
@@ -592,8 +663,14 @@ to Glenelg-model
   set uninhabitable-raster-value 2
   set second-habitat-raster-value 0
   set hab2:hab1 3
+  set third-habitat-raster-value 100
+  set hab3:hab1 1
   set region-shp "gis_layers/glenelg/mtclay_region.shp"
   set region2-shp "gis_layers/glenelg/annya_region.shp"
+  set region3-shp ""
+  set region4-shp ""
+  set region5-shp ""
+  set region6-shp ""
   set survey-transect-shp "gis_layers/glenelg/mtclay_transect.shp"
   set survey-transect2-shp ""
 
@@ -629,11 +706,11 @@ end
 GRAPHICS-WINDOW
 810
 70
-1018
-279
+1128
+389
 -1
 -1
-1.0
+10.0
 1
 10
 1
@@ -644,9 +721,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-199
+30
 0
-199
+30
 0
 0
 1
@@ -763,7 +840,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-0.0
+1.0E-5
 0.5
 1
 /km2
@@ -778,7 +855,7 @@ bait-density
 bait-density
 0
 5
-0.0
+1.0
 0.5
 1
 /km2
@@ -793,7 +870,7 @@ Pr-die-if-exposed-100ha
 Pr-die-if-exposed-100ha
 0
 1
-0.0
+0.3
 0.05
 1
 NIL
@@ -845,7 +922,7 @@ INPUTBOX
 395
 310
 kernel-percent
-[95]
+[100]
 1
 0
 String (reporter)
@@ -856,7 +933,7 @@ INPUTBOX
 395
 245
 home-range-area
-[0.454]
+[2]
 1
 0
 String (reporter)
@@ -869,7 +946,7 @@ CHOOSER
 weeks-per-timestep
 weeks-per-timestep
 1 2 4
-0
+2
 
 CHOOSER
 405
@@ -947,7 +1024,7 @@ landscape-size
 landscape-size
 10
 12000
-400.0
+10.0
 5
 1
 km2
@@ -1180,7 +1257,7 @@ INPUTBOX
 610
 300
 bait-layout-shp
-NIL
+gis_layers/glenelg/mtclay_baits.shp
 1
 1
 String
@@ -1205,7 +1282,7 @@ commence-baiting-year
 commence-baiting-year
 1
 50
-1.0
+3.0
 1
 1
 year
@@ -1220,7 +1297,7 @@ commence-baiting-week
 commence-baiting-week
 1
 52
-1.0
+13.0
 1
 1
 week
@@ -1238,9 +1315,9 @@ NIL
 String
 
 PLOT
-1230
+1425
 10
-1810
+1935
 225
 fox density
 time step
@@ -1255,12 +1332,16 @@ true
 PENS
 "Fox density - region 1" 1.0 0 -5298144 true "" ""
 "Fox density - region 2" 1.0 0 -955883 true "" ""
-"Fox-family density" 1.0 0 -7500403 true "" ""
+"Fox density - region 3" 1.0 0 -7500403 true "" ""
+"Fox density - region 4" 1.0 0 -8431303 true "" ""
+"Fox density - region 5" 1.0 0 -1184463 true "" ""
+"Fox density - region 6" 1.0 0 -13840069 true "" ""
+"Fox-family - region 1" 1.0 0 -16777216 true "" ""
 
 PLOT
-1230
+1425
 235
-1675
+1870
 421
 bait take
 time step
@@ -1270,10 +1351,15 @@ proportion of baits
 0.0
 1.0
 true
-false
+true
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" ""
+"bait-take 1" 1.0 0 -5298144 true "" ""
+"bait-take 2" 1.0 0 -955883 true "" ""
+"bait-take 3" 1.0 0 -9276814 true "" ""
+"bait-take 4" 1.0 0 -6459832 true "" ""
+"bait-take 5" 1.0 0 -1184463 true "" ""
+"bait-take 6" 1.0 0 -13840069 true "" ""
 
 PLOT
 1230
@@ -1302,7 +1388,7 @@ region-size
 region-size
 10
 6000
-110.0
+10.0
 10
 1
 km2
@@ -1324,9 +1410,9 @@ x
 HORIZONTAL
 
 MONITOR
-1680
+1875
 235
-1810
+2005
 288
 annual cost to-date
 bait-cost
@@ -1346,9 +1432,9 @@ uninhabitable-raster-value
 Number
 
 PLOT
-1230
+1425
 590
-1510
+1705
 740
 fox dispersal
 dispersal distance (km)
@@ -1413,7 +1499,7 @@ INPUTBOX
 610
 585
 price-per-bait
-0.0
+2.0
 1
 0
 Number
@@ -1434,7 +1520,7 @@ INPUTBOX
 610
 650
 person-days-per-baiting-round
-0.0
+3.0
 1
 0
 Number
@@ -1445,7 +1531,7 @@ INPUTBOX
 610
 780
 km-per-baiting-round
-0.0
+420.0
 1
 0
 Number
@@ -1456,7 +1542,7 @@ INPUTBOX
 610
 845
 cost-per-km-travel
-0.0
+0.67
 1
 0
 Number
@@ -1467,7 +1553,7 @@ INPUTBOX
 610
 715
 cost-per-person-day
-0.0
+250.0
 1
 0
 Number
@@ -1538,9 +1624,9 @@ IMPORTANT! For the Glenelg-model to work, you must set your working- directory t
 1
 
 PLOT
-1515
+1710
 590
-1810
+2005
 740
 number of neighbouring territories
 time step
@@ -1588,9 +1674,9 @@ plot?
 -1000
 
 PLOT
-1230
+1425
 425
-1510
+1705
 585
 age structure
 Fox age (years)
@@ -1606,9 +1692,9 @@ PENS
 "default" 1.0 1 -16777216 true "" ""
 
 PLOT
-1515
+1710
 425
-1880
+2075
 585
 population structure
 group
@@ -1800,7 +1886,7 @@ INPUTBOX
 170
 640
 third-habitat-raster-value
-4.0
+100.0
 1
 0
 Number
@@ -1814,11 +1900,55 @@ hab3:hab1
 hab3:hab1
 0
 10
-0.75
+1.0
 0.05
 1
 x
 HORIZONTAL
+
+INPUTBOX
+5
+995
+170
+1055
+region3-shp
+NIL
+1
+1
+String
+
+INPUTBOX
+5
+1060
+170
+1120
+region4-shp
+NIL
+1
+1
+String
+
+INPUTBOX
+5
+1125
+170
+1185
+region5-shp
+NIL
+1
+1
+String
+
+INPUTBOX
+5
+1190
+170
+1250
+region6-shp
+NIL
+1
+1
+String
 
 @#$#@#$#@
 ## WHAT IS IT?
