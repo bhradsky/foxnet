@@ -5,6 +5,8 @@
 
 to bait-if-applicable
   
+  if week-of-year = 1 [set bait-cost 0] ; resets bait-cost to 0 at start of each year
+  
   if bait-frequency = "weekly*"
     [lay-baits ]
    
@@ -19,8 +21,9 @@ to bait-if-applicable
    
   if bait-frequency = "custom*"
     [
+      let bait-years read-from-string custom-bait-years
       let bait-weeks read-from-string custom-bait-weeks 
-      if  member? week-of-year bait-weeks 
+      if  member? year bait-years and member? week-of-year bait-weeks 
       [lay-baits]
     ]
 
@@ -38,7 +41,7 @@ to lay-baits
    ]
 
  set count-baits-laid count bait-stations with [color = red]
- ; print count-baits-laid
+  print count-baits-laid
  
  ifelse (year = commence-baiting-year and week-of-year >= commence-baiting-week) or (year > commence-baiting-year) 
    [set baits-are-toxic true ]
@@ -117,7 +120,7 @@ end
 
 to calculate-annual-cost
   if week-of-year = 1
-  [set bait-cost 0]
+  [set bait-cost annual-baseline-cost]
   
   set bait-cost ( bait-cost + count-baits-laid * price-per-bait + person-days-per-baiting-round * cost-per-person-day + km-per-baiting-round * cost-per-km-travel)
   

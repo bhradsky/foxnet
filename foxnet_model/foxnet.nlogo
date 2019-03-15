@@ -605,10 +605,12 @@ to basic-model
   set bait-density 0
   set bait-frequency "4-weeks"
   set bait-layout-shp ""
+  set custom-bait-years "[]"
   set custom-bait-weeks "[]"
   set Pr-die-if-exposed-100ha 0
   set commence-baiting-year 1
   set commence-baiting-week 1
+  set annual-baseline-cost 0
   set price-per-bait 0
   set person-days-per-baiting-round 0
   set cost-per-person-day 0
@@ -678,10 +680,12 @@ to Glenelg-model
   set bait-density 1
   set bait-frequency "4-weeks"
   set bait-layout-shp "gis_layers/glenelg/mtclay_baits.shp"
+  set custom-bait-years "[]"
   set custom-bait-weeks "[]"
   set Pr-die-if-exposed-100ha 0.3
   set commence-baiting-year 3
   set commence-baiting-week 13
+  set annual-baseline-cost 1000
   set price-per-bait 2
   set person-days-per-baiting-round 3
   set cost-per-person-day 250
@@ -706,11 +710,11 @@ end
 GRAPHICS-WINDOW
 810
 70
-1128
-389
+1018
+279
 -1
 -1
-10.0
+1.0
 1
 10
 1
@@ -721,9 +725,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-30
+199
 0
-30
+199
 0
 0
 1
@@ -840,7 +844,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-1.0E-5
+0.5
 0.5
 1
 /km2
@@ -848,14 +852,14 @@ HORIZONTAL
 
 SLIDER
 405
-145
+220
 610
-178
+253
 bait-density
 bait-density
 0
 5
-1.0
+0.0
 0.5
 1
 /km2
@@ -863,14 +867,14 @@ HORIZONTAL
 
 SLIDER
 405
-420
+95
 610
-453
+128
 Pr-die-if-exposed-100ha
 Pr-die-if-exposed-100ha
 0
 1
-0.3
+0.0
 0.05
 1
 NIL
@@ -878,9 +882,9 @@ HORIZONTAL
 
 CHOOSER
 403
-95
+135
 608
-140
+180
 bait-layout
 bait-layout
 "none" "grid" "random-scatter" "custom"
@@ -889,9 +893,9 @@ bait-layout
 TEXTBOX
 405
 185
-634
-219
-bait-density only affects 'grid' and 'random-scatter' bait-layout options
+610
+231
+if bait-density is 'grid' or 'random-scatter', specify density:
 13
 0.0
 1
@@ -922,7 +926,7 @@ INPUTBOX
 395
 310
 kernel-percent
-[100]
+[95]
 1
 0
 String (reporter)
@@ -933,7 +937,7 @@ INPUTBOX
 395
 245
 home-range-area
-[2]
+[0.454]
 1
 0
 String (reporter)
@@ -946,13 +950,13 @@ CHOOSER
 weeks-per-timestep
 weeks-per-timestep
 1 2 4
-2
+0
 
 CHOOSER
 405
-305
+375
 610
-350
+420
 bait-frequency
 bait-frequency
 "weekly*" "fortnightly*" "4-weeks" "custom*"
@@ -960,9 +964,9 @@ bait-frequency
 
 INPUTBOX
 405
-355
-617
-415
+630
+610
+690
 custom-bait-weeks
 []
 1
@@ -1024,7 +1028,7 @@ landscape-size
 landscape-size
 10
 12000
-10.0
+400.0
 5
 1
 km2
@@ -1253,11 +1257,11 @@ HORIZONTAL
 
 INPUTBOX
 405
-230
+295
 610
-300
+365
 bait-layout-shp
-gis_layers/glenelg/mtclay_baits.shp
+NIL
 1
 1
 String
@@ -1275,14 +1279,14 @@ week-of-year
 
 SLIDER
 405
-455
+460
 610
-488
+493
 commence-baiting-year
 commence-baiting-year
 1
 50
-3.0
+1.0
 1
 1
 year
@@ -1290,14 +1294,14 @@ HORIZONTAL
 
 SLIDER
 405
-490
+495
 610
-523
+528
 commence-baiting-week
 commence-baiting-week
 1
 52
-13.0
+1.0
 1
 1
 week
@@ -1315,9 +1319,9 @@ NIL
 String
 
 PLOT
-1425
+1230
 10
-1935
+1740
 225
 fox density
 time step
@@ -1339,9 +1343,9 @@ PENS
 "Fox-family - region 1" 1.0 0 -16777216 true "" ""
 
 PLOT
-1425
+1230
 235
-1870
+1675
 421
 bait take
 time step
@@ -1362,9 +1366,9 @@ PENS
 "bait-take 6" 1.0 0 -13840069 true "" ""
 
 PLOT
-1230
+1035
 745
-1510
+1315
 900
 fox home range area (95% MCP)
 area (ha)
@@ -1388,7 +1392,7 @@ region-size
 region-size
 10
 6000
-10.0
+110.0
 10
 1
 km2
@@ -1410,9 +1414,9 @@ x
 HORIZONTAL
 
 MONITOR
-1875
+1680
 235
-2005
+1810
 288
 annual cost to-date
 bait-cost
@@ -1432,9 +1436,9 @@ uninhabitable-raster-value
 Number
 
 PLOT
-1425
+1230
 590
-1705
+1510
 740
 fox dispersal
 dispersal distance (km)
@@ -1495,11 +1499,11 @@ String
 
 INPUTBOX
 405
-525
+770
 610
-585
+830
 price-per-bait
-2.0
+0.0
 1
 0
 Number
@@ -1516,44 +1520,44 @@ MONITORING
 
 INPUTBOX
 405
-590
+835
 610
-650
+895
 person-days-per-baiting-round
-3.0
+0.0
 1
 0
 Number
 
 INPUTBOX
 405
-720
+965
 610
-780
+1025
 km-per-baiting-round
-420.0
+0.0
 1
 0
 Number
 
 INPUTBOX
 405
-785
+1030
 610
-845
+1090
 cost-per-km-travel
-0.67
+0.0
 1
 0
 Number
 
 INPUTBOX
 405
-655
+900
 610
-715
+960
 cost-per-person-day
-250.0
+0.0
 1
 0
 Number
@@ -1624,9 +1628,9 @@ IMPORTANT! For the Glenelg-model to work, you must set your working- directory t
 1
 
 PLOT
-1710
+1515
 590
-2005
+1810
 740
 number of neighbouring territories
 time step
@@ -1644,9 +1648,9 @@ PENS
 "max" 1.0 0 -7500403 true "" ""
 
 PLOT
-1515
+1320
 745
-1810
+1615
 900
 foxes overlapping transect
 time step
@@ -1674,9 +1678,9 @@ plot?
 -1000
 
 PLOT
-1425
+1230
 425
-1705
+1510
 585
 age structure
 Fox age (years)
@@ -1692,9 +1696,9 @@ PENS
 "default" 1.0 1 -16777216 true "" ""
 
 PLOT
-1710
+1515
 425
-2075
+1880
 585
 population structure
 group
@@ -1886,7 +1890,7 @@ INPUTBOX
 170
 640
 third-habitat-raster-value
-100.0
+0.0
 1
 0
 Number
@@ -1949,6 +1953,58 @@ NIL
 1
 1
 String
+
+INPUTBOX
+405
+570
+610
+630
+custom-bait-years
+[]
+1
+0
+String
+
+TEXTBOX
+410
+260
+560
+291
+if bait-density is 'custom', add shapefile:
+13
+0.0
+1
+
+TEXTBOX
+410
+425
+605
+471
+if bait-frequency isn't 'custom', specify when toxic baiting begins:
+13
+0.0
+1
+
+TEXTBOX
+405
+535
+610
+581
+if bait-frequency is 'custom', specify years & weeks:
+13
+0.0
+1
+
+INPUTBOX
+405
+705
+610
+765
+annual-baseline-cost
+0.0
+1
+0
+Number
 
 @#$#@#$#@
 ## WHAT IS IT?
