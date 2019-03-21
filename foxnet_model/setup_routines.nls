@@ -126,8 +126,8 @@ to create-world
       ifelse habitat-type = uninhabitable-raster-value
        [ set available-to-foxes false 
         set true-color white
-         set cell-fox-density-no-cubs "NaN"
-         set cell-fox-density "NaN"
+         set cell-fox-density-no-cubs 999
+         set cell-fox-density 999
        ]
       [  set available-to-foxes true ]
     ]
