@@ -123,6 +123,8 @@ modelrun <-function(corename)
   
 
    # RUN MODEL
+   
+   # output fox densities and bait take etc over time (as per Hradsky et al J. Appl Ecol)
    timesteps <- 702 # number of ticks
    output.parameters <- c("year", 
                           "week-of-year", 
@@ -131,16 +133,21 @@ modelrun <-function(corename)
                           "bait-take", 
                           "bait-cost"
    )
-   
    output <- NLDoReport(timesteps, "go", output.parameters,
                         as.data.frame = TRUE,
                         df.col.names=output.parameters,
                         nl.obj = corename)
    
    output$baited <- i
-
    write.csv(output, paste0(foxnet.path, "/outputs/mtclay/mtclay_baseline_baited_", i, "_", corename,"_test.csv"))
    
+   ## alternative code for exporting heatmap
+   # output <- NLDoReport(timesteps, "go if year = 16 and week-of-year = 0 [export-fox-density-map]", output.parameters,
+   #                      as.data.frame = TRUE,
+   #                      df.col.names=output.parameters,
+   #                      nl.obj = corename)
+   
+
    NLQuit(nl.obj = corename)
   }
 }
