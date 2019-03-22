@@ -41,7 +41,7 @@ to lay-baits
    ]
 
  set count-baits-laid count bait-stations with [color = red]
-  print count-baits-laid
+ ; print count-baits-laid
  
  ifelse (year = commence-baiting-year and week-of-year >= commence-baiting-week) or (year > commence-baiting-year) 
    [set baits-are-toxic true ]
