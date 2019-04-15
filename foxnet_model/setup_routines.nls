@@ -201,6 +201,62 @@ to identify-region-of-interest
       set region-of-interest2-size count region-of-interest2 * cells-to-km2
       ;  print region-of-interest2-size
     ]
+    
+      if region3-shp != ""
+    [
+      set region-of-interest3-data gis:load-dataset region3-shp
+      ask available-landscape gis:intersecting region-of-interest3-data
+      [ 
+        set part-of-region-of-interest3 true
+        set true-color true-color + 7
+      ]
+    
+      set region-of-interest3 patch-set patches with [part-of-region-of-interest3 = true]
+      set region-of-interest3-size count region-of-interest3 * cells-to-km2
+      ;  print region-of-interest2-size
+    ]
+        
+          if region4-shp != ""
+    [
+      set region-of-interest4-data gis:load-dataset region4-shp
+      ask available-landscape gis:intersecting region-of-interest4-data
+      [ 
+        set part-of-region-of-interest4 true
+        set true-color true-color + 7
+      ]
+    
+      set region-of-interest4 patch-set patches with [part-of-region-of-interest4 = true]
+      set region-of-interest4-size count region-of-interest4 * cells-to-km2
+      ;  print region-of-interest2-size
+    ]
+    
+          if region5-shp != ""
+    [
+      set region-of-interest5-data gis:load-dataset region5-shp
+      ask available-landscape gis:intersecting region-of-interest5-data
+      [ 
+        set part-of-region-of-interest5 true
+        set true-color true-color + 7
+      ]
+    
+      set region-of-interest5 patch-set patches with [part-of-region-of-interest5 = true]
+      set region-of-interest5-size count region-of-interest5 * cells-to-km2
+      ;  print region-of-interest2-size
+    ]
+    
+          if region6-shp != ""
+    [
+      set region-of-interest6-data gis:load-dataset region6-shp
+      ask available-landscape gis:intersecting region-of-interest6-data
+      [ 
+        set part-of-region-of-interest6 true
+        set true-color true-color + 7
+      ]
+    
+      set region-of-interest6 patch-set patches with [part-of-region-of-interest6 = true]
+      set region-of-interest6-size count region-of-interest6 * cells-to-km2
+      ;  print region-of-interest2-size
+    ]
   ]
   
   ; regardless of approach, set region-of-interest
