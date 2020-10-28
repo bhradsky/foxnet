@@ -1,0 +1,52 @@
+; Permeability barrier checking routine.  
+; Called from within fox_territory_routines.nls
+; specifically; make-first-dispersal, check-for-alpha-vacancy & try-to-establish-new-territory
+
+to test-permeable-barrier
+  ; first test if fox is within 5x dispersal distance (or all foxes will check if the barrier is not permeable)
+  ifelse [permeable-barrier-periphery] of permeable-xy-from != true
+    [ set permeable-barrier-not-crossing true ]
+    ; this fox is within the dispersal distance and needs to test barier.
+    [
+      ; hatch two permeability foxes, id them, and move them to permeable-xy-to / from patches
+      hatch-permeability-foxes 1 
+        [
+          set link-id "a"
+          move-to permeable-xy-from
+        ]
+
+      hatch-permeability-foxes 1 
+        [
+          set link-id "b"
+          move-to permeable-xy-to    
+        ]
+  
+      ; create link between permeable foxes
+      create-links-with permeability-foxes
+      set permeable-link links
+
+      ; test if the link is crossing the permeable barrier  
+      ifelse gis:intersects? permeable-barrier permeable-link
+        [
+          ; yes, you are crossing the barrier, now test permeability proportion to see if you make it
+          ifelse random-float 1 < propn-permeable-barrier
+            [; yes, you made it across
+              ask permeability-foxes 
+                [ die ]
+             set permeable-barrier-can-cross true
+            ]
+            [; no sorry, you didnt make it across
+              ask permeability-foxes 
+                [ die ]
+             set permeable-barrier-can-cross false
+            ]
+        ]
+      [
+        ; this fox isn't crossing the barrier
+        set permeable-barrier-not-crossing true   
+        ; remove permeability foxes
+        ask permeability-foxes 
+          [ die ]
+      ]
+    ]
+end
