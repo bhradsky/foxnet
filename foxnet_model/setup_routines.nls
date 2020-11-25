@@ -385,16 +385,33 @@ end
 
 to set-up-permeable-barrier
   
-  set permeable-barrier gis:load-dataset permeable-barrier-shp  
-  set permeable-barrier-exists true
+  ifelse permeable-barrier-shp-2 != ""
+    [
+      set permeable-barrier gis:load-dataset permeable-barrier-shp  
+      set permeable-barrier-2 gis:load-dataset permeable-barrier-shp-2 
+      set permeable-barrier-exists true
+      set permeable-barrier-2-exists true
   
-  ; now make cells under barrier to be uninhabitable to stop territory creep across the barrier. dispersing foxes will still attempt to jump over it.
-  set permeable-barrier-main patch-set patches gis:intersecting permeable-barrier
-  ask permeable-barrier-main
-    [ set habitat-type uninhabitable-raster-value 
-      set available-to-foxes false
-      ;set true-color red
-  ]
+      ; now make cells under barrier to be uninhabitable to stop territory creep across the barrier. dispersing foxes will still attempt to jump over it.
+      set permeable-barrier-main patch-set patches gis:intersecting (list permeable-barrier permeable-barrier-2)
+      ask permeable-barrier-main
+        [ set habitat-type uninhabitable-raster-value 
+          set available-to-foxes false
+          ;set true-color red      
+        ]
+    ]
+    [
+      set permeable-barrier gis:load-dataset permeable-barrier-shp  
+      set permeable-barrier-exists true
+  
+      ; now make cells under barrier to be uninhabitable to stop territory creep across the barrier. dispersing foxes will still attempt to jump over it.
+      set permeable-barrier-main patch-set patches gis:intersecting permeable-barrier
+      ask permeable-barrier-main
+        [ set habitat-type uninhabitable-raster-value 
+          set available-to-foxes false
+          ;set true-color red
+      ]
+    ]
   
   ; set permeable-barrier-pheriphery to true for patches within a *5 mean male dispersal distance of the permeable barrier (captures >98% of dispersing foxes)
   ; then if the barrier is not permeable, ask all foxes to check if they are crossing to ensure the <2% that will still potentially cross outside of the permeable-barrier-pheriphery will not
@@ -430,7 +447,7 @@ to set-up-foxes
     set family-id nobody
     set natal-id nobody
     set failed-territory-id [0]
-    move-to one-of available-landscape
+    move-to one-of available-landscape with [pxcor > 270]    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     set natal-cell patch-here
     ;pendown
     

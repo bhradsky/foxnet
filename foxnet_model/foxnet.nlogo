@@ -186,8 +186,10 @@ globals
 
   ; PERMEABILITY GLOBALS
   permeable-barrier  ; this is the barrier, a GIS input
+  permeable-barrier-2  ; this is the barrier, a GIS input
   permeable-barrier-main  ; patch-set of the cells under the permeable-barrier.  To set cells to uninhabitable to stop territory creep across barrier
   permeable-barrier-exists  ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
+  permeable-barrier-2-exists    ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
   permeable-xy-from  ; the patch where the fox dispersing is leaving from
   permeable-xy-to  ; the patch where the fox dispersing is trying to go to
   permeable-link  ; set each test, its the link between the from patch and the to patch to test.
@@ -866,7 +868,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-0.15
+0.05
 0.5
 1
 /km2
@@ -1116,7 +1118,7 @@ from2yto3y-survival
 from2yto3y-survival
 0
 1
-0.83
+0.82
 0.01
 1
 propn.
@@ -1131,7 +1133,7 @@ more3y-survival
 more3y-survival
 0
 1
-0.1
+0.01
 0.01
 1
 propn.
@@ -1196,7 +1198,7 @@ number-of-cubs
 number-of-cubs
 0
 8
-3.69
+3.58
 0.01
 1
 NIL
@@ -1226,7 +1228,7 @@ dispersal-season-begins
 dispersal-season-begins
 1
 52
-9.0
+1.0
 1
 1
 week
@@ -1967,9 +1969,9 @@ String
 
 INPUTBOX
 5
-1190
+1185
 170
-1250
+1245
 region6-shp
 NIL
 1
@@ -2030,11 +2032,11 @@ Number
 
 INPUTBOX
 5
-1255
+1250
 265
-1320
+1315
 permeable-barrier-shp
-gis_layers/BRP051/BRP051_Barrier.shp
+gis_layers/BRP051/BRP051_Barrier2.shp
 1
 1
 String
@@ -2046,6 +2048,28 @@ INPUTBOX
 1375
 propn-permeable-barrier
 0.0
+1
+0
+Number
+
+INPUTBOX
+5
+1375
+265
+1440
+permeable-barrier-shp-2
+gis_layers/BRP051/BRP051_Barrier3.shp
+1
+1
+String
+
+INPUTBOX
+5
+1440
+157
+1500
+propn-permeable-barrier-2
+0.5
 1
 0
 Number

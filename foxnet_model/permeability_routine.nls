@@ -24,23 +24,41 @@ to test-permeable-barrier
       ; create link between permeable foxes
       create-links-with permeability-foxes
       set permeable-link links
-
-      ; test if the link is crossing the permeable barrier  
-      ifelse gis:intersects? permeable-barrier permeable-link
-        [
-          ; yes, you are crossing the barrier, now test permeability proportion to see if you make it
-          ifelse random-float 1 < propn-permeable-barrier
-            [; yes, you made it across
-              ask permeability-foxes 
-                [ die ]
-             set permeable-barrier-can-cross true
+    
+      ; test links to cross barrier, but also if there is two barriers.
+      ifelse permeable-barrier-2-exists = true
+      [
+      ; test if the link is crossing a permeable barrier  
+      ifelse gis:intersects? permeable-barrier permeable-link or gis:intersects? permeable-barrier-2 permeable-link
+        [; yes, you are crossing a barrier, test if it is the first one and test permeability proportion if true, else permeability proportion of second barrier
+          ifelse gis:intersects? permeable-barrier permeable-link
+            [;yes, you are crossing the first barrier, now test permeability proportion to see if you make it
+              ifelse random-float 1 < propn-permeable-barrier
+                [; yes, you made it across
+                  ask permeability-foxes 
+                    [ die ]
+                 set permeable-barrier-can-cross true
+                ]
+              [; no sorry, you didnt make it across
+                 ask permeability-foxes 
+                    [ die ]
+                 set permeable-barrier-can-cross false
+              ]
             ]
-            [; no sorry, you didnt make it across
-              ask permeability-foxes 
-                [ die ]
-             set permeable-barrier-can-cross false
+            [;now test permeability of second barrier as you werent crossing the first one
+              ifelse random-float 1 < propn-permeable-barrier-2
+                [; yes, you made it across
+                  ask permeability-foxes 
+                    [ die ]
+                 set permeable-barrier-can-cross true
+                ]
+              [; no sorry, you didnt make it across
+                 ask permeability-foxes 
+                    [ die ]
+                 set permeable-barrier-can-cross false
+              ]
             ]
-        ]
+      ]
       [
         ; this fox isn't crossing the barrier
         set permeable-barrier-not-crossing true   
@@ -49,4 +67,28 @@ to test-permeable-barrier
           [ die ]
       ]
     ]
+    [; if there is only a single barrier
+      ifelse gis:intersects? permeable-barrier permeable-link
+        [;yes, you are crossing the first barrier, now test permeability proportion to see if you make it
+        ifelse random-float 1 < propn-permeable-barrier
+          [; yes, you made it across
+            ask permeability-foxes 
+              [ die ]
+            set permeable-barrier-can-cross true
+          ]
+          [; no sorry, you didnt make it across
+            ask permeability-foxes 
+              [ die ]
+            set permeable-barrier-can-cross false
+          ]    
+        ]
+        [
+          ; this fox isn't crossing the barrier
+          set permeable-barrier-not-crossing true   
+          ; remove permeability foxes
+          ask permeability-foxes 
+            [ die ]
+        ]
+      ]
+  ]
 end
