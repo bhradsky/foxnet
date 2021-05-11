@@ -91,7 +91,7 @@ to set-fox-parameters
     [set dispersal-duration (dispersal-season-ends - dispersal-season-begins) / weeks-per-timestep]
     [set dispersal-duration (dispersal-season-ends + (52 - dispersal-season-begins)) / weeks-per-timestep]
   ;print dispersal-duration * weeks-per-timestep
-  
+    
 end
 
 
@@ -119,6 +119,11 @@ to create-world
     gis:set-world-envelope ( gis:envelope-of landscape-data )
     gis:apply-raster landscape-data habitat-type   
     set landscape-data "1" ;remove the large raster file from the model memory
+    
+    ;;;;;; if there is a permeable barrier  ;;;;;;
+    ifelse permeable-barrier-shp != ""
+      [set-up-permeable-barrier]
+      [set permeable-barrier-exists false]
     
     ; identify patches that can never be used (e.g. ocean, waterways)
     ask patches
@@ -151,6 +156,7 @@ to create-world
     set true-color 0
   ]
   
+
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -194,7 +200,7 @@ to identify-region-of-interest
       ask available-landscape gis:intersecting region-of-interest2-data
       [ 
         set part-of-region-of-interest2 true
-        set true-color true-color + 7
+        set true-color true-color + 5
       ]
     
       set region-of-interest2 patch-set patches with [part-of-region-of-interest2 = true]
@@ -202,61 +208,66 @@ to identify-region-of-interest
       ;  print region-of-interest2-size
     ]
     
-      if region3-shp != ""
+   ; set up a third customised region-of-interest if required 
+    if region3-shp != ""
     [
       set region-of-interest3-data gis:load-dataset region3-shp
       ask available-landscape gis:intersecting region-of-interest3-data
       [ 
         set part-of-region-of-interest3 true
-        set true-color true-color + 7
+        set true-color true-color + 5
       ]
     
       set region-of-interest3 patch-set patches with [part-of-region-of-interest3 = true]
       set region-of-interest3-size count region-of-interest3 * cells-to-km2
-      ;  print region-of-interest2-size
+      ;  print region-of-interest3-size
     ]
-        
-          if region4-shp != ""
+    
+   ; set up a fourth customised region-of-interest if required 
+    if region4-shp != ""
     [
       set region-of-interest4-data gis:load-dataset region4-shp
       ask available-landscape gis:intersecting region-of-interest4-data
       [ 
         set part-of-region-of-interest4 true
-        set true-color true-color + 7
+        set true-color true-color + 5
       ]
     
       set region-of-interest4 patch-set patches with [part-of-region-of-interest4 = true]
       set region-of-interest4-size count region-of-interest4 * cells-to-km2
-      ;  print region-of-interest2-size
-    ]
+      ;  print region-of-interest4-size
+    ]  
     
-          if region5-shp != ""
+   ; set up a fifth customised region-of-interest if required 
+    if region5-shp != ""
     [
       set region-of-interest5-data gis:load-dataset region5-shp
       ask available-landscape gis:intersecting region-of-interest5-data
       [ 
         set part-of-region-of-interest5 true
-        set true-color true-color + 7
+        set true-color true-color + 5
       ]
     
       set region-of-interest5 patch-set patches with [part-of-region-of-interest5 = true]
       set region-of-interest5-size count region-of-interest5 * cells-to-km2
-      ;  print region-of-interest2-size
-    ]
-    
-          if region6-shp != ""
+      ;  print region-of-interest5-size
+    ] 
+  
+   ; set up a sixth customised region-of-interest if required 
+    if region6-shp != ""
     [
       set region-of-interest6-data gis:load-dataset region6-shp
       ask available-landscape gis:intersecting region-of-interest6-data
       [ 
         set part-of-region-of-interest6 true
-        set true-color true-color + 7
+        set true-color true-color + 5
       ]
     
       set region-of-interest6 patch-set patches with [part-of-region-of-interest6 = true]
       set region-of-interest6-size count region-of-interest6 * cells-to-km2
-      ;  print region-of-interest2-size
+      ;  print region-of-interest6-size
     ]
+    
   ]
   
   ; regardless of approach, set region-of-interest
@@ -372,6 +383,54 @@ end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+to set-up-permeable-barrier
+  
+  ifelse permeable-barrier-shp-2 != ""
+    [
+      set permeable-barrier gis:load-dataset permeable-barrier-shp  
+      set permeable-barrier-2 gis:load-dataset permeable-barrier-shp-2 
+      set permeable-barrier-exists true
+      set permeable-barrier-2-exists true
+  
+      ; now make cells under barrier to be uninhabitable to stop territory creep across the barrier. dispersing foxes will still attempt to jump over it.
+      set permeable-barrier-main patch-set patches gis:intersecting (list permeable-barrier permeable-barrier-2)
+      ask permeable-barrier-main
+        [ set habitat-type uninhabitable-raster-value 
+          set available-to-foxes false
+          ;set true-color red      
+        ]
+    ]
+    [
+      set permeable-barrier gis:load-dataset permeable-barrier-shp  
+      set permeable-barrier-exists true
+  
+      ; now make cells under barrier to be uninhabitable to stop territory creep across the barrier. dispersing foxes will still attempt to jump over it.
+      set permeable-barrier-main patch-set patches gis:intersecting permeable-barrier
+      ask permeable-barrier-main
+        [ set habitat-type uninhabitable-raster-value 
+          set available-to-foxes false
+          ;set true-color red
+      ]
+    ]
+  
+  ; set permeable-barrier-pheriphery to true for patches within a *5 mean male dispersal distance of the permeable barrier (captures >98% of dispersing foxes)
+  ; then if the barrier is not permeable, ask all foxes to check if they are crossing to ensure the <2% that will still potentially cross outside of the permeable-barrier-pheriphery will not
+  set permeability-dispersal-dist (( 2.778 + 4.038 * home-range-100perc) * kms-to-cells) * 5 ; (in km) uses equation from Trewhella et al 1988 ; convert to cells
+  ifelse propn-permeable-barrier > 0
+  [ ask permeable-barrier-main
+      [
+        ask patches in-radius permeability-dispersal-dist
+          [set permeable-barrier-periphery true]
+      ]
+  ]
+  [ ask patches
+    [ set permeable-barrier-periphery true ]
+  ]
+  
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 to set-up-foxes
 
   if initial-fox-density > 0
@@ -388,7 +447,7 @@ to set-up-foxes
     set family-id nobody
     set natal-id nobody
     set failed-territory-id [0]
-    move-to one-of available-landscape
+    move-to one-of available-landscape with [pxcor > 270]    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     set natal-cell patch-here
     ;pendown
     

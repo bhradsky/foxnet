@@ -423,7 +423,8 @@ to export-fox-density-map
     
   ask one-of patches [set density-map gis:patch-dataset cell-fox-density-no-cubs]
   
-  gis:store-dataset density-map (word working-directory "/" output-file-path "/fox_density_" bait-layout "_Y" year "_W" week-of-year "_" my-seed ".asc")
+  gis:store-dataset density-map (word output-file-path "/fox_density_" bait-layout "_Y" year "_W" week-of-year "_" my-seed ".asc")
+
   
   ; and reverse to get values back to normal
    ask available-landscape 
