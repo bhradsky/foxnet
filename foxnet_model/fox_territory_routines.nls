@@ -80,26 +80,10 @@ to make-first-dispersal-move
   ]
   
  ; type who type sex print my-dispersal-distance
-   
+  
   ifelse can-move? (my-dispersal-distance * kms-to-cells) and [available-to-foxes] of patch-ahead (my-dispersal-distance * kms-to-cells) = true
-  ; if there is no permeable barrier and that location is available (e.g. within world and available), jump ahead
-  [
-    ifelse permeable-barrier-exists = false 
-      [ jump (my-dispersal-distance * kms-to-cells) ]    
-      ; but if there is a permeable barrier then test it
-      [ 
-        set permeable-xy-from patch-here
-        set permeable-xy-to patch-ahead (my-dispersal-distance * kms-to-cells)
-      
-        test-permeable-barrier 
-     
-        if permeable-barrier-can-cross = true or permeable-barrier-not-crossing = true
-          [ jump (my-dispersal-distance * kms-to-cells) ]  
-      
-        ; set the barrier crossing globals back to false so they don't trigger next fox to cross inadvertently
-        set permeable-barrier-can-cross false
-        set permeable-barrier-not-crossing false
-     ]
+  [ 
+    jump (my-dispersal-distance * kms-to-cells) 
   ]
   
   [ ; if that location wasn't available (e.g. off edge of world), choose another vector and try again
@@ -108,7 +92,6 @@ to make-first-dispersal-move
   ] 
   
 end
- 
 
 to check-for-alpha-vacancy  
     
@@ -127,38 +110,19 @@ to check-for-alpha-vacancy
   [
    ; type who print " found a family"
     let chosen-family min-one-of families-with-alpha-vacancy [distance myself]
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; insert permeability code
-    ifelse permeable-barrier-exists = false 
-      [ move-to chosen-family ]    
-        ; but if there is a permeable barrier then test it
-      [ 
-        set permeable-xy-from patch-here
-        ask chosen-family [ set permeable-xy-to patch-here ]
-      
-        test-permeable-barrier 
-     
-        ifelse permeable-barrier-can-cross = true or permeable-barrier-not-crossing = true
-        ; if this is false, it effectively ends this routine, as if there were no families-with-alpha-vacancy nearby.  May want to revisit and put a count in, if there are multiple they can try while there are still some to try?
-          [ move-to chosen-family ]  
-          [ stop ] ; end routine if fox cant cross barrier.
-        ; set the barrier crossing globals back to false so they don't trigger next fox to cross inadvertently
-        set permeable-barrier-can-cross false
-        set permeable-barrier-not-crossing false
-      ]
-     
-     ; set up family id etc for foxes who have moved
-     set family-id [who] of chosen-family
+    move-to chosen-family
     
-     ask chosen-family
-     [ set family-members (turtle-set myself family-members) ]
+    set family-id [who] of chosen-family
     
-     set status "alpha"
+    ask chosen-family
+      [ set family-members (turtle-set myself family-members) ]
+    
+    set status "alpha"
           
-     ifelse my-sex = "female" 
-     [set color red]
-     [set color blue]  
-    
+    ifelse my-sex = "female" 
+      [set color red]
+      [set color blue]    
+
   ]
 
 end
@@ -171,26 +135,7 @@ to try-to-establish-new-territory
 
  if any? potential-home-bases
  [
-   let chosen-potential-home-base one-of potential-home-bases
-   ; insert permeability code
-   ifelse permeable-barrier-exists = false 
-     [ move-to chosen-potential-home-base ]   
-    
-     ; but if there is a permeable barrier then test it
-     [ 
-      set permeable-xy-from patch-here
-      set permeable-xy-to chosen-potential-home-base
-      
-      test-permeable-barrier 
-     
-      if permeable-barrier-can-cross = true or permeable-barrier-not-crossing = true
-      
-       [ move-to chosen-potential-home-base ]  
-      
-       ; set the barrier crossing globals back to false so they don't trigger next fox to cross inadvertently
-       set permeable-barrier-can-cross false
-       set permeable-barrier-not-crossing false
-     ] 
+   move-to one-of potential-home-bases   ; type who print " is trying a new territory"
  
    hatch-fox-families 1
    [
@@ -212,7 +157,6 @@ to try-to-establish-new-territory
        ]
 
      make-vacancies
-     ;type who print " is moving to centroid within try-to-establish-new-territory"
      move-to-centroid
      
      repeat (maximum-territory-update-area * km2-to-cells * 10) [update-territory]
@@ -249,7 +193,6 @@ to fox-families-check-territories
 
  ask fox-families
   [
-    ;type who print " is moving to centroid within fox-families-check-territories"
     move-to-centroid
      
     remove-any-excess-territory   
@@ -377,7 +320,7 @@ to acquire-best-available-vacancy
   set my-territory (patch-set my-territory acquired-territory)
   ask my-territory [set pcolor ([color] of myself) - 2]
   set territory-productivity (sum [current-productivity] of my-territory)
-  ;type who print " is moving to centroid within acquire-best-available-vacancy"
+
   move-to-centroid
 
 end
@@ -474,7 +417,7 @@ to remove-any-excess-territory
     ]
     
     set my-territory my-territory with [fox-family-owner = myself]
-    ;type who print " is moving to centroid within remove-any-excess-territory"
+    
     move-to-centroid
     
     remove-any-excess-territory
@@ -483,7 +426,7 @@ to remove-any-excess-territory
 end
 
 to finalise-territory
-  ;type who print " is moving to centroid within finalise-territory"
+  
   move-to-centroid
   
   set vacancy-score (sum [relative-productivity] of vacancies)
