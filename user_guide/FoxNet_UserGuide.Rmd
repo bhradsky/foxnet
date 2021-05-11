@@ -1,5 +1,5 @@
 ---
-title: "FoxNet User Guide V1.0.0"
+title: "FoxNet User Guide V1.1.0"
 author: "Bronwyn Hradsky, Quantitative and Applied Ecology, University of Melbourne"
 output:
   pdf_document:
@@ -286,7 +286,7 @@ This calculates the model ouputs and plots them if applicable. See the **[update
 
 ## Installing NetLogo and opening FoxNet
 
-FoxNet was built in NetLogo (Wilensky 1999) version 6.0.2 - an open-source modelling environment, downloadable from <https://ccl.northwestern.edu/netlogo/>. FoxNet is saved in within the FoxNet folder: `FoxNet_model / FoxNet.nlogo`.  You can open it from within NetLogo or by double-clicking the file name.
+FoxNet v 1.2.0 was built in NetLogo (Wilensky 1999) version 6.2.0 - an open-source modelling environment, downloadable from <https://ccl.northwestern.edu/netlogo/>. FoxNet is saved in within the FoxNet folder: `FoxNet_model / FoxNet.nlogo`.  You can open it from within NetLogo or by double-clicking the file name.
 
 For an introduction to using NetLogo see <https://ccl.northwestern.edu/netlogo/docs/>, particularly the three tutorials listed in the LH menu.
 
