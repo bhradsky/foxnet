@@ -27,6 +27,7 @@ Netlogo can be freely downloaded from https://ccl.northwestern.edu/netlogo/.
 ## Authors
 
 * [**Bronwyn Hradsky**](https://github.com/bhradsky), University of Melbourne.
+* Lachlan Francis, Arthur Rylah Institute.
 * Luke Kelly, University of Melbourne.
 * Alan Robley, Arthur Rylah Institute.
 * Brendan Wintle, University of Melbourne.
