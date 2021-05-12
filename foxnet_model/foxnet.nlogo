@@ -625,6 +625,10 @@ to basic-model
   set region4-shp ""
   set region5-shp ""
   set region6-shp ""
+  set permeable-barrier-shp ""
+  set permeable-barrier-shp-2 ""
+  set propn-permeable-barrier 0
+  set propn-permeable-barrier-2 0
   set survey-transect-shp ""
   set survey-transect2-shp ""
 
@@ -700,6 +704,10 @@ to Glenelg-model
   set region4-shp ""
   set region5-shp ""
   set region6-shp ""
+  set permeable-barrier-shp ""
+  set permeable-barrier-shp-2 ""
+  set propn-permeable-barrier 0
+  set propn-permeable-barrier-2 0
   set survey-transect-shp "gis_layers/glenelg/mtclay_transect.shp"
   set survey-transect2-shp ""
 
@@ -871,7 +879,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-0.0
+0.05
 0.5
 1
 /km2
