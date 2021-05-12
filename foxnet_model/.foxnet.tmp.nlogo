@@ -22,7 +22,7 @@ breed [vacancies vacant ]
 
 breed [bait-stations bait-station]
 
-breed [permeability-foxes permeability-fox]
+breed [permeability-testers permeability-tester]
 
 globals
 [
@@ -70,6 +70,19 @@ globals
   survey-line2
   my-survey-transect2
   foxes-overlapping-transect2
+
+  ; PERMEABILITY GLOBALS
+  permeable-barrier  ; this is a barrier, a GIS input
+  permeable-barrier-2  ; this is a second barrier, a GIS input
+  permeable-barrier-main  ; patch-set of the cells under the permeable-barrier.  To set cells to uninhabitable to stop territory creep across barrier
+  permeable-barrier-exists  ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
+  permeable-barrier-2-exists    ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
+  permeable-xy-from  ; the patch where the fox dispersing is leaving from
+  permeable-xy-to  ; the patch where the fox dispersing is trying to go to
+  permeable-link  ; set each test, its the link between the from patch and the to patch to test.
+  permeable-barrier-can-cross  ; boolean.  set when there is a fox trying to cross the barrier
+  permeable-barrier-not-crossing  ; boolean.  set when there is a fox trying to cross the barrier that is within a dispersal distance from the barrier, but the dispersal location is not across the barrier
+  permeability-dispersal-dist  ; the maximum possible dispersal distance in the model.  Patches within this distance of the barrier are given a true value, to be tested at start of permeability routine.
 
 
 ; FOX-RELATED PARAMETERS
@@ -243,7 +256,7 @@ bait-stations-own
   Pr-death-bait-scaled
 
 ]
-permeability-foxes-own
+permeability-testers-own
 [
   link-id  ; 'a' or 'b' for each end of the permeability test link
 ]
@@ -612,6 +625,10 @@ to basic-model
   set region4-shp ""
   set region5-shp ""
   set region6-shp ""
+  set permeable-barrier-shp ""
+  set permeable-barrier-shp-2 ""
+  set propn-permeable-barrier 0
+  set propn-permeable-barrier-2 0
   set survey-transect-shp ""
   set survey-transect2-shp ""
 
@@ -687,6 +704,10 @@ to Glenelg-model
   set region4-shp ""
   set region5-shp ""
   set region6-shp ""
+  set permeable-barrier-shp ""
+  set permeable-barrier-shp-2 ""
+  set propn-permeable-barrier 0
+  set propn-permeable-barrier-2 0
   set survey-transect-shp "gis_layers/glenelg/mtclay_transect.shp"
   set survey-transect2-shp ""
 
@@ -1421,7 +1442,7 @@ hab2:hab1
 hab2:hab1
 0
 10
-1.0
+0.95
 0.05
 1
 x

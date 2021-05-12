@@ -22,7 +22,7 @@ breed [vacancies vacant ]
 
 breed [bait-stations bait-station]
 
-breed [permeability-foxes permeability-fox]
+breed [permeability-testers permeability-tester]
 
 globals
 [
@@ -256,7 +256,7 @@ bait-stations-own
   Pr-death-bait-scaled
 
 ]
-permeability-foxes-own
+permeability-testers-own
 [
   link-id  ; 'a' or 'b' for each end of the permeability test link
 ]

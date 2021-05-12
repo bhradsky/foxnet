@@ -409,24 +409,24 @@ to set-up-permeable-barrier
     set available-to-foxes false
   ]
   
-  ; if barrier is 100% impermeable, make all patches within periphery of barrier to ensure no foxes will cross
-  ifelse propn-permeable-barrier = 0
-  [ 
-    ask patches  [ set permeable-barrier-periphery true ]
-  ]
-  
-  ; but if barrier is only partially impermeable,
-  ; set permeable-barrier-pheriphery to true for patches within a x5 mean male dispersal distance of the permeable barrier (captures >98% of dispersing foxes)
-  ;!!! ERROR - THIS TAKES A LOOOONG TIME
-  ; AND APPLIES SAME PERMEABILITY TO BOTH BARRIERS
-  [
-    set permeability-dispersal-dist (( 2.778 + 4.038 * home-range-100perc) * kms-to-cells) * 5 ; (in km) uses equation from Trewhella et al 1988 ; convert to cells
-    ask permeable-barrier-main
-    [
-      ask patches in-radius permeability-dispersal-dist
-          [set permeable-barrier-periphery true]
-    ]
-  ]
+;  ; if barrier is 100% impermeable, make all patches within periphery of barrier to ensure no foxes will cross
+;  ifelse propn-permeable-barrier = 0
+;  [ 
+;    ask patches  [ set permeable-barrier-periphery true ]
+;  ]
+;  
+;  ; but if barrier is only partially impermeable,
+;  ; set permeable-barrier-pheriphery to true for patches within a x5 mean male dispersal distance of the permeable barrier (captures >98% of dispersing foxes)
+;  ;!!! ERROR - THIS TAKES A LOOOONG TIME
+;  ; AND APPLIES SAME PERMEABILITY TO BOTH BARRIERS
+;  [
+;    set permeability-dispersal-dist (( 2.778 + 4.038 * home-range-100perc) * kms-to-cells) * 5 ; (in km) uses equation from Trewhella et al 1988 ; convert to cells
+;    ask permeable-barrier-main
+;    [
+;      ask patches in-radius permeability-dispersal-dist
+;          [set permeable-barrier-periphery true]
+;    ]
+;  ]
 
   
 end
