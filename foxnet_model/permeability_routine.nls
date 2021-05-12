@@ -3,6 +3,7 @@
 ; specifically; make-first-dispersal, check-for-alpha-vacancy & try-to-establish-new-territory
 
 to test-permeable-barrier
+  
   ; first test if fox is within 5x dispersal distance (or all foxes will check if the barrier is not permeable)
   ifelse [permeable-barrier-periphery] of permeable-xy-from != true
     [ set permeable-barrier-not-crossing true ]

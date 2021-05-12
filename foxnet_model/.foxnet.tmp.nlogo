@@ -71,19 +71,6 @@ globals
   my-survey-transect2
   foxes-overlapping-transect2
 
-  ; PERMEABILITY GLOBALS
-  permeable-barrier  ; this is a barrier, a GIS input
-  permeable-barrier-2  ; this is a second barrier, a GIS input
-  permeable-barrier-main  ; patch-set of the cells under the permeable-barrier.  To set cells to uninhabitable to stop territory creep across barrier
-  permeable-barrier-exists  ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
-  permeable-barrier-2-exists    ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
-  permeable-xy-from  ; the patch where the fox dispersing is leaving from
-  permeable-xy-to  ; the patch where the fox dispersing is trying to go to
-  permeable-link  ; set each test, its the link between the from patch and the to patch to test.
-  permeable-barrier-can-cross  ; boolean.  set when there is a fox trying to cross the barrier
-  permeable-barrier-not-crossing  ; boolean.  set when there is a fox trying to cross the barrier that is within a dispersal distance from the barrier, but the dispersal location is not across the barrier
-  permeability-dispersal-dist  ; the maximum possible dispersal distance in the model.  Patches within this distance of the barrier are given a true value, to be tested at start of permeability routine.
-
 
 ; FOX-RELATED PARAMETERS
   real-fox-hr
@@ -871,7 +858,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-0.0
+0.05
 0.5
 1
 /km2
@@ -1434,7 +1421,7 @@ hab2:hab1
 hab2:hab1
 0
 10
-0.95
+1.0
 0.05
 1
 x

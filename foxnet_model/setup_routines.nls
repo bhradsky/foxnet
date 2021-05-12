@@ -1,8 +1,6 @@
 
 to check-for-errors
-    
-  ; spatial inputs
-  
+     
   ; time units
   
   if bait-layout != "none" and bait-frequency = "weekly*" and weeks-per-timestep != 1
@@ -25,6 +23,7 @@ to check-for-errors
  
   
   ; range parameters
+  
   set fox-hr-percentiles read-from-string kernel-percent
   set fox-hr-areas read-from-string home-range-area
   
@@ -38,6 +37,7 @@ to check-for-errors
   [error "ERROR - please enter one kernel-percent value and one home-range-area value"]
   
   ; dispersal parameters
+  
   if (dispersal-season-ends - 1)  MOD weeks-per-timestep != 0 or (dispersal-season-begins - 1) MOD weeks-per-timestep != 0
   [error "ERROR - check that your choice of dispersal weeks is compatible with the time-step interval (dispersal cannot start or end in weeks that will not be included in the time-steps)"]
   
@@ -48,12 +48,16 @@ to check-for-errors
   if (cub-birth-season - 1)  MOD weeks-per-timestep != 0 
   [error "ERROR - check that your choice of cub-birth-season is compatible with the time-step interval (cubs cannot be born in weeks that will not be included in the time-steps)"]
   
-  ; monitoring parameters
+  ; landscape and monitoring parameters
+  
   if foxes-on-transect = true and survey-transect-shp = ""
   [error "ERROR - you've asked the model to monitor foxes on a transect but no transect has been imported"]
   
   if landscape-source = "import raster" and region-shp = "" and region2-shp != "" 
   [error "ERROR - you need to import a shapefile for Region 1 if you are going to import a shapefile for Region 2"]
+  
+  if landscape-source = "import raster" and permeable-barrier-shp = "" and permeable-barrier-shp-2 != "" 
+  [error "ERROR - you need to import a shapefile for permeable-barrier-shp if you are going to import a shapefile for permeable-barrier-shp-2"]
   
   if landscape-source = "generate" and bait-layout = "custom"
   [error "ERROR - you can't use a customised bait layer in a model-generated landscape.  Please change `bait-layout` to another option, or import a raster layer for the landscape."]
@@ -120,20 +124,21 @@ to create-world
     gis:apply-raster landscape-data habitat-type   
     set landscape-data "1" ;remove the large raster file from the model memory
     
-    ;;;;;; if there is a permeable barrier  ;;;;;;
-    ifelse permeable-barrier-shp != ""
-      [set-up-permeable-barrier]
+    ;; check if there are permeable barrier(s)  ;;;;;;
+    ifelse permeable-barrier-shp = ""
       [set permeable-barrier-exists false]
+      [set-up-permeable-barrier]
     
     ; identify patches that can never be used (e.g. ocean, waterways)
     ask patches
     [
       ifelse habitat-type = uninhabitable-raster-value
-       [ set available-to-foxes false 
-        set true-color white
-         set cell-fox-density-no-cubs 999
-         set cell-fox-density 999
-       ]
+       [ 
+          set available-to-foxes false 
+          set true-color white
+          set cell-fox-density-no-cubs 999
+          set cell-fox-density 999
+      ]
       [  set available-to-foxes true ]
     ]
   ]
@@ -385,47 +390,43 @@ end
 
 to set-up-permeable-barrier
   
-  ifelse permeable-barrier-shp-2 != ""
+  set permeable-barrier-exists true
+  set permeable-barrier gis:load-dataset permeable-barrier-shp  
+  set permeable-barrier-main patch-set patches gis:intersecting permeable-barrier
+  
+  ; add second permeable barrier if relevant
+  if permeable-barrier-shp-2 != ""
+  [
+    set permeable-barrier-2 gis:load-dataset permeable-barrier-shp-2 
+    set permeable-barrier-2-exists true
+    set permeable-barrier-main patch-set patches gis:intersecting (list permeable-barrier permeable-barrier-2)
+  ]   
+      
+  ; now make cells under barrier(s) to be uninhabitable to stop territory creep across the barrier. dispersing foxes will still attempt to jump over it. 
+  ask permeable-barrier-main
+  [ 
+    set habitat-type uninhabitable-raster-value 
+    set available-to-foxes false
+    ;set true-color red
+  ]
+  
+  ; if barrier is 100% impermeable, make all patches within periphery of barrier to ensure no foxes will cross
+  ifelse propn-permeable-barrier = 0
+  [ 
+    ask patches  [ set permeable-barrier-periphery true ]
+  ]
+  
+  ; but if barrier is only partially impermeable,
+  ; set permeable-barrier-pheriphery to true for patches within a x5 mean male dispersal distance of the permeable barrier (captures >98% of dispersing foxes)
+  [
+    set permeability-dispersal-dist (( 2.778 + 4.038 * home-range-100perc) * kms-to-cells) * 5 ; (in km) uses equation from Trewhella et al 1988 ; convert to cells
+    ask permeable-barrier-main
     [
-      set permeable-barrier gis:load-dataset permeable-barrier-shp  
-      set permeable-barrier-2 gis:load-dataset permeable-barrier-shp-2 
-      set permeable-barrier-exists true
-      set permeable-barrier-2-exists true
-  
-      ; now make cells under barrier to be uninhabitable to stop territory creep across the barrier. dispersing foxes will still attempt to jump over it.
-      set permeable-barrier-main patch-set patches gis:intersecting (list permeable-barrier permeable-barrier-2)
-      ask permeable-barrier-main
-        [ set habitat-type uninhabitable-raster-value 
-          set available-to-foxes false
-          ;set true-color red      
-        ]
-    ]
-    [
-      set permeable-barrier gis:load-dataset permeable-barrier-shp  
-      set permeable-barrier-exists true
-  
-      ; now make cells under barrier to be uninhabitable to stop territory creep across the barrier. dispersing foxes will still attempt to jump over it.
-      set permeable-barrier-main patch-set patches gis:intersecting permeable-barrier
-      ask permeable-barrier-main
-        [ set habitat-type uninhabitable-raster-value 
-          set available-to-foxes false
-          ;set true-color red
-      ]
-    ]
-  
-  ; set permeable-barrier-pheriphery to true for patches within a *5 mean male dispersal distance of the permeable barrier (captures >98% of dispersing foxes)
-  ; then if the barrier is not permeable, ask all foxes to check if they are crossing to ensure the <2% that will still potentially cross outside of the permeable-barrier-pheriphery will not
-  set permeability-dispersal-dist (( 2.778 + 4.038 * home-range-100perc) * kms-to-cells) * 5 ; (in km) uses equation from Trewhella et al 1988 ; convert to cells
-  ifelse propn-permeable-barrier > 0
-  [ ask permeable-barrier-main
-      [
-        ask patches in-radius permeability-dispersal-dist
+      ask patches in-radius permeability-dispersal-dist
           [set permeable-barrier-periphery true]
-      ]
+    ]
   ]
-  [ ask patches
-    [ set permeable-barrier-periphery true ]
-  ]
+
   
 end
 
@@ -447,13 +448,14 @@ to set-up-foxes
     set family-id nobody
     set natal-id nobody
     set failed-territory-id [0]
-    move-to one-of available-landscape with [pxcor > 270]    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    move-to one-of available-landscape
     set natal-cell patch-here
-    ;pendown
+    
     
     ]
     
     foxes-disperse
+    ask foxes [pendown]
   ]
   
 end
