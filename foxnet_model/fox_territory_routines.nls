@@ -127,7 +127,7 @@ to check-for-alpha-vacancy
 
  attempt-to-join-chosen-family
   
-  set families-with-alpha-vacancy []
+ set families-with-alpha-vacancy [] ; reset this global to an empty agentset
 
 end
 
@@ -135,28 +135,29 @@ to attempt-to-join-chosen-family
   
  if any? families-with-alpha-vacancy; if such family(s) exist, join the nearest one
   [
-   ; type who print " found a family"
+    ; type who print " found a family"
     let chosen-family min-one-of families-with-alpha-vacancy [distance myself]
     
-    ; check whether there is a barrier
+    ; check whether there is a barrier that would prevent joining this family
     ifelse permeable-barrier-exists = false 
       [ move-to chosen-family ]    
-        ; but if there is a permeable barrier then test it
-      [ 
-        set permeable-xy-from patch-here
-        ask chosen-family [ set permeable-xy-to patch-here ]
+    
+     ; if there is a permeable barrier then test whether it's a problem
+    [ 
+      set permeable-xy-from patch-here
+      ask chosen-family [ set permeable-xy-to patch-here ]
        
       test-permeable-barrier 
      
-        ifelse permeable-barrier-can-cross = true or permeable-barrier-not-crossing = true
+      ifelse permeable-barrier-can-cross = true or permeable-barrier-not-crossing = true
           [ move-to chosen-family ]  
-          [ 
-        print [who] of families-with-alpha-vacancy
-        set families-with-alpha-vacancy families-with-alpha-vacancy with [who != [who] of chosen-family] ; checks if there are any other families it could join instead
-                print [who] of families-with-alpha-vacancy
-       attempt-to-join-chosen-family
-      ] 
-        ; set the barrier crossing globals back to false so they don't trigger next fox to cross inadvertently
+          [ ; checks if there are any other families fox could join instead
+           ;print [who] of families-with-alpha-vacancy
+           set families-with-alpha-vacancy families-with-alpha-vacancy with [who != [who] of chosen-family] ; remove family just tested from set of options
+           ;print [who] of families-with-alpha-vacancy
+           attempt-to-join-chosen-family
+         ] 
+        ; set the barrier crossing globals back to false so they don't trigger for next run inadvertently
         set permeable-barrier-can-cross false
         set permeable-barrier-not-crossing false
       ]

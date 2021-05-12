@@ -5,8 +5,6 @@
 
 to test-permeable-barrier
   
-
-  
   ; hatch two permeability-testers, id them, and move them to permeable-xy-to / from patches
   hatch-permeability-testers 1 
   [
