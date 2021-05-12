@@ -82,16 +82,18 @@ to make-first-dispersal-move
  ; type who type sex print my-dispersal-distance
    
   ifelse can-move? (my-dispersal-distance * kms-to-cells) and [available-to-foxes] of patch-ahead (my-dispersal-distance * kms-to-cells) = true
-  ; if there is no permeable barrier and that location is available (e.g. within world and available), jump ahead
+
   [
+    ; if there is no permeable barrier and that location is available (e.g. within world and available), jump ahead
     ifelse permeable-barrier-exists = false 
       [ jump (my-dispersal-distance * kms-to-cells) ]    
-      ; but if there is a permeable barrier then test it
+    
+      ; but if there is a permeable barrier then test whether can cross it
       [ 
-        set permeable-xy-from patch-here
-        set permeable-xy-to patch-ahead (my-dispersal-distance * kms-to-cells)
+      set permeable-xy-from patch-here
+      set permeable-xy-to patch-ahead (my-dispersal-distance * kms-to-cells)
       
-        test-permeable-barrier 
+      test-permeable-barrier 
      
         if permeable-barrier-can-cross = true or permeable-barrier-not-crossing = true
           [ jump (my-dispersal-distance * kms-to-cells) ]  
@@ -116,32 +118,44 @@ to check-for-alpha-vacancy
   let recent-failed-territory-id [failed-territory-id] of self
   let my-sex [sex] of self
   
-  let families-with-alpha-vacancy fox-families in-radius (territory-perception-radius * kms-to-cells) with
+  set families-with-alpha-vacancy fox-families in-radius (territory-perception-radius * kms-to-cells) with
    [
    ; who != former-family-id and; so that the fox can't rejoin its natal family
     not (member? who recent-failed-territory-id) and; so that the the fox can't rejoin a new territory it just attempted 
     (not any? family-members with [status = "alpha" and sex = my-sex]); and have an appropriate vacancy
    ]
 
-  if any? families-with-alpha-vacancy; if such family(s) exist, join the nearest one
+ attempt-to-join-chosen-family
+  
+  set families-with-alpha-vacancy []
+
+end
+
+to attempt-to-join-chosen-family
+  
+ if any? families-with-alpha-vacancy; if such family(s) exist, join the nearest one
   [
    ; type who print " found a family"
     let chosen-family min-one-of families-with-alpha-vacancy [distance myself]
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; insert permeability code
+    
+    ; check whether there is a barrier
     ifelse permeable-barrier-exists = false 
       [ move-to chosen-family ]    
         ; but if there is a permeable barrier then test it
       [ 
         set permeable-xy-from patch-here
         ask chosen-family [ set permeable-xy-to patch-here ]
-      
-        test-permeable-barrier 
+       
+      test-permeable-barrier 
      
         ifelse permeable-barrier-can-cross = true or permeable-barrier-not-crossing = true
-        ; if this is false, it effectively ends this routine, as if there were no families-with-alpha-vacancy nearby.  May want to revisit and put a count in, if there are multiple they can try while there are still some to try?
           [ move-to chosen-family ]  
-          [ stop ] ; end routine if fox cant cross barrier.
+          [ 
+        print [who] of families-with-alpha-vacancy
+        set families-with-alpha-vacancy families-with-alpha-vacancy with [who != [who] of chosen-family] ; checks if there are any other families it could join instead
+                print [who] of families-with-alpha-vacancy
+       attempt-to-join-chosen-family
+      ] 
         ; set the barrier crossing globals back to false so they don't trigger next fox to cross inadvertently
         set permeable-barrier-can-cross false
         set permeable-barrier-not-crossing false
@@ -155,13 +169,13 @@ to check-for-alpha-vacancy
     
      set status "alpha"
           
-     ifelse my-sex = "female" 
+     ifelse sex = "female" 
      [set color red]
      [set color blue]  
     
   ]
-
 end
+
 
 to try-to-establish-new-territory
 

@@ -5,7 +5,9 @@
 
 to test-permeable-barrier
   
-  ; hatch two permeability foxes, id them, and move them to permeable-xy-to / from patches
+
+  
+  ; hatch two permeability-testers, id them, and move them to permeable-xy-to / from patches
   hatch-permeability-testers 1 
   [
     set link-id "a"
@@ -22,30 +24,45 @@ to test-permeable-barrier
   create-links-with permeability-testers
   set permeable-link links
     
-  ; check if link crosses first permeable barrier
-  ifelse gis:intersects? permeable-barrier permeable-link
-   
-  [ ; test if you can cross it
+  ; Check if link crosses first permeable barrier 
+  ifelse gis:intersects? permeable-barrier permeable-link  
+  
+    [ ; check if barrier 1 is permeable to this fox
     ifelse random-float 1 < propn-permeable-barrier
-      [set permeable-barrier-can-cross true ]
-      [set permeable-barrier-can-cross false]
-  ]
-   
-  [ set permeable-barrier-not-crossing true ]
-
- 
-  if permeable-barrier-2-exists = true
-      [
-        ifelse gis:intersects? permeable-barrier-2 permeable-link
-        [ ; test if you can cross barrier 2
-          ifelse random-float 1 < propn-permeable-barrier-2
-          [ set permeable-barrier-can-cross true ]
-          [ set permeable-barrier-can-cross false]
-        ]
-        
-        [ set permeable-barrier-not-crossing true   ]
+      [ 
+        set permeable-barrier-can-cross true 
+        ;type who print " can cross barrier 1"
+        check-barrier-2 ; check if intersects and can cross barrier 2
       ]
-   
+      [ 
+        set permeable-barrier-can-cross false ; if fox can't cross barrier 1 in this leap, no point checking whether it can cross barrier 2
+        ;type who print " can't cross barrier 1" 
+      ]
+  ]
+  
+  [ ; if link doesn't intersect barrier 1, still need to check it intersects barrier 2   
+    ifelse permeable-barrier-2-exists = true 
+    [check-barrier-2]
+    [set permeable-barrier-not-crossing true]; if barrier 2 doesn't exist, fox is free to move
+  ]
+    
   ask permeability-testers [ die ]
 
+end
+
+to check-barrier-2
+  
+  ifelse gis:intersects? permeable-barrier-2 permeable-link
+    [ 
+      ifelse random-float 1 < propn-permeable-barrier-2
+          [ set permeable-barrier-can-cross true 
+            ;type who print " can cross barrier 2"
+          ]
+          [ set permeable-barrier-can-cross false
+            ;type who print " can't cross barrier 2"
+          ]
+  ]
+     
+  [ set permeable-barrier-not-crossing true   ]
+    
 end
