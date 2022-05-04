@@ -12,15 +12,18 @@ to foxes-disperse; disperser routine for foxes
     [ 
       leave-natal-family; leave the original fox-family
       
+    ;  type who print " making first dispersal move"
       make-first-dispersal-move; move a distance drawn from the appropriate exponential distribution
     ]
     
     disperser-check-for-baits
 
+   ; type who print " looking for alpha vacancy"
     check-for-alpha-vacancy ; look for nearby families that lack an alpha of the appropriate sex
     
     if status = "disperser" ; if there weren't any suitable families (i.e. fox hasn't become an alpha)
      [
+   ;    type who print " trying to establish new territory"
        try-to-establish-new-territory 
      ]
 
@@ -85,7 +88,7 @@ to make-first-dispersal-move
 
   [
     ; if there is no permeable barrier and that location is available (e.g. within world and available), jump ahead
-    ifelse permeable-barrier-exists = false 
+    ifelse barrier-exists = false 
       [ jump (my-dispersal-distance * kms-to-cells) ]    
     
       ; but if there is a permeable barrier then test whether can cross it
@@ -93,19 +96,19 @@ to make-first-dispersal-move
       set permeable-xy-from patch-here
       set permeable-xy-to patch-ahead (my-dispersal-distance * kms-to-cells)
       
-      test-permeable-barrier 
+      test-barrier 
      
-        if permeable-barrier-can-cross = true or permeable-barrier-not-crossing = true
+        if barrier-can-cross = true or barrier-not-crossing = true
           [ jump (my-dispersal-distance * kms-to-cells) ]  
       
         ; set the barrier crossing globals back to false so they don't trigger next fox to cross inadvertently
-        set permeable-barrier-can-cross false
-        set permeable-barrier-not-crossing false
+        set barrier-can-cross false
+        set barrier-not-crossing false
      ]
   ]
   
-  [ ; if that location wasn't available (e.g. off edge of world), choose another vector and try again
-    rt random-float 360  
+  [ ; if that location wasn't available (e.g. off edge of world or past impermeable barrier), choose another vector and try again
+    rt random-float 360 
     make-first-dispersal-move 
   ] 
   
@@ -139,7 +142,7 @@ to attempt-to-join-chosen-family
     let chosen-family min-one-of families-with-alpha-vacancy [distance myself]
     
     ; check whether there is a barrier that would prevent joining this family
-    ifelse permeable-barrier-exists = false 
+    ifelse barrier-exists = false 
       [ move-to chosen-family ]    
     
      ; if there is a permeable barrier then test whether it's a problem
@@ -147,19 +150,18 @@ to attempt-to-join-chosen-family
       set permeable-xy-from patch-here
       ask chosen-family [ set permeable-xy-to patch-here ]
        
-      test-permeable-barrier 
+      test-barrier 
      
-      ifelse permeable-barrier-can-cross = true or permeable-barrier-not-crossing = true
+      ifelse barrier-can-cross = true or barrier-not-crossing = true
           [ move-to chosen-family ]  
           [ ; checks if there are any other families fox could join instead
            ;print [who] of families-with-alpha-vacancy
            set families-with-alpha-vacancy families-with-alpha-vacancy with [who != [who] of chosen-family] ; remove family just tested from set of options
+           set barrier-can-cross false        ; set the barrier crossing globals back to false so they don't trigger for next run inadvertently
+           set barrier-not-crossing false
            ;print [who] of families-with-alpha-vacancy
            attempt-to-join-chosen-family
          ] 
-        ; set the barrier crossing globals back to false so they don't trigger for next run inadvertently
-        set permeable-barrier-can-cross false
-        set permeable-barrier-not-crossing false
       ]
      
      ; set up family id etc for foxes who have moved
@@ -187,8 +189,9 @@ to try-to-establish-new-territory
  if any? potential-home-bases
  [
    let chosen-potential-home-base one-of potential-home-bases
+    
    ; insert permeability code
-   ifelse permeable-barrier-exists = false 
+   ifelse barrier-exists = false 
      [ move-to chosen-potential-home-base ]   
     
      ; but if there is a permeable barrier then test it
@@ -196,15 +199,15 @@ to try-to-establish-new-territory
       set permeable-xy-from patch-here
       set permeable-xy-to chosen-potential-home-base
       
-      test-permeable-barrier 
+      test-barrier 
      
-      if permeable-barrier-can-cross = true or permeable-barrier-not-crossing = true
+      if barrier-can-cross = true or barrier-not-crossing = true
       
        [ move-to chosen-potential-home-base ]  
       
        ; set the barrier crossing globals back to false so they don't trigger next fox to cross inadvertently
-       set permeable-barrier-can-cross false
-       set permeable-barrier-not-crossing false
+       set barrier-can-cross false
+       set barrier-not-crossing false
      ] 
  
    hatch-fox-families 1

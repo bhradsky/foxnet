@@ -3,7 +3,7 @@
 ; Called from within fox_territory_routines.nls
 ; specifically; make-first-dispersal, check-for-alpha-vacancy & try-to-establish-new-territory
 
-to test-permeable-barrier
+to test-barrier
   
   ; hatch two permeability-testers, id them, and move them to permeable-xy-to / from patches
   hatch-permeability-testers 1 
@@ -23,25 +23,25 @@ to test-permeable-barrier
   set permeable-link links
     
   ; Check if link crosses first permeable barrier 
-  ifelse gis:intersects? permeable-barrier permeable-link  
+ ; type who print " checking barrier 1"
+  ifelse gis:intersects? barrier permeable-link  
   
     [ ; check if barrier 1 is permeable to this fox
     ifelse random-float 1 < propn-permeable-barrier
       [ 
-        set permeable-barrier-can-cross true 
+        set barrier-can-cross true 
         ;type who print " can cross barrier 1"
-        check-barrier-2 ; check if intersects and can cross barrier 2
       ]
       [ 
-        set permeable-barrier-can-cross false ; if fox can't cross barrier 1 in this leap, no point checking whether it can cross barrier 2
+        set barrier-can-cross false ; if fox can't cross barrier 1 in this leap, no point checking whether it can cross barrier 2
         ;type who print " can't cross barrier 1" 
       ]
   ]
   
   [ ; if link doesn't intersect barrier 1, still need to check it intersects barrier 2   
-    ifelse permeable-barrier-2-exists = true 
+    ifelse barrier-2-exists = true 
     [check-barrier-2]
-    [set permeable-barrier-not-crossing true]; if barrier 2 doesn't exist, fox is free to move
+    [set barrier-not-crossing true]; if barrier 2 doesn't exist, fox is free to move
   ]
     
   ask permeability-testers [ die ]
@@ -50,17 +50,17 @@ end
 
 to check-barrier-2
   
-  ifelse gis:intersects? permeable-barrier-2 permeable-link
+  ifelse gis:intersects? barrier-2 permeable-link
     [ 
       ifelse random-float 1 < propn-permeable-barrier-2
-          [ set permeable-barrier-can-cross true 
-            ;type who print " can cross barrier 2"
+          [ set barrier-can-cross true 
+            type who print " can cross barrier 2"
           ]
-          [ set permeable-barrier-can-cross false
-            ;type who print " can't cross barrier 2"
+          [ set barrier-can-cross false
+            type who print " can't cross barrier 2"
           ]
   ]
      
-  [ set permeable-barrier-not-crossing true   ]
+  [ set barrier-not-crossing true   ]
     
 end

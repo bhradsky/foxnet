@@ -5,7 +5,7 @@
 ; ## BRONWYN HRADSKY
 ; ## UNIVERSITY OF MELBOURNE
 ; ## updated 2020/10/22 by Lachlan Francis (DELWP) to include permeability routine.
-; ## last updated 2021/05/21 by Bronwyn Hradsky
+; ## last updated 2022/05/04 by Bronwyn Hradsky
 
 
 ;##################################################################
@@ -74,16 +74,16 @@ globals
   families-with-alpha-vacancy
 
   ; PERMEABILITY GLOBALS
-  permeable-barrier  ; this is a barrier, a GIS input
-  permeable-barrier-2  ; this is a second barrier, a GIS input
-  permeable-barrier-main  ; patch-set of the cells under the permeable-barrier.  These cells are set as uninhabitable to stop territory creep across barrier
-  permeable-barrier-exists  ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
-  permeable-barrier-2-exists    ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
+  barrier  ; this is a barrier, a GIS input
+  barrier-2  ; this is a second barrier, a GIS input
+  barrier-main  ; patch-set of the cells under the permeable-barrier.  These cells are set as uninhabitable to stop territory creep across barrier
+  barrier-exists  ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
+  barrier-2-exists    ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
   permeable-xy-from  ; the patch where the fox dispersing is leaving from
   permeable-xy-to  ; the patch where the fox dispersing is trying to go to
   permeable-link  ; set each test, its the link between the from patch and the to patch to test.
-  permeable-barrier-can-cross  ; boolean.  set when there is a fox trying to cross the barrier
-  permeable-barrier-not-crossing  ; boolean.  set when there is a fox trying to cross the barrier that is within a dispersal distance from the barrier, but the dispersal location is not across the barrier
+  barrier-can-cross  ; boolean.  set when there is a fox trying to cross the barrier
+  barrier-not-crossing  ; boolean.  set when there is a fox trying to cross the barrier that is within a dispersal distance from the barrier, but the dispersal location is not across the barrier
 
 ; FOX-RELATED PARAMETERS
   real-fox-hr
@@ -398,8 +398,8 @@ to territory-demo
   set region4-shp ""
   set region5-shp ""
   set region6-shp ""
-  set permeable-barrier-shp ""
-  set permeable-barrier-shp-2 ""
+  set barrier-shp ""
+  set barrier-shp-2 ""
   set propn-permeable-barrier 0
   set propn-permeable-barrier-2 0
   set survey-transect-shp ""
@@ -628,8 +628,8 @@ to basic-model
   set region4-shp ""
   set region5-shp ""
   set region6-shp ""
-  set permeable-barrier-shp ""
-  set permeable-barrier-shp-2 ""
+  set barrier-shp ""
+  set barrier-shp-2 ""
   set propn-permeable-barrier 0
   set propn-permeable-barrier-2 0
   set survey-transect-shp ""
@@ -707,8 +707,8 @@ to Glenelg-model
   set region4-shp ""
   set region5-shp ""
   set region6-shp ""
-  set permeable-barrier-shp ""
-  set permeable-barrier-shp-2 ""
+  set barrier-shp ""
+  set barrier-shp-2 ""
   set propn-permeable-barrier 0
   set propn-permeable-barrier-2 0
   set survey-transect-shp "gis_layers/glenelg/mtclay_transect.shp"
@@ -748,11 +748,11 @@ end
 GRAPHICS-WINDOW
 810
 70
-1711
-839
+1264
+459
 -1
 -1
-1.0
+0.5
 1
 10
 1
@@ -882,7 +882,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-0.05
+0.1
 0.5
 1
 /km2
@@ -2049,7 +2049,7 @@ INPUTBOX
 1250
 265
 1315
-permeable-barrier-shp
+barrier-shp
 gis_layers/BRP051/BRP051_Barrier2.shp
 1
 1
@@ -2071,7 +2071,7 @@ INPUTBOX
 1375
 265
 1440
-permeable-barrier-shp-2
+barrier-shp-2
 gis_layers/BRP051/BRP051_Barrier3.shp
 1
 1

@@ -56,8 +56,8 @@ to check-for-errors
   if landscape-source = "import raster" and region-shp = "" and region2-shp != "" 
   [error "ERROR - you need to import a shapefile for Region 1 if you are going to import a shapefile for Region 2"]
   
-  if landscape-source = "import raster" and permeable-barrier-shp = "" and permeable-barrier-shp-2 != "" 
-  [error "ERROR - you need to import a shapefile for permeable-barrier-shp if you are going to import a shapefile for permeable-barrier-shp-2"]
+  if landscape-source = "import raster" and barrier-shp = "" and barrier-shp-2 != "" 
+  [error "ERROR - you need to import a shapefile for barrier-shp if you are going to import a shapefile for barrier-shp-2"]
   
   if landscape-source = "generate" and bait-layout = "custom"
   [error "ERROR - you can't use a customised bait layer in a model-generated landscape.  Please change `bait-layout` to another option, or import a raster layer for the landscape."]
@@ -124,10 +124,10 @@ to create-world
     gis:apply-raster landscape-data habitat-type   
     set landscape-data "1" ;remove the large raster file from the model memory
     
-    ;; check if there are permeable barrier(s)  ;;;;;;
-    ifelse permeable-barrier-shp = ""
-      [set permeable-barrier-exists false]
-      [set-up-permeable-barrier]
+    ; check if there are permeable barrier(s)
+    ifelse barrier-shp = ""
+      [set barrier-exists false]
+      [set-up-barrier]
     
     ; identify patches that can never be used (e.g. ocean, waterways)
     ask patches
@@ -388,25 +388,28 @@ end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to set-up-permeable-barrier
+to set-up-barrier
   
-  set permeable-barrier-exists true
-  set permeable-barrier gis:load-dataset permeable-barrier-shp  
-  set permeable-barrier-main patch-set patches gis:intersecting permeable-barrier
+  set barrier-exists true
+  set barrier gis:load-dataset barrier-shp  
+  set barrier-main patch-set patches gis:intersecting barrier ; patch-set patches with [pxcor = 100]; ! the latter option is for testing and will only work if you change 'permeable-barrier' to 'permeable-barrier-main' in test-permeable-barrier code
   
   ; add second permeable barrier if relevant
-  if permeable-barrier-shp-2 != ""
+  ifelse barrier-shp-2 = ""
+  [set barrier-2-exists false]
   [
-    set permeable-barrier-2 gis:load-dataset permeable-barrier-shp-2 
-    set permeable-barrier-2-exists true
-    set permeable-barrier-main patch-set patches gis:intersecting (list permeable-barrier permeable-barrier-2)
+    set barrier-2 gis:load-dataset barrier-shp-2 
+    set barrier-2-exists true
+    set barrier-main patch-set patches gis:intersecting (list barrier barrier-2)
   ]   
       
   ; now make cells under barrier(s) to be uninhabitable to stop territory creep across the barrier. dispersing foxes will still attempt to jump over it. 
-  ask permeable-barrier-main
+  ask barrier-main
   [ 
     set habitat-type uninhabitable-raster-value 
     set available-to-foxes false
+    set cell-fox-density 0
+    set cell-fox-density-no-cubs 0
   ]
   
 end
@@ -429,9 +432,9 @@ to set-up-foxes
     set family-id nobody
     set natal-id nobody
     set failed-territory-id [0]
-    move-to one-of available-landscape ; with [ pxcor > 400]
+    move-to one-of available-landscape; with [ pxcor < 268]
     set natal-cell patch-here   
-      pendown 
+    ; pendown 
     ]
     
     foxes-disperse
