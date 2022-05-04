@@ -4,18 +4,23 @@
 ; specifically; make-first-dispersal, check-for-alpha-vacancy & try-to-establish-new-territory
 
 to test-barrier
+  ; print "testing the barrier" 
   
   ; hatch two permeability-testers, id them, and move them to permeable-xy-to / from patches
   hatch-barrier-testers 1 
   [
     set link-id "a"
+    penup
     move-to barrier-xy-from
+    ;print barrier-xy-from
   ]
 
   hatch-barrier-testers 1 
   [
     set link-id "b"
-    move-to barrier-xy-to    
+    penup
+    move-to barrier-xy-to  
+    ;print barrier-xy-to  
   ]
   
   ; create link between permeable-testers
@@ -23,8 +28,8 @@ to test-barrier
   set barrier-link links
     
   ; Check if link crosses first barrier 
- ; type who print " checking barrier 1"
-  ifelse gis:intersects? barrier barrier-link  
+  ;type who print " checking barrier 1"
+  ifelse gis:intersects? barrier-main barrier-link  
   
     [ ; check if barrier 1 is permeable to this fox
     ifelse random-float 1 < propn-permeable-barrier
@@ -50,14 +55,15 @@ end
 
 to check-barrier-2
   
+  ;type who print " checking barrier 2"
   ifelse gis:intersects? barrier-2 barrier-link
     [ 
       ifelse random-float 1 < propn-permeable-barrier-2
           [ set barrier-can-cross true 
-            type who print " can cross barrier 2"
+            ;type who print " can cross barrier 2"
           ]
           [ set barrier-can-cross false
-            type who print " can't cross barrier 2"
+            ;type who print " can't cross barrier 2"
           ]
   ]
      

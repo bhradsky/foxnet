@@ -392,8 +392,8 @@ to set-up-barrier
   
   set barrier-exists true
   set barrier gis:load-dataset barrier-shp  
-  set barrier-main patch-set patches gis:intersecting barrier ; patch-set patches with [pxcor = 100]; ! the latter option is for testing and will only work if you change 'barrier' to 'barrier-main' in test-barrier code
-  
+  set barrier-main patch-set patches with [pxcor = 100]; ! the latter option is for testing and will only work if you change 'barrier' to 'barrier-main' in test-barrier code
+ ; patch-set patches gis:intersecting barrier ; 
   ; add second barrier if relevant
   ifelse barrier-shp-2 = ""
   [set barrier-2-exists false]
@@ -420,7 +420,7 @@ to set-up-foxes
 
   if initial-fox-density > 0
   [
-    create-foxes available-landscape-size  * initial-fox-density
+    create-foxes available-landscape-size * initial-fox-density
     [ 
     ;pendown
     set status "disperser"; 'disperser' refers to a fox that is not a cub and is looking for a territory
@@ -432,9 +432,9 @@ to set-up-foxes
     set family-id nobody
     set natal-id nobody
     set failed-territory-id [0]
-    move-to one-of available-landscape; with [ pxcor < 268]
+      move-to one-of available-landscape ; with [ pxcor < 100]; 268]
     set natal-cell patch-here   
-    ; pendown 
+    pendown 
     ]
     
     foxes-disperse

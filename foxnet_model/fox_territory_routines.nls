@@ -11,19 +11,19 @@ to foxes-disperse; disperser routine for foxes
     if my-dispersal-duration = weeks-per-timestep ; i.e. on first dispersal attempt
     [ 
       leave-natal-family; leave the original fox-family
-      
-    ;  type who print " making first dispersal move"
+      ; type who type " making first dispersal move from" print patch-here
       make-first-dispersal-move; move a distance drawn from the appropriate exponential distribution
     ]
     
     disperser-check-for-baits
-
-   ; type who print " looking for alpha vacancy"
+    
+    ;type who type " looking for alpha vacancy from " print patch-here
     check-for-alpha-vacancy ; look for nearby families that lack an alpha of the appropriate sex
     
+    ;print patch-here
     if status = "disperser" ; if there weren't any suitable families (i.e. fox hasn't become an alpha)
      [
-   ;    type who print " trying to establish new territory"
+       ;type who type " trying to establish new territory from " print patch-here
        try-to-establish-new-territory 
      ]
 
@@ -86,34 +86,47 @@ to make-first-dispersal-move
    
   ifelse can-move? (my-dispersal-distance * kms-to-cells) and [available-to-foxes] of patch-ahead (my-dispersal-distance * kms-to-cells) = true
 
-  [
-    ; if there is no barrier and that location is available (e.g. within world and available), jump ahead
-    ifelse barrier-exists = false 
-      [ jump (my-dispersal-distance * kms-to-cells) ]    
+  [ ; if the location exists and is available to foxes, check whether there are any barriers in the way
+    ifelse barrier-exists = false     
     
-      ; but if there is a barrier then test whether can cross it
-      [ 
+    [ jump (my-dispersal-distance * kms-to-cells) ]  ; if there is no barrier in the world, jump to that cell
+      
+    [ ; if there is a barrier, then test whether it is in the way and whether it is permeable
       set barrier-xy-from patch-here
       set barrier-xy-to patch-ahead (my-dispersal-distance * kms-to-cells)
       
       test-barrier 
      
-        if barrier-can-cross = true or barrier-not-crossing = true
-          [ jump (my-dispersal-distance * kms-to-cells) ]  
+      ifelse barrier-can-cross = true or barrier-not-crossing = true
       
-        ; set the barrier crossing globals back to false so they don't trigger next fox to cross inadvertently
-        set barrier-can-cross false
-        set barrier-not-crossing false
-     ]
+        [ ; if the barrier can be crossed or isn't in the way, jump to that cell
+          reset-barrier-globals
+          jump (my-dispersal-distance * kms-to-cells)
+        ]  
+        [ ; if the barrier is preventing movement, choose another vector and try again
+          reset-barrier-globals
+          ; print "couldn't cross barrier, trying to disperse again"
+          rt random-float 360 
+          make-first-dispersal-move 
+       ]
+    ]
   ]
   
-  [ ; if that location wasn't available (e.g. off edge of world or past impermeable barrier), choose another vector and try again
+  [ ; if that location wasn't available, choose another vector and try again
     rt random-float 360 
+    ; print "trying first dispersal move again"
     make-first-dispersal-move 
   ] 
   
 end
  
+to reset-barrier-globals ; set the barrier-crossing globals back to false so they don't trigger inadvertently
+  
+  set barrier-can-cross false    
+  set barrier-not-crossing false 
+  
+end
+
 
 to check-for-alpha-vacancy  
     
@@ -122,11 +135,11 @@ to check-for-alpha-vacancy
   let my-sex [sex] of self
   
   set families-with-alpha-vacancy fox-families in-radius (territory-perception-radius * kms-to-cells) with
-   [
-   ; who != former-family-id and; so that the fox can't rejoin its natal family
-    not (member? who recent-failed-territory-id) and; so that the the fox can't rejoin a new territory it just attempted 
-    (not any? family-members with [status = "alpha" and sex = my-sex]); and have an appropriate vacancy
-   ]
+    [
+      ; who != former-family-id and ; so that the fox can't rejoin its natal family
+      not (member? who recent-failed-territory-id) and; so that the the fox can't rejoin a new territory it just attempted 
+      (not any? family-members with [status = "alpha" and sex = my-sex]); and have an appropriate vacancy
+    ]
 
  attempt-to-join-chosen-family
   
@@ -143,38 +156,45 @@ to attempt-to-join-chosen-family
     
     ; check whether there is a barrier that would prevent joining this family
     ifelse barrier-exists = false 
-      [ move-to chosen-family ]    
     
-     ; if there is a barrier then test whether it's a problem
-    [ 
+    [ move-to chosen-family ]    
+        
+    [  ; if there is a barrier, then test whether it's a problem
       set barrier-xy-from patch-here
       ask chosen-family [ set barrier-xy-to patch-here ]
        
       test-barrier 
      
       ifelse barrier-can-cross = true or barrier-not-crossing = true
-          [ move-to chosen-family ]  
-          [ ; checks if there are any other families fox could join instead
-           ;print [who] of families-with-alpha-vacancy
-           set families-with-alpha-vacancy families-with-alpha-vacancy with [who != [who] of chosen-family] ; remove family just tested from set of options
-           set barrier-can-cross false        ; set the barrier crossing globals back to false so they don't trigger for next run inadvertently
-           set barrier-not-crossing false
-           ;print [who] of families-with-alpha-vacancy
-           attempt-to-join-chosen-family
-         ] 
-      ]
+      
+      [ ; if the barrier can be crossed or isn't in the way, join that family
+        reset-barrier-globals
+        move-to chosen-family 
+      ]  
+      
+      [ ; if the barrier is preventing movement, remove family, check if there are any other fox-families that fox could join instead
+
+        reset-barrier-globals
+        ;type who print [who] of families-with-alpha-vacancy
+        set families-with-alpha-vacancy families-with-alpha-vacancy with [self != chosen-family] ; remove family just tested from set of options
+        ;type who print [who] of families-with-alpha-vacancy
+        attempt-to-join-chosen-family
+      ] 
+    ]
      
-     ; set up family id etc for foxes who have moved
-     set family-id [who] of chosen-family
+     ; foxes that have joined a new fox-family, continue: 
+    ;print chosen-family
+    ;print [who] of chosen-family
+    set family-id [who] of chosen-family ;!! is it better to have this a who or just chosen-family?
     
-     ask chosen-family
-     [ set family-members (turtle-set myself family-members) ]
+    ask chosen-family
+      [ set family-members (turtle-set myself family-members) ]
     
-     set status "alpha"
+    set status "alpha"
           
-     ifelse sex = "female" 
-     [set color red]
-     [set color blue]  
+    ifelse sex = "female" 
+      [set color red]
+      [set color blue]  
     
   ]
 end
@@ -184,34 +204,67 @@ to try-to-establish-new-territory
 
  let my-temporary-home patch-here
     
- let potential-home-bases patches in-radius (territory-perception-radius * kms-to-cells) with [fox-family-owner = nobody and available-to-foxes = true]
+ set potential-home-bases patches in-radius (territory-perception-radius * kms-to-cells) with
+  [ fox-family-owner = nobody and available-to-foxes = true  ]
 
- if any? potential-home-bases
- [
-   let chosen-potential-home-base one-of potential-home-bases
+  try-to-move-to-home-base 
+
+  if status = "disperser" ; ; i.e. if territory didn't succeed, move back to original dispersal location
+ 
+  [ ;print "i'm moving back home"
+    move-to my-temporary-home 
+  ] 
+ 
+end
+
+to try-to-move-to-home-base
+  
+  if any? potential-home-bases
+  
+  [
+    let chosen-potential-home-base one-of potential-home-bases 
+       
+    ifelse barrier-exists = false 
+  
+    [ 
+      move-to chosen-potential-home-base 
+      set-up-fox-family
+    ]   
     
-   ; insert permeability code
-   ifelse barrier-exists = false 
-     [ move-to chosen-potential-home-base ]   
-    
-     ; but if there is a barrier then test it
-     [ 
+    [ ; if the world contains barriers, test if they are a problem
       set barrier-xy-from patch-here
       set barrier-xy-to chosen-potential-home-base
       
       test-barrier 
      
-      if barrier-can-cross = true or barrier-not-crossing = true
+      ifelse barrier-can-cross = true or barrier-not-crossing = true
       
-       [ move-to chosen-potential-home-base ]  
+      [ ; if barrier isn't a problem, move and try to set up a fox family
+        reset-barrier-globals
+        move-to chosen-potential-home-base 
+        set-up-fox-family
+      ]  
       
-       ; set the barrier crossing globals back to false so they don't trigger next fox to cross inadvertently
-       set barrier-can-cross false
-       set barrier-not-crossing false
-     ] 
+      [ ; if barrier is a problem, remove that patch from the set of available options and go back to try again
+        reset-barrier-globals
+        ;type who print potential-home-bases
+        set potential-home-bases potential-home-bases with [self != chosen-potential-home-base ]; remove that potential home-base
+        ;print potential-home-bases
+        try-to-move-to-home-base
+      ]
+    ]
+    
+  ]
+    
+end
+
+
+
+to set-up-fox-family
+  
+  hatch-fox-families 1
  
-   hatch-fox-families 1
-   [
+  [
      set size 3
      set shape "circle"
      set color orange; one-of base-colors + random 4
@@ -256,12 +309,8 @@ to try-to-establish-new-territory
      ] 
    
    ]
-   
-   if status = "disperser" [ move-to my-temporary-home ] ; i.e. if territory didn't succeed, move back to original dispersal location
- 
- ]
- 
 end
+
 
 to fox-families-check-territories
 

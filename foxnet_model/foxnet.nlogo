@@ -239,6 +239,7 @@ foxes-own
   my-dispersal-duration; number of time-steps it took the fox to find a new territory
   collared
   failed-territory-id
+  potential-home-bases
 ]
 
 fox-families-own
@@ -882,7 +883,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-0.1
+0.5
 0.5
 1
 /km2
@@ -1445,7 +1446,7 @@ hab2:hab1
 hab2:hab1
 0
 10
-0.95
+0.85
 0.05
 1
 x
@@ -2061,7 +2062,7 @@ INPUTBOX
 157
 1375
 propn-permeable-barrier
-0.0
+0.5
 1
 0
 Number
@@ -2072,7 +2073,7 @@ INPUTBOX
 265
 1440
 barrier-shp-2
-gis_layers/BRP051/BRP051_Barrier3.shp
+NIL
 1
 1
 String
