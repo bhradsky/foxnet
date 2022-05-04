@@ -1,5 +1,5 @@
 ; ## FOX NET MODEL V1.1
-; ## Update includes a permeability routine for foxes to check if they can cross permeable barriers within the landscape (e.g rivers, highways etc).
+; ## Update includes a permeability routine for foxes to check if they can cross barriers within the landscape (e.g rivers, highways etc).
 ; ## Permeability can be set to zero, in which case all foxes attempting to cross will be denied, or else the proportion of foxes which are able
 ; ## to successfully cross the barrier is set by the modeller
 ; ## BRONWYN HRADSKY
@@ -22,7 +22,7 @@ breed [vacancies vacant ]
 
 breed [bait-stations bait-station]
 
-breed [permeability-testers permeability-tester]
+breed [barrier-testers barrier-tester]
 
 globals
 [
@@ -73,15 +73,15 @@ globals
 
   families-with-alpha-vacancy
 
-  ; PERMEABILITY GLOBALS
+  ; BARRIER GLOBALS
   barrier  ; this is a barrier, a GIS input
   barrier-2  ; this is a second barrier, a GIS input
-  barrier-main  ; patch-set of the cells under the permeable-barrier.  These cells are set as uninhabitable to stop territory creep across barrier
+  barrier-main  ; patch-set of the cells under the barrier.  These cells are set as uninhabitable to stop territory creep across barrier
   barrier-exists  ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
   barrier-2-exists    ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
-  permeable-xy-from  ; the patch where the fox dispersing is leaving from
-  permeable-xy-to  ; the patch where the fox dispersing is trying to go to
-  permeable-link  ; set each test, its the link between the from patch and the to patch to test.
+  barrier-xy-from  ; the patch where the fox dispersing is leaving from
+  barrier-xy-to  ; the patch where the fox dispersing is trying to go to
+  barrier-link  ; set each test, its the link between the from patch and the to patch to test.
   barrier-can-cross  ; boolean.  set when there is a fox trying to cross the barrier
   barrier-not-crossing  ; boolean.  set when there is a fox trying to cross the barrier that is within a dispersal distance from the barrier, but the dispersal location is not across the barrier
 
@@ -255,7 +255,7 @@ bait-stations-own
   Pr-death-bait-scaled
 
 ]
-permeability-testers-own
+barrier-testers-own
 [
   link-id  ; 'a' or 'b' for each end of the permeability test link
 ]

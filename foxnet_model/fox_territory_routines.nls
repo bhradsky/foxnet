@@ -87,14 +87,14 @@ to make-first-dispersal-move
   ifelse can-move? (my-dispersal-distance * kms-to-cells) and [available-to-foxes] of patch-ahead (my-dispersal-distance * kms-to-cells) = true
 
   [
-    ; if there is no permeable barrier and that location is available (e.g. within world and available), jump ahead
+    ; if there is no barrier and that location is available (e.g. within world and available), jump ahead
     ifelse barrier-exists = false 
       [ jump (my-dispersal-distance * kms-to-cells) ]    
     
-      ; but if there is a permeable barrier then test whether can cross it
+      ; but if there is a barrier then test whether can cross it
       [ 
-      set permeable-xy-from patch-here
-      set permeable-xy-to patch-ahead (my-dispersal-distance * kms-to-cells)
+      set barrier-xy-from patch-here
+      set barrier-xy-to patch-ahead (my-dispersal-distance * kms-to-cells)
       
       test-barrier 
      
@@ -145,10 +145,10 @@ to attempt-to-join-chosen-family
     ifelse barrier-exists = false 
       [ move-to chosen-family ]    
     
-     ; if there is a permeable barrier then test whether it's a problem
+     ; if there is a barrier then test whether it's a problem
     [ 
-      set permeable-xy-from patch-here
-      ask chosen-family [ set permeable-xy-to patch-here ]
+      set barrier-xy-from patch-here
+      ask chosen-family [ set barrier-xy-to patch-here ]
        
       test-barrier 
      
@@ -194,10 +194,10 @@ to try-to-establish-new-territory
    ifelse barrier-exists = false 
      [ move-to chosen-potential-home-base ]   
     
-     ; but if there is a permeable barrier then test it
+     ; but if there is a barrier then test it
      [ 
-      set permeable-xy-from patch-here
-      set permeable-xy-to chosen-potential-home-base
+      set barrier-xy-from patch-here
+      set barrier-xy-to chosen-potential-home-base
       
       test-barrier 
      

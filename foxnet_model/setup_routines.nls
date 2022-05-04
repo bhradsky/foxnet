@@ -124,7 +124,7 @@ to create-world
     gis:apply-raster landscape-data habitat-type   
     set landscape-data "1" ;remove the large raster file from the model memory
     
-    ; check if there are permeable barrier(s)
+    ; check if there are barrier(s)
     ifelse barrier-shp = ""
       [set barrier-exists false]
       [set-up-barrier]
@@ -392,9 +392,9 @@ to set-up-barrier
   
   set barrier-exists true
   set barrier gis:load-dataset barrier-shp  
-  set barrier-main patch-set patches gis:intersecting barrier ; patch-set patches with [pxcor = 100]; ! the latter option is for testing and will only work if you change 'permeable-barrier' to 'permeable-barrier-main' in test-permeable-barrier code
+  set barrier-main patch-set patches gis:intersecting barrier ; patch-set patches with [pxcor = 100]; ! the latter option is for testing and will only work if you change 'barrier' to 'barrier-main' in test-barrier code
   
-  ; add second permeable barrier if relevant
+  ; add second barrier if relevant
   ifelse barrier-shp-2 = ""
   [set barrier-2-exists false]
   [
