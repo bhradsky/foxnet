@@ -393,7 +393,7 @@ to set-up-barrier
   set barrier-exists true
   set barrier gis:load-dataset barrier-shp  
   set barrier-main patch-set patches with [pxcor = 100]; ! the latter option is for testing and will only work if you change 'barrier' to 'barrier-main' in test-barrier code
- ; patch-set patches gis:intersecting barrier ; 
+ ; set barrier-main patch-set patches gis:intersecting barrier ; 
   ; add second barrier if relevant
   ifelse barrier-shp-2 = ""
   [set barrier-2-exists false]
@@ -407,11 +407,9 @@ to set-up-barrier
   ask barrier-main
   [ 
     set habitat-type uninhabitable-raster-value 
-    set available-to-foxes false
-    set cell-fox-density 0
-    set cell-fox-density-no-cubs 0
   ]
-  
+
+
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

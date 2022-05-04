@@ -105,6 +105,8 @@ globals
   dispersal-duration
   maximum-territory-update-area
 
+  poison
+  Pr-death-disperser-scaled
 
 
 ; MONITORING GLOBALS
@@ -749,11 +751,11 @@ end
 GRAPHICS-WINDOW
 810
 70
-1264
-459
+3497
+2359
 -1
 -1
-0.5
+3.0
 1
 10
 1
@@ -883,7 +885,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-0.5
+0.1
 0.5
 1
 /km2
@@ -1446,7 +1448,7 @@ hab2:hab1
 hab2:hab1
 0
 10
-0.85
+1.0
 0.05
 1
 x
@@ -1918,7 +1920,7 @@ INPUTBOX
 580
 70
 output-file-path
-output/Test
+outputs/test
 1
 0
 String
@@ -2062,7 +2064,7 @@ INPUTBOX
 157
 1375
 propn-permeable-barrier
-0.5
+0.0
 1
 0
 Number

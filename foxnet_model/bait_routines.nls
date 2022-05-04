@@ -85,29 +85,72 @@ to disperser-check-for-baits
     let area-explored-km2 count area-explored * cells-to-km2
    ; type "disperser"  type area-explored type area-explored-km2 type " " 
     let baited-patches bait-stations-on area-explored
-    let poison baited-patches with [bait-present = true]
 
+    set poison baited-patches with [bait-present = true] 
+    ; ask poison [ask patches in-radius 10 [set pcolor pink]]
+    set Pr-death-disperser-scaled (1 / area-explored-km2 ) * Pr-die-if-exposed-100ha ; scale by 100 ha (i.e. 1 km2) 
+                                                                                         ;print (1 - (1 - Pr-death-disperser-scaled) ^ count poison)
+    check-if-poisoned
+  ]
+end
+
+to check-if-poisoned
+    
     if any? poison
     [
-      ; ask poison [ask patches in-radius 10 [set pcolor pink]]
+      ifelse barrier-exists = false 
       
-      let Pr-death-disperser-scaled (1 / area-explored-km2 ) * Pr-die-if-exposed-100ha ; scale by 100 ha (i.e. 1 km2) 
-      ;print (1 - (1 - Pr-death-disperser-scaled) ^ count poison)
-      if random-float 1 < (1 - (1 - Pr-death-disperser-scaled) ^ count poison)
+      [ 
+        if random-float 1 < (1 - (1 - Pr-death-disperser-scaled) ^ count poison)
         [
           move-to one-of poison
           ask bait-stations-here [set bait-present false set color white]
-         
+          
           ifelse baits-are-toxic = true 
           [ ; type " Disperser " type who print " ate a bait"
             die]
           [move-to this-cell]
         ]
-    ]
+      ]
+      
+      [
+        let chosen-bait-station one-of poison
+        set barrier-xy-from patch-here
+        set barrier-xy-to chosen-bait-station
+        test-barrier
+        
+        ifelse barrier-can-cross = true or barrier-not-crossing = true
+        
+        [ ; if barrier isn't a problem, fox could be exposed to this bait
+          reset-barrier-globals
+          if random-float 1 <  Pr-death-disperser-scaled
+           [
+            ask bait-stations-here [set bait-present false set color white]
+          
+            ifelse baits-are-toxic = true 
+            [ ; type " Disperser " type who print " ate a bait"
+              die]
+            [move-to this-cell]
+          ]
+        ]
+        
+        [ ; if barrier is in the way, fox can't be exposed to the bait
+          reset-barrier-globals
+        type who print poison
+          set poison poison with [self != chosen-bait-station ]
+        type who print poison
+          check-if-poisoned
+        ]
+        
+
+      ] 
   ]
+      
 end
 
 
+
+    
 to remove-all-baits
 
   ask bait-stations [set bait-present false set color white set Pr-death-bait-scaled 0] ; remove all poison baits at end of month
