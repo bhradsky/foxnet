@@ -80,7 +80,7 @@ to disperser-check-for-baits
   
   if any? bait-stations with [bait-present = true]
   [   
-    let this-cell patch-here
+
     let area-explored patches in-radius (territory-perception-radius * kms-to-cells ) 
     let area-explored-km2 count area-explored * cells-to-km2
    ; type "disperser"  type area-explored type area-explored-km2 type " " 
@@ -91,11 +91,16 @@ to disperser-check-for-baits
     set Pr-death-disperser-scaled (1 / area-explored-km2 ) * Pr-die-if-exposed-100ha ; scale by 100 ha (i.e. 1 km2) 
                                                                                          ;print (1 - (1 - Pr-death-disperser-scaled) ^ count poison)
     check-if-poisoned
+    
+    set poison nobody;  ; reset globals to null
+    set Pr-death-disperser-scaled 0;
   ]
 end
 
 to check-if-poisoned
     
+   let this-cell patch-here
+  
     if any? poison
     [
       ifelse barrier-exists = false 
@@ -107,38 +112,50 @@ to check-if-poisoned
           ask bait-stations-here [set bait-present false set color white]
           
           ifelse baits-are-toxic = true 
-          [ ; type " Disperser " type who print " ate a bait"
+          [ 
+           set poison nobody;  ; reset globals to null 
+           set Pr-death-disperser-scaled 0;
             die]
           [move-to this-cell]
         ]
       ]
       
-      [
+      [ ; if a barrier exists
         let chosen-bait-station one-of poison
         set barrier-xy-from patch-here
         set barrier-xy-to chosen-bait-station
         test-barrier
-        
+       ; type who type "_" type barrier-can-cross type barrier-not-crossing type " " print Pr-death-disperser-scaled 
+
         ifelse barrier-can-cross = true or barrier-not-crossing = true
         
         [ ; if barrier isn't a problem, fox could be exposed to this bait
           reset-barrier-globals
-          if random-float 1 <  Pr-death-disperser-scaled
+          if random-float 1 <  Pr-death-disperser-scaled ; note that this is quite a small number, even if per bait probability is high
            [
-            ask bait-stations-here [set bait-present false set color white]
+            move-to chosen-bait-station
+            ask chosen-bait-station 
+            [
+              ;ask patches in-radius 10 [set pcolor pink]
+              set bait-present false 
+              set color white
+            ]
           
             ifelse baits-are-toxic = true 
-            [ ; type " Disperser " type who print " ate a bait"
-              die]
-            [move-to this-cell]
+            [ ;type " Disperser " type who print " ate a bait despite the barrier"
+              set poison nobody;  ; reset globals to null 
+              set Pr-death-disperser-scaled 0;
+              die
+            ]
+            [ move-to this-cell ]
           ]
         ]
         
         [ ; if barrier is in the way, fox can't be exposed to the bait
           reset-barrier-globals
-        type who print poison
+        ; type who print poison
           set poison poison with [self != chosen-bait-station ]
-        type who print poison
+        ; type who print poison
           check-if-poisoned
         ]
         

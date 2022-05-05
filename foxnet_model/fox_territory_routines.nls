@@ -143,7 +143,7 @@ to check-for-alpha-vacancy
 
  attempt-to-join-chosen-family
   
- set families-with-alpha-vacancy [] ; reset this global to an empty agentset
+ set families-with-alpha-vacancy nobody; reset this global to an empty agentset
 
 end
 
@@ -208,13 +208,15 @@ to try-to-establish-new-territory
   [ fox-family-owner = nobody and available-to-foxes = true  ]
 
   try-to-move-to-home-base 
+  
+  set potential-home-bases nobody
 
   if status = "disperser" ; ; i.e. if territory didn't succeed, move back to original dispersal location
  
   [ ;print "i'm moving back home"
     move-to my-temporary-home 
   ] 
- 
+   
 end
 
 to try-to-move-to-home-base

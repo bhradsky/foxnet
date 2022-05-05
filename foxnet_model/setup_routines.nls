@@ -430,7 +430,7 @@ to set-up-foxes
     set family-id nobody
     set natal-id nobody
     set failed-territory-id [0]
-      move-to one-of available-landscape ; with [ pxcor < 100]; 268]
+    move-to one-of available-landscape ; with [ pxcor < 100]; 268]
     set natal-cell patch-here   
     pendown 
     ]

@@ -105,6 +105,7 @@ globals
   dispersal-duration
   maximum-territory-update-area
 
+  potential-home-bases
   poison
   Pr-death-disperser-scaled
 
@@ -241,7 +242,7 @@ foxes-own
   my-dispersal-duration; number of time-steps it took the fox to find a new territory
   collared
   failed-territory-id
-  potential-home-bases
+
 ]
 
 fox-families-own
@@ -749,10 +750,10 @@ to Glenelg-model
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-810
-70
-3497
-2359
+815
+200
+3502
+2489
 -1
 -1
 3.0
@@ -885,7 +886,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-0.1
+0.05
 0.5
 1
 /km2
@@ -900,7 +901,7 @@ bait-density
 bait-density
 0
 5
-0.0
+1.0
 0.5
 1
 /km2
@@ -929,7 +930,7 @@ CHOOSER
 bait-layout
 bait-layout
 "none" "grid" "random-scatter" "custom"
-3
+1
 
 TEXTBOX
 405
@@ -1001,7 +1002,7 @@ CHOOSER
 bait-frequency
 bait-frequency
 "weekly*" "fortnightly*" "4-weeks" "custom*"
-3
+0
 
 INPUTBOX
 405
@@ -1069,7 +1070,7 @@ landscape-size
 landscape-size
 10
 12000
-10.0
+35.0
 5
 1
 km2
@@ -2064,7 +2065,7 @@ INPUTBOX
 157
 1375
 propn-permeable-barrier
-0.0
+0.8
 1
 0
 Number
