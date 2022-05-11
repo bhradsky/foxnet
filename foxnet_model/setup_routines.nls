@@ -61,8 +61,7 @@ to check-for-errors
   
   if landscape-source = "generate" and bait-layout = "custom"
   [error "ERROR - you can't use a customised bait layer in a model-generated landscape.  Please change `bait-layout` to another option, or import a raster layer for the landscape."]
-  
-  
+ 
   
 end
 
@@ -109,6 +108,7 @@ to create-world
   [
     let world-side (sqrt (landscape-size * km2-to-cells))
     resize-world 0 (world-side - 1 ) 0 (world-side - 1)
+    set barrier-exists false
     ask patches 
     [ set available-to-foxes true  ]    
     gis:set-transformation (list min-pxcor max-pxcor min-pycor max-pycor) (list min-pxcor max-pxcor min-pycor max-pycor) ; needed so that density map can be exported
@@ -384,6 +384,9 @@ to set-up-bait-stations
      ]
    ]
     
+  if any? bait-stations with [available-to-foxes = false]
+  [error "ERROR - at least one bait station is on a cell not available to foxes.  Either the bait station is in an 'uninhabitable' region or overlaps a 'barrier'.  Please adjust spatial inputs and set up again."]
+  
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -392,8 +395,8 @@ to set-up-barrier
   
   set barrier-exists true
   set barrier gis:load-dataset barrier-shp  
-  set barrier-main patch-set patches with [pxcor = 100]; ! the latter option is for testing and will only work if you change 'barrier' to 'barrier-main' in test-barrier code
- ; set barrier-main patch-set patches gis:intersecting barrier ; 
+  ;set barrier-main patch-set patches with [pxcor = 100]; ! the latter option is for testing and will only work if you change 'barrier' to 'barrier-main' in test-barrier code
+  set barrier-main patch-set patches gis:intersecting barrier ; 
   ; add second barrier if relevant
   ifelse barrier-shp-2 = ""
   [set barrier-2-exists false]
@@ -432,7 +435,7 @@ to set-up-foxes
     set failed-territory-id [0]
     move-to one-of available-landscape ; with [ pxcor < 100]; 268]
     set natal-cell patch-here   
-    pendown 
+    ;pendown 
     ]
     
     foxes-disperse
