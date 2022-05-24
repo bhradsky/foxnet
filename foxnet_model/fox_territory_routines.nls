@@ -157,7 +157,17 @@ to attempt-to-join-chosen-family
     ; check whether there is a barrier that would prevent joining this family
     ifelse barrier-exists = false 
     
-    [ move-to chosen-family ]    
+    [ move-to chosen-family 
+      ; print chosen-family
+      ; print [who] of chosen-family
+      set status "alpha"
+      ifelse sex = "female" 
+        [set color red]
+        [set color blue]  
+      set family-id [who] of chosen-family ;!! is it better to have this a who or just chosen-family?
+      ask chosen-family
+        [ set family-members (turtle-set myself family-members) ]
+    ]    
         
     [  ; if there is a barrier, then test whether it's a problem
       set barrier-xy-from patch-here
@@ -170,32 +180,25 @@ to attempt-to-join-chosen-family
       [ ; if the barrier can be crossed or isn't in the way, join that family
         reset-barrier-globals
         move-to chosen-family 
+        ; print chosen-family
+        ; print [who] of chosen-family
+        set status "alpha"
+        ifelse sex = "female" 
+        [set color red]
+        [set color blue]  
+        set family-id [who] of chosen-family ;!! is it better to have this a who or just chosen-family?
+        ask chosen-family
+        [ set family-members (turtle-set myself family-members) ]
       ]  
       
       [ ; if the barrier is preventing movement, remove family, check if there are any other fox-families that fox could join instead
-
         reset-barrier-globals
-        ;type who print [who] of families-with-alpha-vacancy
+       ;if pxcor > 450 and pxcor < 550 [type who print [who] of families-with-alpha-vacancy]
         set families-with-alpha-vacancy families-with-alpha-vacancy with [self != chosen-family] ; remove family just tested from set of options
-        ;type who print [who] of families-with-alpha-vacancy
+        ;if pxcor > 450 and pxcor < 550 [ type who print [who] of families-with-alpha-vacancy ]
         attempt-to-join-chosen-family
       ] 
-    ]
-     
-     ; foxes that have joined a new fox-family, continue: 
-    ;print chosen-family
-    ;print [who] of chosen-family
-    set family-id [who] of chosen-family ;!! is it better to have this a who or just chosen-family?
-    
-    ask chosen-family
-      [ set family-members (turtle-set myself family-members) ]
-    
-    set status "alpha"
-          
-    ifelse sex = "female" 
-      [set color red]
-      [set color blue]  
-    
+    ]  
   ]
 end
 
