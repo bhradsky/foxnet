@@ -19,9 +19,7 @@ extensions [profiler gis]
 breed [foxes fox]
 breed [fox-families fox-family]
 breed [vacancies vacant ]
-
 breed [bait-stations bait-station]
-
 breed [barrier-testers barrier-tester]
 
 globals
@@ -217,16 +215,16 @@ patches-own
   part-of-region-of-interest5
   part-of-region-of-interest6
 
+  true-color
   true-productivity
   current-productivity
-  true-color
 
-  checked-already
   fox-family-owner
   cell-relative-productivity
   cell-relative-use
   cell-fox-density
   cell-fox-density-no-cubs
+  checked-already
 
  ]
 
@@ -240,9 +238,8 @@ foxes-own
   my-dispersal-distance
   distance-from-natal
   my-dispersal-duration; number of time-steps it took the fox to find a new territory
-  collared
   failed-territory-id
-
+  ;collared
 ]
 
 fox-families-own
@@ -390,7 +387,7 @@ to territory-demo
   set male-dispersers		0.758
   set bait-layout		"none"
 
- set landscape-raster ""
+  set landscape-raster ""
   set uninhabitable-raster-value 0
   set second-habitat-raster-value 0
   set third-habitat-raster-value 0
@@ -402,10 +399,12 @@ to territory-demo
   set region4-shp ""
   set region5-shp ""
   set region6-shp ""
+
   set barrier-shp ""
   set barrier-shp-2 ""
   set propn-permeable-barrier 0
   set propn-permeable-barrier-2 0
+
   set survey-transect-shp ""
   set survey-transect2-shp ""
 
@@ -632,10 +631,12 @@ to basic-model
   set region4-shp ""
   set region5-shp ""
   set region6-shp ""
+
   set barrier-shp ""
   set barrier-shp-2 ""
   set propn-permeable-barrier 0
   set propn-permeable-barrier-2 0
+
   set survey-transect-shp ""
   set survey-transect2-shp ""
 
@@ -711,10 +712,12 @@ to Glenelg-model
   set region4-shp ""
   set region5-shp ""
   set region6-shp ""
-  set barrier-shp ""
+
+  set barrier-shp "gis_layers/glenelg/fence.shp"
   set barrier-shp-2 ""
   set propn-permeable-barrier 0
   set propn-permeable-barrier-2 0
+
   set survey-transect-shp "gis_layers/glenelg/mtclay_transect.shp"
   set survey-transect2-shp ""
 
@@ -751,12 +754,12 @@ end
 @#$#@#$#@
 GRAPHICS-WINDOW
 815
-200
-3502
-2489
+70
+1729
+770
 -1
 -1
-3.0
+1.0
 1
 10
 1
@@ -767,9 +770,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-892
+905
 0
-759
+690
 0
 0
 1
@@ -873,7 +876,7 @@ SWITCH
 368
 fox-mortality
 fox-mortality
-1
+0
 1
 -1000
 
@@ -886,7 +889,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-0.05
+1.5
 0.5
 1
 /km2
@@ -916,7 +919,7 @@ Pr-die-if-exposed-100ha
 Pr-die-if-exposed-100ha
 0
 1
-0.99
+0.3
 0.05
 1
 NIL
@@ -930,7 +933,7 @@ CHOOSER
 bait-layout
 bait-layout
 "none" "grid" "random-scatter" "custom"
-1
+3
 
 TEXTBOX
 405
@@ -992,7 +995,7 @@ CHOOSER
 weeks-per-timestep
 weeks-per-timestep
 1 2 4
-0
+2
 
 CHOOSER
 405
@@ -1002,7 +1005,7 @@ CHOOSER
 bait-frequency
 bait-frequency
 "weekly*" "fortnightly*" "4-weeks" "custom*"
-0
+2
 
 INPUTBOX
 405
@@ -1010,7 +1013,7 @@ INPUTBOX
 610
 690
 custom-bait-weeks
-[1 2 3 4 5 6]
+[]
 1
 0
 String
@@ -1070,7 +1073,7 @@ landscape-size
 landscape-size
 10
 12000
-35.0
+400.0
 5
 1
 km2
@@ -1082,7 +1085,7 @@ INPUTBOX
 170
 410
 landscape-raster
-gis_layers/BRP051/BRP051.asc
+gis_layers/glenelg/mtclay_landscape.asc
 1
 1
 String
@@ -1106,7 +1109,7 @@ less1y-survival
 less1y-survival
 0
 1
-0.38
+0.39
 0.01
 1
 propn.
@@ -1121,7 +1124,7 @@ from1yto2y-survival
 from1yto2y-survival
 0
 1
-0.58
+0.65
 0.01
 1
 propn.
@@ -1136,7 +1139,7 @@ from2yto3y-survival
 from2yto3y-survival
 0
 1
-0.82
+0.92
 0.01
 1
 propn.
@@ -1151,7 +1154,7 @@ more3y-survival
 more3y-survival
 0
 1
-0.01
+0.18
 0.01
 1
 propn.
@@ -1201,7 +1204,7 @@ propn-cubs-female
 propn-cubs-female
 0
 1
-0.45
+0.5
 0.01
 1
 propn.
@@ -1216,7 +1219,7 @@ number-of-cubs
 number-of-cubs
 0
 8
-3.58
+3.2
 0.01
 1
 NIL
@@ -1246,7 +1249,7 @@ dispersal-season-begins
 dispersal-season-begins
 1
 52
-1.0
+9.0
 1
 1
 week
@@ -1303,7 +1306,7 @@ INPUTBOX
 610
 365
 bait-layout-shp
-gis_layers/BRP051/BRP051_BStn_001.shp
+gis_layers/glenelg/mtclay_baits.shp
 1
 1
 String
@@ -1328,7 +1331,7 @@ commence-baiting-year
 commence-baiting-year
 1
 50
-0.0
+3.0
 1
 1
 year
@@ -1343,7 +1346,7 @@ commence-baiting-week
 commence-baiting-week
 1
 52
-0.0
+13.0
 1
 1
 week
@@ -1355,7 +1358,7 @@ INPUTBOX
 170
 915
 region-shp
-gis_layers/BRP051/BRP051_RoI.shp
+gis_layers/glenelg/mtclay_region.shp
 1
 1
 String
@@ -1434,7 +1437,7 @@ region-size
 region-size
 10
 6000
-0.0
+200.0
 10
 1
 km2
@@ -1449,7 +1452,7 @@ hab2:hab1
 hab2:hab1
 0
 10
-1.0
+3.0
 0.05
 1
 x
@@ -1472,7 +1475,7 @@ INPUTBOX
 170
 475
 uninhabitable-raster-value
-0.0
+2.0
 1
 0
 Number
@@ -1501,7 +1504,7 @@ INPUTBOX
 170
 755
 survey-transect-shp
-NIL
+gis_layers/glenelg/mtclay_transect.shp
 1
 1
 String
@@ -1512,7 +1515,7 @@ INPUTBOX
 170
 540
 second-habitat-raster-value
-2.0
+0.0
 1
 0
 Number
@@ -1545,7 +1548,7 @@ INPUTBOX
 610
 830
 price-per-bait
-0.0
+2.0
 1
 0
 Number
@@ -1566,7 +1569,7 @@ INPUTBOX
 610
 895
 person-days-per-baiting-round
-0.0
+3.0
 1
 0
 Number
@@ -1577,7 +1580,7 @@ INPUTBOX
 610
 1025
 km-per-baiting-round
-0.0
+420.0
 1
 0
 Number
@@ -1588,7 +1591,7 @@ INPUTBOX
 610
 1090
 cost-per-km-travel
-0.0
+0.67
 1
 0
 Number
@@ -1599,7 +1602,7 @@ INPUTBOX
 610
 960
 cost-per-person-day
-0.0
+250.0
 1
 0
 Number
@@ -1610,7 +1613,7 @@ INPUTBOX
 170
 990
 region2-shp
-NIL
+gis_layers/glenelg/annya_region.shp
 1
 1
 String
@@ -1715,7 +1718,7 @@ SWITCH
 378
 plot?
 plot?
-1
+0
 1
 -1000
 
@@ -1785,7 +1788,7 @@ SWITCH
 518
 density
 density
-1
+0
 1
 -1000
 
@@ -1884,7 +1887,7 @@ SWITCH
 448
 bait-consumption
 bait-consumption
-1
+0
 1
 -1000
 
@@ -1932,7 +1935,7 @@ INPUTBOX
 170
 640
 third-habitat-raster-value
-0.0
+100.0
 1
 0
 Number
@@ -1946,7 +1949,7 @@ hab3:hab1
 hab3:hab1
 0
 10
-0.0
+1.0
 0.05
 1
 x
@@ -2002,7 +2005,7 @@ INPUTBOX
 610
 630
 custom-bait-years
-[1]
+[]
 1
 0
 String
@@ -2043,7 +2046,7 @@ INPUTBOX
 610
 765
 annual-baseline-cost
-0.0
+1000.0
 1
 0
 Number
@@ -2054,7 +2057,7 @@ INPUTBOX
 265
 1315
 barrier-shp
-gis_layers/BRP051/BRP051_Barrier2.shp
+gis_layers/glenelg/fence.shp
 1
 1
 String
@@ -2065,7 +2068,7 @@ INPUTBOX
 157
 1375
 propn-permeable-barrier
-0.8
+0.0
 1
 0
 Number
@@ -2076,7 +2079,7 @@ INPUTBOX
 265
 1440
 barrier-shp-2
-NIL
+gis_layers/glenelg/coast.shp
 1
 1
 String

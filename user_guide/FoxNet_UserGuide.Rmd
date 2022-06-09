@@ -1,6 +1,10 @@
 ---
-title: "FoxNet User Guide V1.0.0"
+title: "FoxNet User Guide V1.3.0"
 author: "Bronwyn Hradsky, Quantitative and Applied Ecology, University of Melbourne"
+header-includes:
+  - \usepackage{float}
+  - \floatplacement{figure}{H} 
+  - \floatplacement{table}{H} 
 output:
   pdf_document:
     number_sections: yes
@@ -16,7 +20,7 @@ output:
     toc: yes
     toc_depth: '2'
 vignette: |
-  %\VignetteIndexEntry{FoxNet User Guide} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{FoxNet User Guide V1.2} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
@@ -27,8 +31,10 @@ knitr::opts_chunk$set(
 library(knitr)
 library(kableExtra)
 library(png)
-setwd("C:/Users/hradskyb/FoxControlPatrol/Dropbox/personal/bron/ibm/foxnet/user_guide")
+setwd("C:/Users/hradskyb/FoxControlPatrol/Dropbox/personal/bron/ibm/foxnet_github/user_guide")
 ```
+
+\pagebreak
 
 ### Notation {-}
 
@@ -60,7 +66,8 @@ Email <hradskyb@unimelb.edu.au> or <bhradsky@gmail.com>
 ### The development of FoxNet was funded by the {-}
 - Australian Government's National Environmental Science Program through the Threatened Species Recovery Hub
 - Victorian Government (Department of Environment, Land, Water and Planning)
-- Parks Victoria  
+- Parks Victoria
+- Australian Research Council Linkage Project 170101134
 
 
 
@@ -75,7 +82,7 @@ FoxNet is a customisable, individual-based modelling framework for running spati
 
 ## Components
 
-FoxNet has four main types of agent: *habitat-cells*, *foxes*, *fox-families* and *bait-stations*. Another type of short-lived agent (*vacancy*) is used to execute territory-checking processes efficiently.  
+FoxNet has four main types of agent: *habitat-cells*, *foxes*, *fox-families* and *bait-stations*. Another two types of short-lived agent (*vacancies* and *barrier-testers*) are used to execute territory-checking and barrier-testing processes efficiently.  
 
 *Habitat-cells* are the squares of habitat that define the spatial resolution, configuration and productivity of a model landscape in FoxNet.  Within a *habitat-cell*, productivity and *fox* access to *bait-stations* is homogenous.  The area represented by each *habitat-cell* can be specified using `cell-dimension`, and is usually in the order of 0.01 km^2^ to provide a compromise between computational efficiency and intra-home-range variation  (fox home-range size varies between <0.5 and >9 km^2^; Trewhella et al. 1988). Each *habitat-cell* keeps track of the following parameters:  
 
@@ -85,7 +92,7 @@ FoxNet has four main types of agent: *habitat-cells*, *foxes*, *fox-families* an
   
 - `part-of-region-of-interest`: "true" or "false". This parameter defaults to "false". When "true", the *habitat-cell* becomes part of the `region-of-interest` where the *fox* population is monitored (e.g. a central square or a nature reserve).  The `region-of-interest` can be the entire landscape if desired.
 
-- `part-of-region-of-interest2`: "true" or "false". This parameter defaults to "false".  When "true", the *habitat-cell* becomes part of a second region of interest (`region-of-interest2`) where the *fox* population is also monitored (e.g. a second nature reserve).  
+- `part-of-region-of-interest[2 - 6]`: An additional 5 parameters, each set to "true" or "false". They default to "false".  When "true", the *habitat-cell* becomes part of region of interest X (`region-of-interest2`, `region-of-interest3`, etc.) where the *fox* population is also monitored (e.g. a second and third (up to 6th) nature reserve).  
 
 - `true-color`: the intrinsic colour of the *habitat-cell* when unoccupied by a *fox-family*.  This defaults to black for the primary habitat type, but will be a different colour if the *habitat-cell* is the secondary habitat type, is not available to foxes, or is part of the region(s)-of-interest. 
 
@@ -99,7 +106,9 @@ FoxNet has four main types of agent: *habitat-cells*, *foxes*, *fox-families* an
 
 - `cell-relative-use`: set to 0 by default. However, if the *habitat-cell* is owned by a *fox-family*, it is calculated as the intensity with which the *habitat-cell* is used by the *fox-family*, i.e., the `current-productivity` of the *habitat-cell* divided by the total productivity of the *fox-family*'s territory. For example, in a homogeneous landscape with a territory-size of 100 ha and 1-ha *habitat-cells*, `cell-relative use` would be 0.01.  However, if the territory-size was 500 ha, `cell-relative-use` would be 0.002. `cell-relative-use` is used to scale the exposure of *foxes* to *bait-stations* with territory-size and *habitat-cell* productivity, and to derive the density of *foxes* (a monitoring output).  
 
-- `cell-relative-use-foxes`: set to 0 by default. However, if the *habitat-cell* is owned by a *fox-family*, it is calculated as `cell-relative-use` multiplied by the number of *foxes* in the *fox-family*. This is used to calculate the density of *foxes*. For example, if 4 *foxes* share the 500-ha territory and `cell-relative-use` is 0.002, `cell-relative-use-foxes` is 0.222 x 4 = 0.008.   
+- `cell-fox-density`: set to 0 by default  (or 999 for cells that are not available to foxes). However, if the *habitat-cell* is owned by a *fox-family*, it is calculated as `cell-relative-use` multiplied by the number of *foxes* in the *fox-family*. This is used to calculate the density of *foxes*. For example, if 4 *foxes* share the 500-ha territory and `cell-relative-use` is 0.002, `cell-relative-use-foxes` is 0.222 x 4 = 0.008.   
+
+- `cell-fox-density-no-cubs`: as for `cell-fox-density` but excludes cubs from the count of *foxes* in the *fox-family*.
 
 - `checked-already`:  "no" (default) or "yes": indicates whether the *fox-family* owner has already considered discarding this *habitat-cell*.  Used to speed up the **[update-territory]** submodel.
 
@@ -142,6 +151,8 @@ FoxNet has four main types of agent: *habitat-cells*, *foxes*, *fox-families* an
 - `Pr-death-bait-scaled` - the likelihood of the bait affecting a *fox* whose territory overlaps it. 
 
 *Vacancies* are temporary static agents. They are briefly created and used by *fox-families* to (a) identify any *habitat-cells* that are adjacent to their territory and not owned by another *fox-family*, and (b) determine the `relative-productivity` of each of these available *habitat-cells* (i.e. the `current-productivity` of the *habitat-cell* weighted by the inverse of its distance from the centre of the *fox-family's* territory).  The sum of these values becomes the *fox-family's* `vacancy-score` for that time-step.  *Vacancies* are removed at the end of each *fox-family's* territory-checking procedure and are simply used to help the model run efficiently.
+
+*Barrier-testers* are temporary agents.  They are briefly created and used by a *fox* to check whether a straight line (link) between the *fox*'s current location and another point intercepts a barrier (if there are any barriers in the model landscape), e.g. when the *fox* is trying to disperse.  They are  removed immediately after the test.
 
 ## Temporal and spatial scales
 
@@ -286,7 +297,7 @@ This calculates the model ouputs and plots them if applicable. See the **[update
 
 ## Installing NetLogo and opening FoxNet
 
-FoxNet was built in NetLogo (Wilensky 1999) version 6.0.2 - an open-source modelling environment, downloadable from <https://ccl.northwestern.edu/netlogo/>. FoxNet is saved in within the FoxNet folder: `FoxNet_model / FoxNet.nlogo`.  You can open it from within NetLogo or by double-clicking the file name.
+FoxNet V1.3.0 was built in NetLogo (Wilensky 1999) version 6.2.0 - an open-source modelling environment, downloadable from <https://ccl.northwestern.edu/netlogo/>. FoxNet is saved in within the FoxNet folder: `FoxNet_model / FoxNet.nlogo`.  You can open it from within NetLogo or by double-clicking the file name.
 
 For an introduction to using NetLogo see <https://ccl.northwestern.edu/netlogo/docs/>, particularly the three tutorials listed in the LH menu.
 
@@ -303,7 +314,9 @@ When you first open FoxNet, you should see the graphic user interface.  The inte
 
 + **go (continuous)** will run FoxNet forever (or at least until you click the button again) - this is shown by the circling arrows.
 
-+ **territory-demo** will provide a demonstration of key model processes - see [Model demonstration].  
++**export** will export a spatial layer of fox density (excuding cubs) to the folder specified in your `output file path` as an .asc file.
+
++ **territory-demo** will provide a demonstration of key model processes relating to fox territories - see [Model demonstration].  
 
 + **basic-scenario** will setup FoxNet with a simple example scenario - see [Building a simple scenario from scratch].
 
@@ -365,7 +378,7 @@ Click on **territory-demo** (mauve button).  A description of what is happening 
 Let's start by building a simple landscape. Using the Interface tab, either:  
 
 - Set the following inputs manually by moving the sliders and entering the values, and then click **setup**, OR  
-- Click the mauve **basic-scenario** button (which will automatically set up the model with the same input parameters)
+- Click the mauve **basic-model** button (which will automatically set up the model with the same input parameters)
 
 
 ```{r, echo=FALSE, results='asis'}
@@ -570,10 +583,10 @@ To explore the built-in customised scenario:
 
 The world-view should now be much larger, and show an imported landscape layer with three different types of *habitat-cells*: forest (black), farmland (dark grey) and ocean (white, unavailable to *foxes*).  *Fox* home ranges are three times smaller in the farmland than the forest because of differences in the productivity of the *habitat-cells*.
 
-Within the landscape, there are two `regions-of-interest` for monitoring the fox population. The first is mid-grey (to the south), and includes *bait-stations* (white squares) and a survey-transect (red line) for monitoring the number of *foxes*.  The second region-of-interest is lighter grey (to the north).
+Within the landscape, there are two `regions-of-interest` for monitoring the fox population. The first is mid-grey (to the south), and includes *bait-stations* (white squares) and a survey-transect (red line) for monitoring the number of *foxes*.  The second region-of-interest is lighter grey (to the north).  There is a also a north-south barrier to fox movement, just to the east of the regions of interest (white vertical line).
 
 
-```{r, echo = FALSE, fig.show='hold', fig.align='center', out.width = "95%"}
+```{r, echo = FALSE, fig.show='hold', fig.align='center', out.width = "60%"}
 
 
 include_graphics("figures/FoxNet_glenelg_1.png")
@@ -582,7 +595,7 @@ include_graphics("figures/FoxNet_glenelg_1.png")
   
 If you'd like to see the landscape more clearly, set `initial-fox-density` to 0 and click **setup** again.
 
-```{r, echo = FALSE, fig.show='hold', fig.align='center', out.width = "95%"}
+```{r, echo = FALSE, fig.show='hold', fig.align='center', out.width = "60%"}
 
 include_graphics("figures/FoxNet_glenelg_nofox.png")
 
@@ -624,7 +637,7 @@ kableExtra::kable(inputs.glenelg.table) %>%
 The worldview should now look like this:  
 
 
-```{r, echo = FALSE, fig.show='hold', fig.align='center', out.width = "95%"}
+```{r, echo = FALSE, fig.show='hold', fig.align='center', out.width = "60%"}
 
 include_graphics("figures/FoxNet_glenelg_build1.png")
 
@@ -638,7 +651,7 @@ The `region-of-interest` has still been generated within the model and so forms 
 
 At the top of the interface, the output box `actual landscape size` shows the area habitable by *foxes* (4970.79 km^2^).  
 
-The total size of the landscape including the ocean is 6260.46 km^2^. To find this out, type  `count patches * cells-to-km2` into the command center at the bottom of the screen.
+The total size of the landscape including the ocean is 6260.46 km^2^. To find this out, type  `count patches * cells-to-km2` into the command centre at the bottom of the screen.
 
 ### Add some foxes
 
@@ -688,9 +701,9 @@ include_graphics("figures/FoxNet_glenelg_build3.png")
 
 > TIP To find out the size of the smallest and largest *fox-family* territories, type `min [count my-territory] of fox-families * cells-to-km2` or `max [count my-territory] of fox-families * cells-to-km2` into the command center at the bottom of the screen 
 
-### Add two monitoring regions
+### Add customised monitoring region(s)
 
-Rather than monitoring *foxes* in a central, square region-of-interest, we can monitor *fox* density in one or two customised regions, in this case: Mt Clay Nature Reserve (where fox baiting occurs) and Annya State Forest (where baiting does not occur).  These regions are specified as separate polygon shapefiles:
+Rather than monitoring *foxes* in a central, square region-of-interest, we can monitor *fox* density in one to six customised regions.  In this case, we will monitor them in two: Mt Clay Nature Reserve (where fox baiting occurs) and Annya State Forest (where baiting does not occur).  These regions are specified as separate polygon shapefiles:
 
 
 ```{r, echo=FALSE, results='asis'}
@@ -755,11 +768,64 @@ kableExtra::kable(inputs.transect) %>%
 
 ```
 
-`initial-fox-density` has been set to 0 to make the transect easier to see.
+`initial-fox-density` has been set to 0 in this image to make the transect easier to see.
 
 ```{r, echo = FALSE, fig.show='hold', fig.align='center', out.width = "60%"}
 
 include_graphics("figures/FoxNet_glenelg_build6.png")
+
+```
+
+### Add a barrier
+
+There might be a  barrier such as a fence, wide river or busy highway that entirely prevents (or partially limits) fox movement across your landscape.  You can include up to two barriers in a model scenario, with different levels of permeability. Barriers are imported as line shapefiles.
+
+In this example, we will add one impermeable north-south fence across the entire landscape:
+
+```{r, echo=FALSE, results='asis'}
+inputs.barrier <- read.csv("tables/inputs_barrier.csv")
+
+
+kableExtra::kable(inputs.barrier) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "responsive")) %>%
+  group_rows(index = c("Landscape setup" = 1))
+
+```
+
+If you set-up the model, you can inspect patches along the barrier and see that fox home-ranges never overlap the fence.
+
+Then in the Command Centre, type `ask foxes [pendown]`.  Click **go (continuous)**.  You will see that foxes never cross the barrier.  
+
+Pause the model, change `propn-permeable-barrier` to 0.5, and click **go (continuous)** again.  Foxes can now cross the barrier but are half as likely to cross the fence on each movement attempt as they are to move across other points of the landscape.
+
+> TIP. When you've got 'pendown', you may also see that some foxes are 'jumping' over the ocean to other parts of the landscape (e.g. those cobweb-type yellow lines in the fig below, after running a scenario for 55 years).  You can prevent this by making a barrier along the coastline.  However, note that including a barrier (vs. no barrier) makes the model run more slowly, so if you don't have other barriers, you may only want to do this if it is important for your scenario. 
+
+
+```{r, echo = FALSE, fig.show='hold', fig.align='center', out.width = "60%"}
+
+include_graphics("figures/FoxNet_glenelg_swimmingfoxes.png")
+
+```
+
+
+To add an impermeable barrier along the coastline, add the following:
+
+```{r, echo=FALSE, results='asis'}
+inputs.barrier2 <- read.csv("tables/inputs_barrier2.csv")
+
+
+kableExtra::kable(inputs.barrier2) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "responsive")) %>%
+  group_rows(index = c("Landscape setup" = 1))
+
+```
+
+This will prevent foxes 'swimming' across the bays: 
+
+
+```{r, echo = FALSE, fig.show='hold', fig.align='center', out.width = "60%"}
+
+include_graphics("figures/FoxNet_glenelg_coastbarrier.png")
 
 ```
 
@@ -805,7 +871,7 @@ This will not work! The easiest way to fix this problem is to open the .prj file
 
 A list of acceptable projection coordinate systems can be found at `<https://ccl.northwestern.edu/netlogo/docs/gis.html>`
 
-> TIP: It is easiest to save all your GIS layers for customising FoxNet within `FoxNet/GIS_Layers/YourNewSubfolder`
+> TIP: It is easiest to save all your GIS layers for customising FoxNet within `foxnet/gis_layers/yournewsubfolder`
 
 ### Importing your ascii file into FoxNet
 
@@ -813,7 +879,7 @@ On the FoxNet interface:
 
 1) Change the `landscape-source` to "import raster". 
 
-2) Click on 'change' on the `landscape-raster` input box, and type the file path to your .asc file.  If the file is saved within your FoxNet folder, you only need to enter the location within your `working-directory` (e.g. `GIS_Layers/YourNewSubfolder/Yourascii.asc`). Click OK.
+2) Click on 'change' on the `landscape-raster` input box, and type the file path to your .asc file.  If the file is saved within your FoxNet folder, you only need to enter the location within your `working-directory` (e.g. `gis_layers/yournewsubfolder/yourascii.asc`). Click OK.
 
 3) Your raster should use different integers for each habitat type as well as uninhabitable areas (such as ocean). Enter the relevant integers into the `second-habitat-raster-value` and `unihabitable-raster-value` boxes, respectively.  
 
@@ -822,26 +888,50 @@ On the FoxNet interface:
 
 ## Customised region(s) of interest
 
-To monitor *foxes* within a customised area of your raster-based landscape (for example, a nature reserve) rather than a generic central square, you can import a polygon shapefile of the `region-of-interest`. Make sure that it is in the same spatial projection as your raster layer.
+To monitor *foxes* within customised area(s) of your raster-based landscape (for example, a nature reserve) rather than a generic central square, you can import polygon shapefile(s) of the `region-of-interest`. Make sure that they are in the same spatial projection as your raster layer.
 
-1) Click 'change' on the `region-shp` input box, and type the file path to your .shp file. If the file is saved within your FoxNet folder, you only need to enter the location within your `working-directory` (e.g. GIS_Layers/YourNewSubfolder/RegionShapefile.shp)
+1) Click 'change' on the `region-shp` input box, and type the file path to your .shp file. If the file is saved within your FoxNet folder, you only need to enter the location within your `working-directory` (e.g. gis_layers/yournewsubfolder/regionshapefile.shp)
 
-2) If you have a second region-of-interest, you can enter the file path in the `region2-shp` input box.
+2) If you have a second region-of-interest, you can enter the file path in the `region2-shp` input box, etc.
 
 ## Customised bait layout
 
 Customised *bait-stations* can be imported as a point shapefile, in the same projection as your raster layer.  
 
-1) Click 'change' on the `bait-layout-shp` input box, and type the file path to your .shp file. If the file is saved within your FoxNet folder, you only need to enter the location within your `working-directory` (e.g. GIS_Layers/YourNewSubfolder/BaitsShapefile.shp)
+1) Click 'change' on the `bait-layout-shp` input box, and type the file path to your .shp file. If the file is saved within your FoxNet folder, you only need to enter the location within your `working-directory` (e.g. gis_layers/yournewsubfolder/baitsshapefile.shp)
 
 ## Customised survey transect
 
 A customised survey transect can be imported as a line shapefile, in the same projection as your raster layer. 
 
-1) Click 'change' on the `survey-transect-shp` input box, and type the file path to your .shp file. If the file is saved within your FoxNet folder, you only need to enter the location within your `working-directory` (e.g. GIS_Layers/YourNewSubfolder/TransectShapefile.shp)
+1) Click 'change' on the `survey-transect-shp` input box, and type the file path to your .shp file. If the file is saved within your FoxNet folder, you only need to enter the location within your `working-directory` (e.g. gis_layers/yournewsubfolder/transectshapefile.shp)
+
+## Customised barrier(s)
+
+Up to two customised barriers can be imported as a line shapefile(s), in the same projection as your raster layer.  They can have different levels of permeability, from 0 (no foxes can cross) to 1 (entirely permeable, i.e. no effect on fox movement) 
+
+1) Click 'change' on the `barrier-shp` input box, and type the file path to your .shp file. If the file is saved within your FoxNet folder, you only need to enter the location within your `working-directory` (e.g. gis_layers/yournewsubfolder/barriershapefile.shp)
+
+2) Type the permeability value (from 0 to 1) in the `propn-permeable-barrier` input box.
+
+Repeat for a second barrier using the `barrier-shp-2` and `propn-permeable-barrier-2` input boxes if required.
 
 \pagebreak
 
+# Generating an (averaged) map of fox density
+
+A visual representation of fox density across a landscape can be a powerful communication tool.  It also helps you check that your model is behaving (and you are interpreting it) in the way you anticipated!
+
+To export a spatial layer of fox density (by default, this is the density of foxes excluding cubs), you can click on the **export** button.  This will save an ascii (.asc) file in the folder specified in the `output file path` input box.  By default, this path is 'outputs/test'.
+
+If you open the .asc file in spatial mapping software (e.g. R, ArcGIS or QGIS), you will see that the density is 'lumpy', with circles around fox home ranges.
+
+It will be more meaningful if you average the density across several outputs, e.g. across different time steps for the same model run, or across outputs generated from different model runs at the same time step
+
+Code for averaging the density from several exported .asc files using R can be found within the FoxNet package at `r_scripts/analyse_outputs/Smooth_density_maps.R`
+
+
+\pagebreak
 # Running batch scripts 
 
 Specifying inputs from the interface and running scenarios becomes tedious when you want to run many experiments with varying parameters. 
@@ -854,7 +944,8 @@ On the NetLogo interface, go to Tools > BehaviourSpace.
 
 You can then setup a new experiment or run an existing script.
 
-Information on how to use BehaviourSpace can be found at `<https://ccl.northwestern.edu/netlogo/docs/behaviorspace.html>`.
+Information on how to use BehaviourSpace can be found at
+`<https://ccl.northwestern.edu/netlogo/docs/behaviorspace.html>`.
 
 Example BehaviourSpace scripts for each of the FoxNet models described in Hradsky et al. (2019a) *J. Applied Ecology* are saved within FoxNet.  Note that you must set the `working-directory` within the BehaviourSpace experiment to the correct file path (the location of your FoxNet folder e.g. `C:/Users/hradskyb/foxnet`) for any script that involves importing a raster layer.
 
@@ -1003,6 +1094,21 @@ An example for running a single version of FoxNet from R is provided here:
 # CLOSE NETLOGO (restart R if you want to run another model) 
    NLQuit(nl.obj = corename)
 ```
+
+
+You can also export spatial layer(s) of fox density at specified time points to generate (averaged) fox density maps using the batch script.  For example, this will export a map from year 16 week 0:
+
+```{r, echo = TRUE, eval = FALSE}
+    output <- NLDoReport(timesteps, 
+                         "go if year = 16 and week-of-year = 0 [export-fox-density-map]", 
+                         output.parameters,
+                         as.data.frame = TRUE,
+                         df.col.names=output.parameters,
+                         nl.obj = corename)
+```
+
+This code is also provided in the script at `foxnet/r_scripts/run_model/MtClay_baseline.R`
+
 \pagebreak
 
 # Implementation verification
@@ -1336,6 +1442,8 @@ knitr::kable(weeks.table) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "responsive"))
 
 ```
+
+\pagebreak 
 
 # References
 Baker, P.J., Robertson, C.P.J., Funk, S.M. & Harris, S. (1998) Potential fitness benefits of group living in the red fox, *Vulpes vulpes*. *Animal Behaviour*, 56, 1411-1424.  

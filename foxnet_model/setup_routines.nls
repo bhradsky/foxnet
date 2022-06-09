@@ -397,6 +397,7 @@ to set-up-barrier
   set barrier gis:load-dataset barrier-shp  
   ;set barrier-main patch-set patches with [pxcor = 100]; ! the latter option is for testing and will only work if you change 'barrier' to 'barrier-main' in test-barrier code
   set barrier-main patch-set patches gis:intersecting barrier ; 
+  
   ; add second barrier if relevant
   ifelse barrier-shp-2 = ""
   [set barrier-2-exists false]
