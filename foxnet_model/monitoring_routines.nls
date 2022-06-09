@@ -418,15 +418,15 @@ to export-fox-density-map
   ; update values to get foxes per km2 rather than per cell (for better map interpretation)
   ask available-landscape 
   [ set cell-fox-density cell-fox-density * km2-to-cells
-    set cell-fox-density-no-cubs cell-fox-density-no-cubs   * km2-to-cells
+    set cell-fox-density-no-cubs cell-fox-density-no-cubs * km2-to-cells
   ]   
     
   ask one-of patches [set density-map gis:patch-dataset cell-fox-density-no-cubs]
   
-  gis:store-dataset density-map (word working-directory "/" output-file-path "/fox_density_" bait-layout "_Y" year "_W" week-of-year "_" my-seed ".asc")
+  gis:store-dataset density-map (word output-file-path "/fox_density_" bait-layout "_Y" year "_W" week-of-year "_" my-seed ".asc")
   
   ; and reverse to get values back to normal
-   ask available-landscape 
+  ask available-landscape 
   [ 
     set cell-fox-density cell-fox-density / km2-to-cells
     set cell-fox-density-no-cubs cell-fox-density-no-cubs / km2-to-cells

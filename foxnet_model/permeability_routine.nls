@@ -1,0 +1,72 @@
+; Barrier checking routine.  
+
+; Called from within fox_territory_routines.nls
+; specifically; make-first-dispersal, check-for-alpha-vacancy & try-to-establish-new-territory
+
+to test-barrier
+  ; print "testing the barrier" 
+  
+  ; hatch two barrier-testers, id them, and move them to permeable-xy-to / from patches
+  hatch-barrier-testers 1 
+  [
+    set link-id "a"
+    penup
+    move-to barrier-xy-from
+    ;print barrier-xy-from
+  ]
+
+  hatch-barrier-testers 1 
+  [
+    set link-id "b"
+    penup
+    move-to barrier-xy-to  
+    ;print barrier-xy-to  
+  ]
+  
+  ; create link between permeable-testers
+  create-links-with barrier-testers
+  set barrier-link links
+    
+  ; Check if link crosses first barrier 
+  ;type who print " checking barrier 1"
+  ifelse gis:intersects? barrier barrier-link  
+  
+    [ ; check if barrier 1 is permeable to this fox
+    ifelse random-float 1 < propn-permeable-barrier
+      [ 
+        set barrier-can-cross true 
+        ;type who print " can cross barrier 1"
+      ]
+      [ 
+        set barrier-can-cross false ; if fox can't cross barrier 1 in this leap, no point checking whether it can cross barrier 2
+        ;type who print " can't cross barrier 1" 
+      ]
+  ]
+  
+  [ ; if link doesn't intersect barrier 1, still need to check it intersects barrier 2   
+    ifelse barrier-2-exists = true 
+    [check-barrier-2]
+    [set barrier-not-crossing true]; if barrier 2 doesn't exist, fox is free to move
+  ]
+    
+  ask barrier-testers [ die ]
+
+end
+
+to check-barrier-2
+  
+  ;type who print " checking barrier 2"
+  ifelse gis:intersects? barrier-2 barrier-link
+    [ 
+      ifelse random-float 1 < propn-permeable-barrier-2
+          [ set barrier-can-cross true 
+            ;type who print " can cross barrier 2"
+          ]
+          [ set barrier-can-cross false
+            ;type who print " can't cross barrier 2"
+          ]
+  ]
+     
+  [ set barrier-not-crossing true   ]
+    
+end

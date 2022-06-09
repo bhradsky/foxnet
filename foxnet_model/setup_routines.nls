@@ -1,8 +1,6 @@
 
 to check-for-errors
-    
-  ; spatial inputs
-  
+     
   ; time units
   
   if bait-layout != "none" and bait-frequency = "weekly*" and weeks-per-timestep != 1
@@ -25,6 +23,7 @@ to check-for-errors
  
   
   ; range parameters
+  
   set fox-hr-percentiles read-from-string kernel-percent
   set fox-hr-areas read-from-string home-range-area
   
@@ -38,6 +37,7 @@ to check-for-errors
   [error "ERROR - please enter one kernel-percent value and one home-range-area value"]
   
   ; dispersal parameters
+  
   if (dispersal-season-ends - 1)  MOD weeks-per-timestep != 0 or (dispersal-season-begins - 1) MOD weeks-per-timestep != 0
   [error "ERROR - check that your choice of dispersal weeks is compatible with the time-step interval (dispersal cannot start or end in weeks that will not be included in the time-steps)"]
   
@@ -48,17 +48,20 @@ to check-for-errors
   if (cub-birth-season - 1)  MOD weeks-per-timestep != 0 
   [error "ERROR - check that your choice of cub-birth-season is compatible with the time-step interval (cubs cannot be born in weeks that will not be included in the time-steps)"]
   
-  ; monitoring parameters
+  ; landscape and monitoring parameters
+  
   if foxes-on-transect = true and survey-transect-shp = ""
   [error "ERROR - you've asked the model to monitor foxes on a transect but no transect has been imported"]
   
   if landscape-source = "import raster" and region-shp = "" and region2-shp != "" 
   [error "ERROR - you need to import a shapefile for Region 1 if you are going to import a shapefile for Region 2"]
   
+  if landscape-source = "import raster" and barrier-shp = "" and barrier-shp-2 != "" 
+  [error "ERROR - you need to import a shapefile for barrier-shp if you are going to import a shapefile for barrier-shp-2"]
+  
   if landscape-source = "generate" and bait-layout = "custom"
   [error "ERROR - you can't use a customised bait layer in a model-generated landscape.  Please change `bait-layout` to another option, or import a raster layer for the landscape."]
-  
-  
+ 
   
 end
 
@@ -91,7 +94,7 @@ to set-fox-parameters
     [set dispersal-duration (dispersal-season-ends - dispersal-season-begins) / weeks-per-timestep]
     [set dispersal-duration (dispersal-season-ends + (52 - dispersal-season-begins)) / weeks-per-timestep]
   ;print dispersal-duration * weeks-per-timestep
-  
+    
 end
 
 
@@ -105,6 +108,7 @@ to create-world
   [
     let world-side (sqrt (landscape-size * km2-to-cells))
     resize-world 0 (world-side - 1 ) 0 (world-side - 1)
+    set barrier-exists false
     ask patches 
     [ set available-to-foxes true  ]    
     gis:set-transformation (list min-pxcor max-pxcor min-pycor max-pycor) (list min-pxcor max-pxcor min-pycor max-pycor) ; needed so that density map can be exported
@@ -120,15 +124,21 @@ to create-world
     gis:apply-raster landscape-data habitat-type   
     set landscape-data "1" ;remove the large raster file from the model memory
     
+    ; check if there are barrier(s)
+    ifelse barrier-shp = ""
+      [set barrier-exists false]
+      [set-up-barrier]
+    
     ; identify patches that can never be used (e.g. ocean, waterways)
     ask patches
     [
       ifelse habitat-type = uninhabitable-raster-value
-       [ set available-to-foxes false 
-        set true-color white
-         set cell-fox-density-no-cubs 999
-         set cell-fox-density 999
-       ]
+       [ 
+          set available-to-foxes false 
+          set true-color white
+          set cell-fox-density-no-cubs 999
+          set cell-fox-density 999
+      ]
       [  set available-to-foxes true ]
     ]
   ]
@@ -151,6 +161,7 @@ to create-world
     set true-color 0
   ]
   
+
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -194,7 +205,7 @@ to identify-region-of-interest
       ask available-landscape gis:intersecting region-of-interest2-data
       [ 
         set part-of-region-of-interest2 true
-        set true-color true-color + 7
+        set true-color true-color + 5
       ]
     
       set region-of-interest2 patch-set patches with [part-of-region-of-interest2 = true]
@@ -202,61 +213,66 @@ to identify-region-of-interest
       ;  print region-of-interest2-size
     ]
     
-      if region3-shp != ""
+   ; set up a third customised region-of-interest if required 
+    if region3-shp != ""
     [
       set region-of-interest3-data gis:load-dataset region3-shp
       ask available-landscape gis:intersecting region-of-interest3-data
       [ 
         set part-of-region-of-interest3 true
-        set true-color true-color + 7
+        set true-color true-color + 5
       ]
     
       set region-of-interest3 patch-set patches with [part-of-region-of-interest3 = true]
       set region-of-interest3-size count region-of-interest3 * cells-to-km2
-      ;  print region-of-interest2-size
+      ;  print region-of-interest3-size
     ]
-        
-          if region4-shp != ""
+    
+   ; set up a fourth customised region-of-interest if required 
+    if region4-shp != ""
     [
       set region-of-interest4-data gis:load-dataset region4-shp
       ask available-landscape gis:intersecting region-of-interest4-data
       [ 
         set part-of-region-of-interest4 true
-        set true-color true-color + 7
+        set true-color true-color + 5
       ]
     
       set region-of-interest4 patch-set patches with [part-of-region-of-interest4 = true]
       set region-of-interest4-size count region-of-interest4 * cells-to-km2
-      ;  print region-of-interest2-size
-    ]
+      ;  print region-of-interest4-size
+    ]  
     
-          if region5-shp != ""
+   ; set up a fifth customised region-of-interest if required 
+    if region5-shp != ""
     [
       set region-of-interest5-data gis:load-dataset region5-shp
       ask available-landscape gis:intersecting region-of-interest5-data
       [ 
         set part-of-region-of-interest5 true
-        set true-color true-color + 7
+        set true-color true-color + 5
       ]
     
       set region-of-interest5 patch-set patches with [part-of-region-of-interest5 = true]
       set region-of-interest5-size count region-of-interest5 * cells-to-km2
-      ;  print region-of-interest2-size
-    ]
-    
-          if region6-shp != ""
+      ;  print region-of-interest5-size
+    ] 
+  
+   ; set up a sixth customised region-of-interest if required 
+    if region6-shp != ""
     [
       set region-of-interest6-data gis:load-dataset region6-shp
       ask available-landscape gis:intersecting region-of-interest6-data
       [ 
         set part-of-region-of-interest6 true
-        set true-color true-color + 7
+        set true-color true-color + 5
       ]
     
       set region-of-interest6 patch-set patches with [part-of-region-of-interest6 = true]
       set region-of-interest6-size count region-of-interest6 * cells-to-km2
-      ;  print region-of-interest2-size
+      ;  print region-of-interest6-size
     ]
+    
   ]
   
   ; regardless of approach, set region-of-interest
@@ -368,6 +384,36 @@ to set-up-bait-stations
      ]
    ]
     
+  if any? bait-stations with [available-to-foxes = false]
+  [error "ERROR - at least one bait station is on a cell not available to foxes.  Either the bait station is in an 'uninhabitable' region or overlaps a 'barrier'.  Please adjust spatial inputs and set up again."]
+  
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to set-up-barrier
+  
+  set barrier-exists true
+  set barrier gis:load-dataset barrier-shp  
+  ;set barrier-main patch-set patches with [pxcor = 100]; ! the latter option is for testing and will only work if you change 'barrier' to 'barrier-main' in test-barrier code
+  set barrier-main patch-set patches gis:intersecting barrier ; 
+  
+  ; add second barrier if relevant
+  ifelse barrier-shp-2 = ""
+  [set barrier-2-exists false]
+  [
+    set barrier-2 gis:load-dataset barrier-shp-2 
+    set barrier-2-exists true
+    set barrier-main patch-set patches gis:intersecting (list barrier barrier-2)
+  ]   
+      
+  ; now make cells under barrier(s) to be uninhabitable to stop territory creep across the barrier. dispersing foxes will still attempt to jump over it. 
+  ask barrier-main
+  [ 
+    set habitat-type uninhabitable-raster-value 
+  ]
+
+
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -376,7 +422,7 @@ to set-up-foxes
 
   if initial-fox-density > 0
   [
-    create-foxes available-landscape-size  * initial-fox-density
+    create-foxes available-landscape-size * initial-fox-density
     [ 
     ;pendown
     set status "disperser"; 'disperser' refers to a fox that is not a cub and is looking for a territory
@@ -388,13 +434,13 @@ to set-up-foxes
     set family-id nobody
     set natal-id nobody
     set failed-territory-id [0]
-    move-to one-of available-landscape
-    set natal-cell patch-here
-    ;pendown
-    
+    move-to one-of available-landscape ; with [ pxcor < 100]; 268]
+    set natal-cell patch-here   
+    ;pendown 
     ]
     
     foxes-disperse
+    ;ask foxes [pendown]
   ]
   
 end

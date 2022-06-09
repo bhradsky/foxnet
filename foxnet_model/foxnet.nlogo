@@ -1,22 +1,26 @@
-; ## FOX NET MODEL V1.0
+; ## FOX NET MODEL V1.1
+; ## Update includes a permeability routine for foxes to check if they can cross barriers within the landscape (e.g rivers, highways etc).
+; ## Permeability can be set to zero, in which case all foxes attempting to cross will be denied, or else the proportion of foxes which are able
+; ## to successfully cross the barrier is set by the modeller
 ; ## BRONWYN HRADSKY
 ; ## UNIVERSITY OF MELBOURNE
-; ## last updated 2019/01/02
+; ## updated 2020/10/22 by Lachlan Francis (DELWP) to include permeability routine.
+; ## last updated 2022/05/04 by Bronwyn Hradsky
 
 
 ;##################################################################
 ;################# MODEL COMPONENTS ###############################
 ;##################################################################
 
-__includes["setup_routines.nls" "fox_birthdeath_routines.nls" "fox_territory_routines.nls" "monitoring_routines.nls" "bait_routines.nls" "demo_routines.nls"]  ; "bait_routines_otways.nls"
+__includes["setup_routines.nls" "fox_birthdeath_routines.nls" "fox_territory_routines.nls" "monitoring_routines.nls" "bait_routines.nls" "demo_routines.nls" "permeability_routine.nls"]
 
 extensions [profiler gis]
 
 breed [foxes fox]
 breed [fox-families fox-family]
 breed [vacancies vacant ]
-
 breed [bait-stations bait-station]
+breed [barrier-testers barrier-tester]
 
 globals
 [
@@ -65,6 +69,20 @@ globals
   my-survey-transect2
   foxes-overlapping-transect2
 
+  families-with-alpha-vacancy
+
+  ; BARRIER GLOBALS
+  barrier  ; this is a barrier, a GIS input
+  barrier-2  ; this is a second barrier, a GIS input
+  barrier-main  ; patch-set of the cells under the barrier.  These cells are set as uninhabitable to stop territory creep across barrier
+  barrier-exists  ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
+  barrier-2-exists    ; boolean value set in setup if a barrier exists.  becomes a true/false test in dispersal routines.
+  barrier-xy-from  ; the patch where the fox dispersing is leaving from
+  barrier-xy-to  ; the patch where the fox dispersing is trying to go to
+  barrier-link  ; set each test, its the link between the from patch and the to patch to test.
+  barrier-can-cross  ; boolean.  set when there is a fox trying to cross the barrier
+  barrier-not-crossing  ; boolean.  set when there is a fox trying to cross the barrier that is within a dispersal distance from the barrier, but the dispersal location is not across the barrier
+
 ; FOX-RELATED PARAMETERS
   real-fox-hr
 
@@ -84,6 +102,11 @@ globals
   territory-perception-radius
   dispersal-duration
   maximum-territory-update-area
+
+  potential-home-bases
+  poison
+  Pr-death-disperser-scaled
+
 
 ; MONITORING GLOBALS
   my-seed
@@ -192,16 +215,17 @@ patches-own
   part-of-region-of-interest5
   part-of-region-of-interest6
 
+  true-color
   true-productivity
   current-productivity
-  true-color
 
-  checked-already
   fox-family-owner
   cell-relative-productivity
   cell-relative-use
   cell-fox-density
   cell-fox-density-no-cubs
+  checked-already
+
  ]
 
 foxes-own
@@ -214,8 +238,8 @@ foxes-own
   my-dispersal-distance
   distance-from-natal
   my-dispersal-duration; number of time-steps it took the fox to find a new territory
-  collared
   failed-territory-id
+  ;collared
 ]
 
 fox-families-own
@@ -231,6 +255,10 @@ bait-stations-own
   bait-present
   Pr-death-bait-scaled
 
+]
+barrier-testers-own
+[
+  link-id  ; 'a' or 'b' for each end of the permeability test link
 ]
 
 vacancies-own
@@ -281,7 +309,6 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to go
-
   set year floor (ticks * weeks-per-timestep / 52) + 1; Model commences in 'year 1'
   set week-of-year (ticks * weeks-per-timestep + 1) MOD 52; Model commences in 'week 1'
   if week-of-year = 0 [set week-of-year 52]; prevents model showing 'week 0' for last week of year, when 'weeks-per-timestep' is 1
@@ -360,7 +387,7 @@ to territory-demo
   set male-dispersers		0.758
   set bait-layout		"none"
 
- set landscape-raster ""
+  set landscape-raster ""
   set uninhabitable-raster-value 0
   set second-habitat-raster-value 0
   set third-habitat-raster-value 0
@@ -372,6 +399,12 @@ to territory-demo
   set region4-shp ""
   set region5-shp ""
   set region6-shp ""
+
+  set barrier-shp ""
+  set barrier-shp-2 ""
+  set propn-permeable-barrier 0
+  set propn-permeable-barrier-2 0
+
   set survey-transect-shp ""
   set survey-transect2-shp ""
 
@@ -598,6 +631,12 @@ to basic-model
   set region4-shp ""
   set region5-shp ""
   set region6-shp ""
+
+  set barrier-shp ""
+  set barrier-shp-2 ""
+  set propn-permeable-barrier 0
+  set propn-permeable-barrier-2 0
+
   set survey-transect-shp ""
   set survey-transect2-shp ""
 
@@ -673,6 +712,12 @@ to Glenelg-model
   set region4-shp ""
   set region5-shp ""
   set region6-shp ""
+
+  set barrier-shp "gis_layers/glenelg/fence.shp"
+  set barrier-shp-2 ""
+  set propn-permeable-barrier 0
+  set propn-permeable-barrier-2 0
+
   set survey-transect-shp "gis_layers/glenelg/mtclay_transect.shp"
   set survey-transect2-shp ""
 
@@ -708,10 +753,10 @@ to Glenelg-model
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-810
+815
 70
-1018
-279
+1729
+770
 -1
 -1
 1.0
@@ -725,9 +770,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-199
+905
 0
-199
+690
 0
 0
 1
@@ -791,7 +836,7 @@ BUTTON
 684
 158
 profiler
-setup                  ;; set up the model\nprofiler:start         ;; start profiling\n;repeat 10 [setup]\nrepeat 26 [go]       ;; run something you want to measure\nprofiler:stop          ;; stop profiling\nprint profiler:report  ;; view the results\nprofiler:reset         ;; clear the data
+setup                  ;; set up the model\nprofiler:start         ;; start profiling\n;repeat 10 [setup]\nrepeat 104 [go]       ;; run something you want to measure\nprofiler:stop          ;; stop profiling\nprint profiler:report  ;; view the results\nprofiler:reset         ;; clear the data
 NIL
 1
 T
@@ -844,7 +889,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-0.5
+1.5
 0.5
 1
 /km2
@@ -859,7 +904,7 @@ bait-density
 bait-density
 0
 5
-0.0
+1.0
 0.5
 1
 /km2
@@ -874,7 +919,7 @@ Pr-die-if-exposed-100ha
 Pr-die-if-exposed-100ha
 0
 1
-0.0
+0.3
 0.05
 1
 NIL
@@ -888,7 +933,7 @@ CHOOSER
 bait-layout
 bait-layout
 "none" "grid" "random-scatter" "custom"
-0
+3
 
 TEXTBOX
 405
@@ -937,7 +982,7 @@ INPUTBOX
 395
 245
 home-range-area
-[0.454]
+[2.14]
 1
 0
 String (reporter)
@@ -950,7 +995,7 @@ CHOOSER
 weeks-per-timestep
 weeks-per-timestep
 1 2 4
-0
+2
 
 CHOOSER
 405
@@ -992,7 +1037,7 @@ CHOOSER
 landscape-source
 landscape-source
 "generate" "import raster"
-0
+1
 
 TEXTBOX
 10
@@ -1040,7 +1085,7 @@ INPUTBOX
 170
 410
 landscape-raster
-NIL
+gis_layers/glenelg/mtclay_landscape.asc
 1
 1
 String
@@ -1064,7 +1109,7 @@ less1y-survival
 less1y-survival
 0
 1
-0.48
+0.39
 0.01
 1
 propn.
@@ -1079,7 +1124,7 @@ from1yto2y-survival
 from1yto2y-survival
 0
 1
-0.54
+0.65
 0.01
 1
 propn.
@@ -1094,7 +1139,7 @@ from2yto3y-survival
 from2yto3y-survival
 0
 1
-0.53
+0.92
 0.01
 1
 propn.
@@ -1109,7 +1154,7 @@ more3y-survival
 more3y-survival
 0
 1
-0.51
+0.18
 0.01
 1
 propn.
@@ -1144,7 +1189,7 @@ cub-birth-season
 cub-birth-season
 1
 52
-13.0
+37.0
 1
 1
 week
@@ -1174,7 +1219,7 @@ number-of-cubs
 number-of-cubs
 0
 8
-4.72
+3.2
 0.01
 1
 NIL
@@ -1204,7 +1249,7 @@ dispersal-season-begins
 dispersal-season-begins
 1
 52
-37.0
+9.0
 1
 1
 week
@@ -1219,7 +1264,7 @@ dispersal-season-ends
 dispersal-season-ends
 1
 52
-9.0
+21.0
 1
 1
 week
@@ -1234,7 +1279,7 @@ female-dispersers
 female-dispersers
 0
 0.999
-0.378
+0.7
 0.001
 1
 propn.
@@ -1249,7 +1294,7 @@ male-dispersers
 male-dispersers
 0
 0.999
-0.758
+0.999
 0.001
 1
 propn.
@@ -1261,7 +1306,7 @@ INPUTBOX
 610
 365
 bait-layout-shp
-NIL
+gis_layers/glenelg/mtclay_baits.shp
 1
 1
 String
@@ -1286,7 +1331,7 @@ commence-baiting-year
 commence-baiting-year
 1
 50
-1.0
+3.0
 1
 1
 year
@@ -1301,7 +1346,7 @@ commence-baiting-week
 commence-baiting-week
 1
 52
-1.0
+13.0
 1
 1
 week
@@ -1313,16 +1358,16 @@ INPUTBOX
 170
 915
 region-shp
-NIL
+gis_layers/glenelg/mtclay_region.shp
 1
 1
 String
 
 PLOT
-1230
-10
-1740
-225
+1845
+680
+2355
+895
 fox density
 time step
 number per km2
@@ -1343,10 +1388,10 @@ PENS
 "Fox-family - region 1" 1.0 0 -16777216 true "" ""
 
 PLOT
-1230
-235
-1675
-421
+1845
+905
+2290
+1091
 bait take
 time step
 proportion of baits
@@ -1366,10 +1411,10 @@ PENS
 "bait-take 6" 1.0 0 -13840069 true "" ""
 
 PLOT
-1035
-745
-1315
-900
+1650
+1415
+1930
+1570
 fox home range area (95% MCP)
 area (ha)
 number
@@ -1392,7 +1437,7 @@ region-size
 region-size
 10
 6000
-110.0
+200.0
 10
 1
 km2
@@ -1407,17 +1452,17 @@ hab2:hab1
 hab2:hab1
 0
 10
-1.0
+3.0
 0.05
 1
 x
 HORIZONTAL
 
 MONITOR
-1680
-235
-1810
-288
+2295
+905
+2425
+958
 annual cost to-date
 bait-cost
 0
@@ -1430,16 +1475,16 @@ INPUTBOX
 170
 475
 uninhabitable-raster-value
-0.0
+2.0
 1
 0
 Number
 
 PLOT
-1230
-590
-1510
-740
+1845
+1260
+2125
+1410
 fox dispersal
 dispersal distance (km)
 freq
@@ -1459,7 +1504,7 @@ INPUTBOX
 170
 755
 survey-transect-shp
-NIL
+gis_layers/glenelg/mtclay_transect.shp
 1
 1
 String
@@ -1503,7 +1548,7 @@ INPUTBOX
 610
 830
 price-per-bait
-0.0
+2.0
 1
 0
 Number
@@ -1524,7 +1569,7 @@ INPUTBOX
 610
 895
 person-days-per-baiting-round
-0.0
+3.0
 1
 0
 Number
@@ -1535,7 +1580,7 @@ INPUTBOX
 610
 1025
 km-per-baiting-round
-0.0
+420.0
 1
 0
 Number
@@ -1546,7 +1591,7 @@ INPUTBOX
 610
 1090
 cost-per-km-travel
-0.0
+0.67
 1
 0
 Number
@@ -1557,7 +1602,7 @@ INPUTBOX
 610
 960
 cost-per-person-day
-0.0
+250.0
 1
 0
 Number
@@ -1568,7 +1613,7 @@ INPUTBOX
 170
 990
 region2-shp
-NIL
+gis_layers/glenelg/annya_region.shp
 1
 1
 String
@@ -1628,10 +1673,10 @@ IMPORTANT! For the Glenelg-model to work, you must set your working- directory t
 1
 
 PLOT
-1515
-590
-1810
-740
+2130
+1260
+2425
+1410
 number of neighbouring territories
 time step
 number
@@ -1648,10 +1693,10 @@ PENS
 "max" 1.0 0 -7500403 true "" ""
 
 PLOT
-1320
-745
-1615
-900
+1935
+1415
+2230
+1570
 foxes overlapping transect
 time step
 number
@@ -1678,10 +1723,10 @@ plot?
 -1000
 
 PLOT
-1230
-425
-1510
-585
+1845
+1095
+2125
+1255
 age structure
 Fox age (years)
 Propn. foxes
@@ -1696,10 +1741,10 @@ PENS
 "default" 1.0 1 -16777216 true "" ""
 
 PLOT
-1515
-425
-1880
-585
+2130
+1095
+2495
+1255
 population structure
 group
 propn. foxes
@@ -1842,7 +1887,7 @@ SWITCH
 448
 bait-consumption
 bait-consumption
-1
+0
 1
 -1000
 
@@ -1879,7 +1924,7 @@ INPUTBOX
 580
 70
 output-file-path
-outputs
+outputs/test
 1
 0
 String
@@ -1890,7 +1935,7 @@ INPUTBOX
 170
 640
 third-habitat-raster-value
-0.0
+100.0
 1
 0
 Number
@@ -1945,9 +1990,9 @@ String
 
 INPUTBOX
 5
-1190
+1185
 170
-1250
+1245
 region6-shp
 NIL
 1
@@ -2001,6 +2046,50 @@ INPUTBOX
 610
 765
 annual-baseline-cost
+1000.0
+1
+0
+Number
+
+INPUTBOX
+5
+1250
+265
+1315
+barrier-shp
+gis_layers/glenelg/fence.shp
+1
+1
+String
+
+INPUTBOX
+5
+1315
+157
+1375
+propn-permeable-barrier
+0.0
+1
+0
+Number
+
+INPUTBOX
+5
+1375
+265
+1440
+barrier-shp-2
+gis_layers/glenelg/coast.shp
+1
+1
+String
+
+INPUTBOX
+5
+1440
+157
+1500
+propn-permeable-barrier-2
 0.0
 1
 0
