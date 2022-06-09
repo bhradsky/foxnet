@@ -141,7 +141,7 @@ modelrun <-function(corename)
    output$baited <- i
    write.csv(output, paste0(foxnet.path, "/outputs/mtclay/mtclay_baseline_baited_", i, "_", corename,"_test.csv"))
    
-   ## alternative code for exporting heatmap
+   ## alternative code for exporting density map
    # output <- NLDoReport(timesteps, "go if year = 16 and week-of-year = 0 [export-fox-density-map]", output.parameters,
    #                      as.data.frame = TRUE,
    #                      df.col.names=output.parameters,
