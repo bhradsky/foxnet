@@ -342,6 +342,7 @@ to go
 
  ]
 
+ ; if year = 1 and week-of-year = 1 [export-fox-density-map]
 
  update-monitors; see 'monitoring_routines'
 
@@ -755,8 +756,8 @@ end
 GRAPHICS-WINDOW
 815
 70
-1729
-770
+1219
+475
 -1
 -1
 1.0
@@ -770,9 +771,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-905
+199
 0
-690
+199
 0
 0
 1
@@ -889,7 +890,7 @@ initial-fox-density
 initial-fox-density
 0
 8
-1.5
+0.0
 0.5
 1
 /km2
@@ -904,7 +905,7 @@ bait-density
 bait-density
 0
 5
-1.0
+0.0
 0.5
 1
 /km2
@@ -919,7 +920,7 @@ Pr-die-if-exposed-100ha
 Pr-die-if-exposed-100ha
 0
 1
-0.3
+0.0
 0.05
 1
 NIL
@@ -933,7 +934,7 @@ CHOOSER
 bait-layout
 bait-layout
 "none" "grid" "random-scatter" "custom"
-3
+0
 
 TEXTBOX
 405
@@ -982,7 +983,7 @@ INPUTBOX
 395
 245
 home-range-area
-[2.14]
+[0.454]
 1
 0
 String (reporter)
@@ -995,7 +996,7 @@ CHOOSER
 weeks-per-timestep
 weeks-per-timestep
 1 2 4
-2
+0
 
 CHOOSER
 405
@@ -1037,7 +1038,7 @@ CHOOSER
 landscape-source
 landscape-source
 "generate" "import raster"
-1
+0
 
 TEXTBOX
 10
@@ -1085,7 +1086,7 @@ INPUTBOX
 170
 410
 landscape-raster
-gis_layers/glenelg/mtclay_landscape.asc
+NIL
 1
 1
 String
@@ -1109,7 +1110,7 @@ less1y-survival
 less1y-survival
 0
 1
-0.39
+0.48
 0.01
 1
 propn.
@@ -1124,7 +1125,7 @@ from1yto2y-survival
 from1yto2y-survival
 0
 1
-0.65
+0.54
 0.01
 1
 propn.
@@ -1139,7 +1140,7 @@ from2yto3y-survival
 from2yto3y-survival
 0
 1
-0.92
+0.53
 0.01
 1
 propn.
@@ -1154,7 +1155,7 @@ more3y-survival
 more3y-survival
 0
 1
-0.18
+0.51
 0.01
 1
 propn.
@@ -1189,7 +1190,7 @@ cub-birth-season
 cub-birth-season
 1
 52
-37.0
+13.0
 1
 1
 week
@@ -1219,7 +1220,7 @@ number-of-cubs
 number-of-cubs
 0
 8
-3.2
+4.72
 0.01
 1
 NIL
@@ -1249,7 +1250,7 @@ dispersal-season-begins
 dispersal-season-begins
 1
 52
-9.0
+37.0
 1
 1
 week
@@ -1264,7 +1265,7 @@ dispersal-season-ends
 dispersal-season-ends
 1
 52
-21.0
+9.0
 1
 1
 week
@@ -1279,7 +1280,7 @@ female-dispersers
 female-dispersers
 0
 0.999
-0.7
+0.378
 0.001
 1
 propn.
@@ -1294,7 +1295,7 @@ male-dispersers
 male-dispersers
 0
 0.999
-0.999
+0.758
 0.001
 1
 propn.
@@ -1306,7 +1307,7 @@ INPUTBOX
 610
 365
 bait-layout-shp
-gis_layers/glenelg/mtclay_baits.shp
+NIL
 1
 1
 String
@@ -1331,7 +1332,7 @@ commence-baiting-year
 commence-baiting-year
 1
 50
-3.0
+1.0
 1
 1
 year
@@ -1346,7 +1347,7 @@ commence-baiting-week
 commence-baiting-week
 1
 52
-13.0
+1.0
 1
 1
 week
@@ -1358,16 +1359,16 @@ INPUTBOX
 170
 915
 region-shp
-gis_layers/glenelg/mtclay_region.shp
+NIL
 1
 1
 String
 
 PLOT
-1845
-680
-2355
-895
+1230
+70
+1740
+285
 fox density
 time step
 number per km2
@@ -1388,10 +1389,10 @@ PENS
 "Fox-family - region 1" 1.0 0 -16777216 true "" ""
 
 PLOT
-1845
-905
-2290
-1091
+1230
+295
+1675
+481
 bait take
 time step
 proportion of baits
@@ -1411,10 +1412,10 @@ PENS
 "bait-take 6" 1.0 0 -13840069 true "" ""
 
 PLOT
-1650
-1415
-1930
-1570
+870
+810
+1150
+965
 fox home range area (95% MCP)
 area (ha)
 number
@@ -1437,7 +1438,7 @@ region-size
 region-size
 10
 6000
-200.0
+110.0
 10
 1
 km2
@@ -1452,17 +1453,17 @@ hab2:hab1
 hab2:hab1
 0
 10
-3.0
+1.0
 0.05
 1
 x
 HORIZONTAL
 
 MONITOR
-2295
-905
-2425
-958
+1605
+295
+1735
+348
 annual cost to-date
 bait-cost
 0
@@ -1475,16 +1476,16 @@ INPUTBOX
 170
 475
 uninhabitable-raster-value
-2.0
+0.0
 1
 0
 Number
 
 PLOT
-1845
-1260
-2125
-1410
+870
+655
+1150
+805
 fox dispersal
 dispersal distance (km)
 freq
@@ -1504,7 +1505,7 @@ INPUTBOX
 170
 755
 survey-transect-shp
-gis_layers/glenelg/mtclay_transect.shp
+NIL
 1
 1
 String
@@ -1548,7 +1549,7 @@ INPUTBOX
 610
 830
 price-per-bait
-2.0
+0.0
 1
 0
 Number
@@ -1569,7 +1570,7 @@ INPUTBOX
 610
 895
 person-days-per-baiting-round
-3.0
+0.0
 1
 0
 Number
@@ -1580,7 +1581,7 @@ INPUTBOX
 610
 1025
 km-per-baiting-round
-420.0
+0.0
 1
 0
 Number
@@ -1591,7 +1592,7 @@ INPUTBOX
 610
 1090
 cost-per-km-travel
-0.67
+0.0
 1
 0
 Number
@@ -1602,7 +1603,7 @@ INPUTBOX
 610
 960
 cost-per-person-day
-250.0
+0.0
 1
 0
 Number
@@ -1613,7 +1614,7 @@ INPUTBOX
 170
 990
 region2-shp
-gis_layers/glenelg/annya_region.shp
+NIL
 1
 1
 String
@@ -1673,10 +1674,10 @@ IMPORTANT! For the Glenelg-model to work, you must set your working- directory t
 1
 
 PLOT
-2130
-1260
-2425
-1410
+1155
+655
+1450
+805
 number of neighbouring territories
 time step
 number
@@ -1693,10 +1694,10 @@ PENS
 "max" 1.0 0 -7500403 true "" ""
 
 PLOT
-1935
-1415
-2230
-1570
+1155
+810
+1450
+965
 foxes overlapping transect
 time step
 number
@@ -1723,10 +1724,10 @@ plot?
 -1000
 
 PLOT
-1845
-1095
-2125
-1255
+870
+490
+1150
+650
 age structure
 Fox age (years)
 Propn. foxes
@@ -1741,10 +1742,10 @@ PENS
 "default" 1.0 1 -16777216 true "" ""
 
 PLOT
-2130
-1095
-2495
-1255
+1155
+490
+1520
+650
 population structure
 group
 propn. foxes
@@ -1887,7 +1888,7 @@ SWITCH
 448
 bait-consumption
 bait-consumption
-0
+1
 1
 -1000
 
@@ -1935,7 +1936,7 @@ INPUTBOX
 170
 640
 third-habitat-raster-value
-100.0
+0.0
 1
 0
 Number
@@ -2046,7 +2047,7 @@ INPUTBOX
 610
 765
 annual-baseline-cost
-1000.0
+0.0
 1
 0
 Number
@@ -2057,7 +2058,7 @@ INPUTBOX
 265
 1315
 barrier-shp
-gis_layers/glenelg/fence.shp
+NIL
 1
 1
 String
@@ -2079,7 +2080,7 @@ INPUTBOX
 265
 1440
 barrier-shp-2
-gis_layers/glenelg/coast.shp
+NIL
 1
 1
 String
@@ -2437,7 +2438,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.0
+NetLogo 6.2.2
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
