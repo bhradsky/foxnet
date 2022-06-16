@@ -47,33 +47,34 @@
 \contentsline {subsection}{\numberline {5.4}Customised survey transect}{30}{subsection.5.4}
 \contentsline {subsection}{\numberline {5.5}Customised barrier(s)}{30}{subsection.5.5}
 \contentsline {section}{\numberline {6}Generating an (averaged) map of fox density}{31}{section.6}
-\contentsline {section}{\numberline {7}Running batch scripts}{32}{section.7}
-\contentsline {subsection}{\numberline {7.1}Within NetLogo}{32}{subsection.7.1}
-\contentsline {subsection}{\numberline {7.2}From R using the RNetLogo package}{32}{subsection.7.2}
-\contentsline {section}{\numberline {8}Implementation verification}{36}{section.8}
-\contentsline {subsection}{\numberline {8.1}Effect of productivity on fox-family territories}{36}{subsection.8.1}
-\contentsline {subsection}{\numberline {8.2}Effect of productivity on fox density}{37}{subsection.8.2}
-\contentsline {subsection}{\numberline {8.3}Effect of baiting on fox mortality}{38}{subsection.8.3}
-\contentsline {section}{\numberline {9}Submodels}{39}{section.9}
-\contentsline {subsection}{\numberline {9.1}Submodels used during model processing}{39}{subsection.9.1}
-\contentsline {subsubsection}{\numberline {9.1.1}update-fox-age-and-status}{39}{subsubsection.9.1.1}
-\contentsline {subsubsection}{\numberline {9.1.2}fox-families-check-territories}{39}{subsubsection.9.1.2}
-\contentsline {subsubsection}{\numberline {9.1.3}bait-if-applicable}{40}{subsubsection.9.1.3}
-\contentsline {subsubsection}{\numberline {9.1.4}foxes-disperse}{40}{subsubsection.9.1.4}
-\contentsline {subsubsection}{\numberline {9.1.5}fox-families-breed}{41}{subsubsection.9.1.5}
-\contentsline {subsubsection}{\numberline {9.1.6}foxes-die}{41}{subsubsection.9.1.6}
-\contentsline {subsubsection}{\numberline {9.1.7}update-monitors}{41}{subsubsection.9.1.7}
-\contentsline {subsubsection}{\numberline {9.1.8}move-to-centroid}{41}{subsubsection.9.1.8}
-\contentsline {subsubsection}{\numberline {9.1.9}territory-fail}{42}{subsubsection.9.1.9}
-\contentsline {subsection}{\numberline {9.2}Submodels specific to model set-up}{42}{subsection.9.2}
-\contentsline {subsubsection}{\numberline {9.2.1}check-for-errors}{42}{subsubsection.9.2.1}
+\contentsline {section}{\numberline {7}Running batch scripts}{33}{section.7}
+\contentsline {subsection}{\numberline {7.1}Within NetLogo}{33}{subsection.7.1}
+\contentsline {subsection}{\numberline {7.2}From R using the RNetLogo package}{33}{subsection.7.2}
+\contentsline {subsection}{\numberline {7.3}From R using the nlrx package.}{33}{subsection.7.3}
+\contentsline {section}{\numberline {8}Implementation verification}{35}{section.8}
+\contentsline {subsection}{\numberline {8.1}Effect of productivity on fox-family territories}{35}{subsection.8.1}
+\contentsline {subsection}{\numberline {8.2}Effect of productivity on fox density}{36}{subsection.8.2}
+\contentsline {subsection}{\numberline {8.3}Effect of baiting on fox mortality}{37}{subsection.8.3}
+\contentsline {section}{\numberline {9}Submodels}{38}{section.9}
+\contentsline {subsection}{\numberline {9.1}Submodels used during model processing}{38}{subsection.9.1}
+\contentsline {subsubsection}{\numberline {9.1.1}update-fox-age-and-status}{38}{subsubsection.9.1.1}
+\contentsline {subsubsection}{\numberline {9.1.2}fox-families-check-territories}{38}{subsubsection.9.1.2}
+\contentsline {subsubsection}{\numberline {9.1.3}bait-if-applicable}{39}{subsubsection.9.1.3}
+\contentsline {subsubsection}{\numberline {9.1.4}foxes-disperse}{39}{subsubsection.9.1.4}
+\contentsline {subsubsection}{\numberline {9.1.5}fox-families-breed}{40}{subsubsection.9.1.5}
+\contentsline {subsubsection}{\numberline {9.1.6}foxes-die}{40}{subsubsection.9.1.6}
+\contentsline {subsubsection}{\numberline {9.1.7}update-monitors}{40}{subsubsection.9.1.7}
+\contentsline {subsubsection}{\numberline {9.1.8}move-to-centroid}{40}{subsubsection.9.1.8}
+\contentsline {subsubsection}{\numberline {9.1.9}territory-fail}{41}{subsubsection.9.1.9}
+\contentsline {subsection}{\numberline {9.2}Submodels specific to model set-up}{41}{subsection.9.2}
+\contentsline {subsubsection}{\numberline {9.2.1}check-for-errors}{41}{subsubsection.9.2.1}
 \contentsline {subsubsection}{\numberline {9.2.2}set-fox-parameters}{42}{subsubsection.9.2.2}
-\contentsline {subsubsection}{\numberline {9.2.3}create-world}{43}{subsubsection.9.2.3}
-\contentsline {subsubsection}{\numberline {9.2.4}identify-region-of-interest}{43}{subsubsection.9.2.4}
-\contentsline {subsubsection}{\numberline {9.2.5}set-landscape-productivity}{43}{subsubsection.9.2.5}
-\contentsline {subsubsection}{\numberline {9.2.6}set-up-bait-stations}{44}{subsubsection.9.2.6}
-\contentsline {subsubsection}{\numberline {9.2.7}set-up-foxes}{44}{subsubsection.9.2.7}
-\contentsline {section}{\numberline {10}Appendices}{45}{section.10}
-\contentsline {subsection}{\numberline {10.1}Customisable model parameters}{45}{subsection.10.1}
+\contentsline {subsubsection}{\numberline {9.2.3}create-world}{42}{subsubsection.9.2.3}
+\contentsline {subsubsection}{\numberline {9.2.4}identify-region-of-interest}{42}{subsubsection.9.2.4}
+\contentsline {subsubsection}{\numberline {9.2.5}set-landscape-productivity}{42}{subsubsection.9.2.5}
+\contentsline {subsubsection}{\numberline {9.2.6}set-up-bait-stations}{43}{subsubsection.9.2.6}
+\contentsline {subsubsection}{\numberline {9.2.7}set-up-foxes}{43}{subsubsection.9.2.7}
+\contentsline {section}{\numberline {10}Appendices}{44}{section.10}
+\contentsline {subsection}{\numberline {10.1}Customisable model parameters}{44}{subsection.10.1}
 \contentsline {subsection}{\numberline {10.2}Week Conversion Table}{49}{subsection.10.2}
 \contentsline {section}{\numberline {11}References}{50}{section.11}

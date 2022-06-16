@@ -1,8 +1,12 @@
 ---
-title: "FoxNet User Guide V1.3.0"
-author: "Bronwyn Hradsky, Quantitative and Applied Ecology, University of Melbourne"
+title: "FoxNet User Guide V2.0.0"
+author: "Dr Bronwyn Hradsky, Quantitative and Applied Ecology, University of Melbourne"
 header-includes:
   - \usepackage{float}
+  # - \usepackage{titling}
+  # - \pretitle{\begin{center}
+  #   \includegraphics[width=7in,height=4in]{figures/density_averaged_smooth15.png}\LARGE\\}
+  # - \posttitle{\end{center}}
   - \floatplacement{figure}{H} 
   - \floatplacement{table}{H} 
 output:
@@ -10,7 +14,6 @@ output:
     number_sections: yes
     toc: yes
     toc_depth: 2
-
   html_vignette:
     number_sections: yes
     toc: yes
@@ -20,7 +23,7 @@ output:
     toc: yes
     toc_depth: '2'
 vignette: |
-  %\VignetteIndexEntry{FoxNet User Guide V1.2} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{FoxNet User Guide V2.0} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
@@ -86,9 +89,9 @@ FoxNet has four main types of agent: *habitat-cells*, *foxes*, *fox-families* an
 
 *Habitat-cells* are the squares of habitat that define the spatial resolution, configuration and productivity of a model landscape in FoxNet.  Within a *habitat-cell*, productivity and *fox* access to *bait-stations* is homogenous.  The area represented by each *habitat-cell* can be specified using `cell-dimension`, and is usually in the order of 0.01 km^2^ to provide a compromise between computational efficiency and intra-home-range variation  (fox home-range size varies between <0.5 and >9 km^2^; Trewhella et al. 1988). Each *habitat-cell* keeps track of the following parameters:  
 
-- `habitat-type`: an integer that denotes the type of habitat (e.g. "0" = ocean, "1" = forest, "2" = farmland). If the model landscape is generated within FoxNet, there will only be one `habitat-type`. However, if the model landscape is imported as an ascii raster layer, the `uninhabitable-raster-value`, `second-habitat-raster-value` and `hab2:hab1` inputs can be used to specify, respectively, a raster integer value that denotes *habitat-cells* that are not available to *foxes* (such as ocean or lakes), a raster integer value that denotes a secondary type of habitat (e.g. farmland if the primary habitat type is forest), and the productivity of the second `habitat-type` relative to the primary `habitat-type`.  The productivity of the *habitat-cells* determines how many *habitat-cells* a *fox-family* needs to acquire to establish a territory (see below).
+- `habitat-type`: an integer that denotes the type of habitat (e.g. "0" = ocean, "1" = forest, "2" = farmland, "3" = heathland). If the model landscape is generated within FoxNet, there will only be one `habitat-type`. However, if the model landscape is imported as an ascii raster layer, the `uninhabitable-raster-value`, `second-habitat-raster-value`, `hab2:hab1`, `third-habitat-raster-value` and `hab3:hab1` inputs can be used to specify, respectively, a raster integer value that denotes *habitat-cells* that are not available to *foxes* (such as ocean or lakes), a raster integer value that denotes a secondary type of habitat (e.g. farmland if the primary habitat type is forest) and the productivity of the second `habitat-type` relative to the primary `habitat-type`, and a raster integer value that denotes a third type of habitat (e.g. heathland) and the productivity of the third `habitat-type` relative to the primary `habitat-type`.  The productivity of the *habitat-cells* determines how many *habitat-cells* a *fox-family* needs to acquire to establish a territory (see below).
 
-- `available-to-foxes`: "true" or "false". This parameter defaults to "true" unless the *habitat-cell*'s `habitat-type` is the same as the `uninhabitable-raster-value` for an imported landscape. In this case, the *habitat-cell* becomes unavailable to *foxes* and is not included in the `available-landscape-size`.  This allows to you to specify areas that *foxes* cannot access, such as oceans, lakes, predator-proof fenced areas etc.  
+- `available-to-foxes`: "true" or "false". This parameter defaults to "true" unless the *habitat-cell*'s `habitat-type` is the same as the `uninhabitable-raster-value` for an imported landscape. In this case, the *habitat-cell* becomes unavailable to *foxes* and is not included in the `available-landscape-size`.  This allows to you to specify areas that *foxes* cannot access, such as oceans, lakes, predator-proof fenced areas etc. Cells underlying a barrier are also unavailable to foxes.  
   
 - `part-of-region-of-interest`: "true" or "false". This parameter defaults to "false". When "true", the *habitat-cell* becomes part of the `region-of-interest` where the *fox* population is monitored (e.g. a central square or a nature reserve).  The `region-of-interest` can be the entire landscape if desired.
 
@@ -297,7 +300,11 @@ This calculates the model ouputs and plots them if applicable. See the **[update
 
 ## Installing NetLogo and opening FoxNet
 
-FoxNet V1.3.0 was built in NetLogo (Wilensky 1999) version 6.2.0 - an open-source modelling environment, downloadable from <https://ccl.northwestern.edu/netlogo/>. FoxNet is saved in within the FoxNet folder: `FoxNet_model / FoxNet.nlogo`.  You can open it from within NetLogo or by double-clicking the file name.
+FoxNet V 1.0 was built in NetLogo (Wilensky 1999) version 6.0.2 and used the R package `rnetlogo` to run model experiments.
+
+FoxNet V 2.0 was updated for NetLogo 6.2.2 and includes an example of how to run experiments using the R package `nlrx`.
+
+NetLogo is an open-source modelling environment, downloadable from <https://ccl.northwestern.edu/netlogo/>. FoxNet is saved in within the FoxNet folder: `FoxNet_model / FoxNet.nlogo`.  You can open it from within NetLogo or by double-clicking the file name.
 
 For an introduction to using NetLogo see <https://ccl.northwestern.edu/netlogo/docs/>, particularly the three tutorials listed in the LH menu.
 
@@ -314,7 +321,7 @@ When you first open FoxNet, you should see the graphic user interface.  The inte
 
 + **go (continuous)** will run FoxNet forever (or at least until you click the button again) - this is shown by the circling arrows.
 
-+**export** will export a spatial layer of fox density (excuding cubs) to the folder specified in your `output file path` as an .asc file.
++ **export** will export a spatial layer of fox density (excuding cubs) to the folder specified in your `output file path` as an .asc file.
 
 + **territory-demo** will provide a demonstration of key model processes relating to fox territories - see [Model demonstration].  
 
@@ -920,15 +927,47 @@ Repeat for a second barrier using the `barrier-shp-2` and `propn-permeable-barri
 
 # Generating an (averaged) map of fox density
 
-A visual representation of fox density across a landscape can be a powerful communication tool.  It also helps you check that your model is behaving (and you are interpreting it) in the way you anticipated!
+A visual representation of fox density across a landscape can be a powerful communication tool.  It also helps you check that your model is behaving (and you are interpreting it) in the way you anticipated.
 
 To export a spatial layer of fox density (by default, this is the density of foxes excluding cubs), you can click on the **export** button.  This will save an ascii (.asc) file in the folder specified in the `output file path` input box.  By default, this path is 'outputs/test'.
 
-If you open the .asc file in spatial mapping software (e.g. R, ArcGIS or QGIS), you will see that the density is 'lumpy', with circles around fox home ranges.
+Alternatively, you can add a line in the code to automatically export this spatial layer at specified timesteps.  Click `code`, under `Procedures`, choose `go`.  After the end of the square bracket section, add: `if year = 1 and week-of-year = 1 [export-fox-density-map]`, with your desired year and week-of-year values (make sure that the weeks will actually occur, if `week-per-timestep` > 1).  This will save an ascii (.asc) file in the folder specified in the `output file path` input box.  By default, this path is 'outputs/test'.
 
-It will be more meaningful if you average the density across several outputs, e.g. across different time steps for the same model run, or across outputs generated from different model runs at the same time step
+If you open the .asc file in spatial mapping software (e.g. R, ArcGIS or QGIS), you will see that the density is 'lumpy', with individual fox ranges showing as distinct circles.
 
-Code for averaging the density from several exported .asc files using R can be found within the FoxNet package at `r_scripts/analyse_outputs/Smooth_density_maps.R`
+
+```{r, echo = FALSE, fig.align='centre', fig.show='hold', out.width = "60%", fig.align='center'}
+
+include_graphics("figures/density_1run.png")
+
+
+```
+
+
+It will be more meaningful if you average the density across several outputs, e.g. across different time steps for the same model run, or across outputs generated from different model runs at the same time step.  
+
+The figure below shows density averaged from 16 model runs at the same time-step.
+
+
+```{r, echo = FALSE, fig.align='centre', fig.show='hold', out.width = "60%", fig.align='center'}
+
+include_graphics("figures/density_averaged.png")
+
+
+```
+
+You may then want to 'smooth' the density across a moving window. The final appearance will depend on the size of the window - this example below compares a 5 x 5 smoothed cell window to a 15 x 15 smoothed cell window, where each cell is 100 m.
+
+
+```{r, echo = FALSE, fig.align='centre', fig.show='hold', out.width = "40%", fig.align='center'}
+
+include_graphics("figures/density_averaged_smooth5.png")
+include_graphics("figures/density_averaged_smooth15.png")
+
+
+```
+
+Code for averaging and smoothing the density from several exported .asc files using R is provided within the FoxNet package at `r_scripts/analyse_outputs/smooth_density_maps.R`
 
 
 \pagebreak
@@ -936,7 +975,7 @@ Code for averaging the density from several exported .asc files using R can be f
 
 Specifying inputs from the interface and running scenarios becomes tedious when you want to run many experiments with varying parameters. 
 
-There are two ways to run batch scripts: (1) within NetLogo and (2) from R, using the RNetLogo package.
+There are three ways to run batch scripts: (1) within NetLogo, (2) from R, using the RNetLogo package (no longer maintained), (3) from R, using the nlrx package
 
 ## Within NetLogo
 
@@ -951,7 +990,9 @@ Example BehaviourSpace scripts for each of the FoxNet models described in Hradsk
 
 ## From R using the RNetLogo package
 
-NetLogo can be called from R via the RNetLogo package. However, this package is no longer maintained.
+NetLogo can be called from R via the RNetLogo package. RNetLogo is compatible with Netlogo v 6.0.2, and was used for running the models in the *J. Appl. Ecol* (2019) paper. 
+
+However, RNetLogo is no longer maintained and is not compatible with later versions of NetLogo. I DO NOT RECOMMEND using this approach for your new models, but it is provided for reproducibility.
 
 See:
 
@@ -959,142 +1000,7 @@ See:
 
 - Thiele J, Kurth W, Grimm V (2012). RNetLogo: An R Package for Running and Exploring Individual-Based Models Implemented in NetLogo. *Methods in Ecology and Evolution* 3 (3), 480-483. <http://onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2011.00180.x/abstract/>
 
-Example R scripts for running each of the FoxNet models described in Hradsky et al. (2019a) *J. Applied Ecology* in parallel are provided within the FoxNet folder - see `foxnet/r_scripts/run_model`. Note again that you must set the `working-directory` within the script to the correct file path (the location of your FoxNet folder e.g. `C:/Users/hradskyb/foxnet`) for any model that involves importing a raster layer.
-
-An example for running a single version of FoxNet from R is provided here: 
-
-```{r, echo = TRUE, eval = FALSE}
-
-# LOAD PACKAGES
-    require(rJava)
-    .jinit(options(java.parameters=c("-server","-Xmx6000m")), force.init	= TRUE) 
-    #this may be required to override memory constraints for some computers
-    
-    require(RNetLogo) #version 1.0-4
-    
-# SPECIFY PATHS FOR NETLOGO SOFTWARE AND FOXNET FOLDER
-    computersetup <- "laptop"
-    
-    if (computersetup == "laptop") {
-      netlogo.path <- "C:/Program Files/NetLogo 6.0.2/app" 
-      foxnet.path <- "C:/Users/hradskyb/FoxControlPatrol/Dropbox/personal/bron/ibm/foxnet"
-    }
-    
-    corename <- "testrun"
-    
-# LOAD NETLOGO
-    NLStart(netlogo.path, gui = TRUE, nl.jarname = "netlogo-6.0.2.jar", 
-            nl.obj = corename)
-    # make sure version number is correct
-    # ignore the Warning about error code 5 and "Unable to locate empty model: /system/empty.nlogo"
-    # it only occurs when gui (the visual interface) = TRUE and doesn't affect anything
-    
-# LOAD FOXNET MODELLING PLATFORM  
-    NLLoadModel(paste0(foxnet.path, "/foxnet_model/foxnet.nlogo"),  
-                nl.obj = corename)
-    
-# SET MODEL PARAMETERS
-    NLCommand(
-      # LANDSCAPE CONFIGURATION
-      "set working-directory", paste0("\"", foxnet.path, "\""),
-      "set weeks-per-timestep 2",
-      "set cell-dimension 100", 
-      "set landscape-source \"import raster\"", 
-      "set landscape-size 0",   
-      "set region-size 0",
-      "set landscape-raster \"gis_layers/glenelg/mtclay_landscape.asc\"",
-      "set uninhabitable-raster-value 2",
-      "set second-habitat-raster-value 0",
-      "set hab2:hab1 1",
-      "set region-shp \"gis_layers/glenelg/mtclay_region.shp\"",
-      "set region2-shp \"\"",
-      "set survey-transect-shp \"\"",
-      "set survey-transect2-shp \"\"", 
-      
-      # FOX PARAMETERS
-      "set initial-fox-density 0.5",
-      
-      # ranging behaviour
-      "set range-calculation \"1 kernel, 1 mean\"",
-      "set home-range-area \"[2.14]\"",
-      "set kernel-percent \"[95]\"",
-      
-      # survival
-      "set fox-mortality true",
-      "set less1y-survival 0.39",
-      "set from1yto2y-survival 0.65",
-      "set from2yto3y-survival 0.92",
-      "set more3y-survival 0.18",
-      
-      # reproduction
-      "set cub-birth-season 37",
-      "set number-of-cubs 3.74",
-      "set propn-cubs-female 0.5",
-      "set age-at-independence 12",
-      
-      # dispersal
-      "set dispersal-season-begins 9",
-      "set dispersal-season-ends 21",
-      "set female-dispersers 0.7",
-      "set male-dispersers 0.999",
-     
-      # BAITING PARAMETERS
-      "set bait-layout \"custom\"",
-      "set bait-density 0", 
-      "set bait-layout-shp \"gis_layers/glenelg/mtclay_baits.shp\"",
-      "set bait-frequency \"fortnightly*\"",
-      "set custom-bait-weeks \"[]\"",
-      "set Pr-die-if-exposed-100ha 0.3", 
-      "set commence-baiting-year 16",
-      "set commence-baiting-week 1",
-      
-      "set price-per-bait 0", 
-      "set person-days-per-baiting-round 0",
-      "set cost-per-person-day 0",
-      "set km-per-baiting-round 0",
-      "set cost-per-km-travel 0",
-      
-      # MONITORING
-      "set plot? false",
-      "set age-structure false",
-      "set bait-consumption false", 
-      "set count-neighbours false", 
-      "set density true",
-      "set dispersal-distances false",
-      "set family-density false",
-      "set foxes-on-transect false",
-      "set popn-structure false",
-      "set range-size false", # this won't work from R as it requires calling R
-
-    nl.obj = corename)
-  
-# SETUP MODEL
-   NLCommand("setup", nl.obj = corename)   
-    # NLCommand("go", nl.obj = corename)     
-  
-
-# RUN MODEL
-   timesteps <- 702 # number of ticks
-   output.parameters <- c("year", 
-                          "week-of-year", 
-                          "total-fox-density",
-                          "all-fox-but-cub-density",
-                          "bait-take", 
-                          "bait-cost"
-   )
-   
-   output <- NLDoReport(timesteps, "go", output.parameters,
-                        as.data.frame = TRUE,
-                        df.col.names=output.parameters,
-                        nl.obj = corename)
-   
-# EXPORT OUTPUT AS A .csv
-   write.csv(output, paste0(foxnet.path, "/outputs/mtclay/mtclay_example_test.csv"))
-  
-# CLOSE NETLOGO (restart R if you want to run another model) 
-   NLQuit(nl.obj = corename)
-```
-
+R scripts for running each of the FoxNet models described in Hradsky et al. (2019a) *J. Applied Ecology* in parallel are provided within the FoxNet folder - see `foxnet/r_scripts/run_model`. Note again that you must set the `working-directory` within the script to the correct file path (the location of your FoxNet folder e.g. `C:/Users/hradskyb/foxnet`) for any model that involves importing a spatial input layer.
 
 You can also export spatial layer(s) of fox density at specified time points to generate (averaged) fox density maps using the batch script.  For example, this will export a map from year 16 week 0:
 
@@ -1108,6 +1014,20 @@ You can also export spatial layer(s) of fox density at specified time points to 
 ```
 
 This code is also provided in the script at `foxnet/r_scripts/run_model/MtClay_baseline.R`
+
+## From R using the nlrx package.
+
+nlrx is a new R package that provides tools to setup and execute NetLogo simulations from R.  It is more efficient and easier to setup than RNetLogo.
+
+See:
+
+- Salecker J, Sciaini M, Meyer KM, Wiegand K.(2019) The nlrx r package: A next-generation framework for reproducible NetLogo model analyses. *Methods Ecol Evol* 10: 1854-1863. <https://doi.org/10.1111/2041-210X.13286>
+
+- https://docs.ropensci.org/nlrx/
+
+An example R script for running FoxNet with some of the Mt Clay scenarios using the nlrx package is provided within the FoxNet folder - see `foxnet/r_scripts/run_model/MtClay_baseline_nlrx.R`.
+
+To export fox density maps using nlrx, I recommend editing the FoxNet code directly - see **[Generating an (averaged) map of fox density]**
 
 \pagebreak
 
@@ -1266,15 +1186,17 @@ Each fox whose `status` is "disperser":
 $$Female: 3.853+2.659 \times hr.100perc$$
 $$Male: 2.778+4.038 \times hr.100perc$$
 
-(1) If that location is not possible (e.g. because it is in the ocean or beyond the edge of the landscape), the *fox* chooses another random distance and bearing from the appropriate distribution and tries again until it succeeds in moving.  
+(1) The fox first checks if that destination cell is available to foxes (i.e. it is not in the ocean or beyond the edge of the landscape).  If so, the fox then checks if there are barriers in the landscape.  If there are no barriers, it jumps to the destination cell.  If there are barrier(s), it tests the barrier. If its movement path doesn't cross the barrier or it is able to cross the partially-permeable barrier, the fox jumps to the destination cell.
 
-(1) Checks for baits within its `territory-perception-radius`.  The likelihood of the disperser eating a bait scales inversely with the radius.  If the bait is toxic, the disperser dies.  
+If either the destination cell is not available or the destination cell is available but the fox is not able to move there because of a barrier, the *fox* chooses another random distance and bearing from the appropriate distribution and tries again until it succeeds in moving.  
 
-(1) Looks for a *fox-family* that lacks an "alpha" *fox* of the appropriate sex within its `territory-perception-radius`.  If any candidate *fox-families* exist, the "disperser" *fox* will join the nearest one and become an "alpha" fox.
+(1) Checks for baits within its `territory-perception-radius`.  The likelihood of the disperser eating a bait scales inversely with the radius.  If the bait is toxic, the disperser dies. Barriers affect fox exposure to baits.  
+
+(1) Looks for a *fox-family* that lacks an "alpha" *fox* of the appropriate sex within its `territory-perception-radius`. Barriers affect fox access to *fox-families*. If any candidate *fox-families* exist, the "disperser" *fox* will join the nearest one and become an "alpha" fox.
 
 (1) If this fails, the "disperser" *fox* will **try-to-establish-new-territory**. It will:   
 
-    i. Move to a random cell within its `territory-perception-radius` that hasn't already been occupied by another *fox-family*.  
+    i. Move to a random cell within its `territory-perception-radius` that hasn't already been occupied by another *fox-family*, and is accessible (if the model landscape includes barriers).  
 
     i. Create a *fox-family* which has the "disperser" *fox* as its sole family-member.  The *fox-family*'s territory is the single cell where it is located, its `territory-productivity` is the `current-productivity` of that cell, and its `vacancy-score` is 0.  
     
@@ -1382,9 +1304,9 @@ This generates a landscape of an appropriate size.
 
 If `landscape-source` = "generate", the landscape is generated by the model as a square with an area as close to world-size as possible.  
 
-If `landscape-source` = "input raster", the landscape is imported at a raster layer (ascii file), and will automatically re-size to the appropriate dimensions.  In the latter case, the `habitat-type` of each *habitat-cell* will be determined by the raster value.  
+If `landscape-source` = "input raster", the landscape is imported at a raster layer (ascii file), and will automatically re-size to the appropriate dimensions.  In the latter case, the `habitat-type` of each *habitat-cell* will be determined by the raster value.  Barriers to fox movement are also imported if relevant.
 
-`Habitat-types` that are unavailable to all agents (e.g. ocean) can be specified using the `uninhabitable-raster-value`.  These areas are not included in the landscape size output. 
+`Habitat-types` that are unavailable to all agents (e.g. ocean) can be specified using the `uninhabitable-raster-value`.  Barriers also have this value. These areas are not included in the landscape size output. 
 
 For both options, the spatial resolution is set by `cell-dimension`; this must correspond to the size of the raster cells if applicable.  
 

@@ -32,10 +32,8 @@ plot(r)
 averaged <- mean(s)
 plot(averaged)
 
-# smooth across a moving window of 5 x 5 cells
-
-
-smoothed.map <- focal(averaged, w=matrix(1,nrow=5,ncol=5), mean, na.rm=FALSE, pad=FALSE, padValue=NA, NAonly=FALSE) 
+# smooth across a moving window, of whatever size you feel is appropriate 
+smoothed.map <- focal(averaged, w=matrix(1,nrow=15,ncol=15), mean, na.rm=TRUE, pad=FALSE, padValue=NA, NAonly=FALSE) 
 # You may need na.rm = TRUE or na.rm = FALSE
 
 plot(smoothed.map)

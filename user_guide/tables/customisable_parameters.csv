@@ -1,5 +1,6 @@
 Parameter,Unit,Explanation
 `working-directory`,—,"Location of FoxNet folder, e.g. `C:/Users/hradsky/FoxNet`"
+`output-file-path`,,"Location where model outputs (.csv or .asc) will be saved within the working directory, e.g. `outputs/test`"
 `weeks-per-timestep`,weeks ,"Number of weeks for each model timestep (""1"", ""2"" or ""4"")"
 `cell-dimension`,m,Distance along one edge of a *habitat-cell*
 `landscape-source`,“generate” or “import raster”,Whether the landscape is generated within the model or imported as a raster
@@ -9,10 +10,20 @@ Parameter,Unit,Explanation
 `uninhabitable-raster-value`,integer,The value used in the raster layer to specify *habitat-cells* that can’t be inhabited by *foxes* (e.g. ocean)
 `second-habitat-raster-value`,integer,The value used in the raster layer to specify *habitat-cells* that are a secondary type of habitat (e.g. farmland rather than forest)
 `hab2:hab1`,ratio,The productivity of the secondary habitat type relative to the primary habitat type
+`third-habitat-raster-value`,integer,The value used in the raster layer to specify *habitat-cells* that are a third type of habitat (e.g. heathland rather than forest)
+`hab3:hab1`,ratio,The productivity of the third habitat type relative to the primary habitat type
+`survey-transect-shp`,.shp file,A shapefile (line) describing a transect for surveying *fox* populations - optional
+`survey-transect2-shp`,.shp file,A shapefile (line) describing a second transect for surveying *fox* populations - optional
 `region-shp`,.shp file,A shapefile (polygon) describing a region-of-interest (where *fox* populations are monitored) if the landscape is imported
 `region2-shp`,.shp file,A shapefile (polygon) describing a second region-of-interest (where *fox* populations are monitored) if the landscape is imported – optional.
-`survey-transect-shp`,.shp file,A shapefile (line) describing a transect for surveying *fox* populations
-`survey-transect2-shp`,.shp file,A shapefile (line) describing a second transect for surveying *fox* populations
+`region3-shp`,.shp file,A shapefile (polygon) describing a third region-of-interest (where *fox* populations are monitored) if the landscape is imported – optional.
+`region4-shp`,.shp file,A shapefile (polygon) describing a fourth region-of-interest (where *fox* populations are monitored) if the landscape is imported – optional.
+`region5-shp`,.shp file,A shapefile (polygon) describing a fifth region-of-interest (where *fox* populations are monitored) if the landscape is imported – optional.
+`region6-shp`,.shp file,A shapefile (polygon) describing a sixth region-of-interest (where *fox* populations are monitored) if the landscape is imported – optional.
+`barrier-shp`,.shp file,A shapefile (polyline) defining a barrier that impedes fox movement - optional
+`propn-permeable-barrier`,propn.,The probability that a fox will successfully cross the barrier on an attempt (ranges from 0 - 1).
+`barrier-shp`,.shp file,A shapefile (polyline) defining a second barrier that impedes fox movement - optional
+`propn-permeable-barrier`,propn.,The probability that a fox will successfully cross the second barrier on an attempt (ranges from 0 - 1).
 `initial-fox-density`,individuals km^-2^,The number of *foxes* per square kilometre when the model is initiated
 `range-calculation`,"` “1 kernel, 1 mean” ` or “1 kernel, min and max”",The method used for calculating the productivity of the landscape from the fox home range data
 `home-range-area`,km^2^,The area of an average fox home range in this landscape
