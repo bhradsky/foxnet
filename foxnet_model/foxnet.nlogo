@@ -1,12 +1,6 @@
-; ## FOX NET MODEL V1.1
-; ## Update includes a permeability routine for foxes to check if they can cross barriers within the landscape (e.g rivers, highways etc).
-; ## Permeability can be set to zero, in which case all foxes attempting to cross will be denied, or else the proportion of foxes which are able
-; ## to successfully cross the barrier is set by the modeller
-; ## BRONWYN HRADSKY
+; ## FOXNET MODEL
+; ## DR BRONWYN HRADSKY
 ; ## UNIVERSITY OF MELBOURNE
-; ## updated 2020/10/22 by Lachlan Francis (DELWP) to include permeability routine.
-; ## last updated 2022/05/04 by Bronwyn Hradsky
-
 
 ;##################################################################
 ;################# MODEL COMPONENTS ###############################
@@ -756,8 +750,8 @@ end
 GRAPHICS-WINDOW
 815
 70
-1219
-475
+1023
+279
 -1
 -1
 1.0
