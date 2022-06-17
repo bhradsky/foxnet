@@ -1,6 +1,7 @@
 ---
 title: "FoxNet User Guide V2.0.0"
 author: "Dr Bronwyn Hradsky, Quantitative and Applied Ecology, University of Melbourne"
+date: "Last compiled on `r format(Sys.time(), '%B %d, %Y')`"
 header-includes:
   - \usepackage{float}
   # - \usepackage{titling}
@@ -1017,7 +1018,7 @@ This code is also provided in the script at `foxnet/r_scripts/run_model/MtClay_b
 
 ## From R using the nlrx package.
 
-nlrx is a new R package that provides tools to setup and execute NetLogo simulations from R.  It is more efficient and easier to setup than RNetLogo.
+nlrx is a new R package that provides tools to setup and execute NetLogo simulations from R.  It is more efficient and easier to setup than RNetLogo, especially for parallel computing.
 
 See:
 
@@ -1025,7 +1026,7 @@ See:
 
 - https://docs.ropensci.org/nlrx/
 
-An example R script for running FoxNet with some of the Mt Clay scenarios using the nlrx package is provided within the FoxNet folder - see `foxnet/r_scripts/run_model/MtClay_baseline_nlrx.R`.
+An example R script for running FoxNet with some of the Mt Clay scenarios using the nlrx package is provided within the FoxNet folder - see `foxnet/r_scripts/run_model/MtClay_nlrx_examples.R`.
 
 To export fox density maps using nlrx, I recommend editing the FoxNet code directly - see **[Generating an (averaged) map of fox density]**
 
