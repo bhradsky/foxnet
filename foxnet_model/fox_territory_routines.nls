@@ -119,13 +119,7 @@ to make-first-dispersal-move
   ] 
   
 end
- 
-to reset-barrier-globals ; set the barrier-crossing globals back to false so they don't trigger inadvertently
-  
-  set barrier-can-cross false    
-  set barrier-not-crossing false 
-  
-end
+
 
 
 to check-for-alpha-vacancy  

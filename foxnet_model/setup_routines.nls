@@ -341,7 +341,7 @@ to set-up-bait-stations
           [
             set color white
             set shape "square"
-            set size 4
+            set size 1
             set bait-present false
           ]
         ]
@@ -350,8 +350,8 @@ to set-up-bait-stations
 
  if bait-layout = "random-scatter"and bait-density > 0
    [
-     let number-of-baits bait-density * landscape-size
-     ask n-of number-of-baits patches
+     let number-of-baits bait-density * available-landscape-size
+     ask n-of number-of-baits patches  with [available-to-foxes = true]
      [
        sprout-bait-stations 1
          [
@@ -368,7 +368,8 @@ to set-up-bait-stations
      let grid-size (1000  / cell-dimension) / sqrt (bait-density)
      ;next 3 lines copied from Wilensky, U. (2003). NetLogo Traffic Grid model. http://ccl.northwestern.edu/netlogo/models/TrafficGrid. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
      let bait-sites patches with
-     [(floor((pxcor + max-pxcor - floor(grid-size - 1)) mod grid-size) = 0) and
+     [available-to-foxes = true and
+        (floor((pxcor + max-pxcor - floor(grid-size - 1)) mod grid-size) = 0) and
        (floor((pycor + max-pycor) mod grid-size) = 0)]
 
      ask bait-sites
