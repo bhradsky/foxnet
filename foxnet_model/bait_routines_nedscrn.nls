@@ -1,0 +1,211 @@
+;#############################################################
+;########## FOX BAITING RELATED ROUTINES #####################
+;#############################################################
+
+; THIS SCRIPT IS CUSTOMISED TO THE NEDS CORNER SCENARIO
+
+to bait-if-applicable
+  
+  if week-of-year = 1 [set bait-cost 0] ; resets bait-cost to 0 at start of each year
+    
+  ; bait monthly for 6 years at original set of bait stations
+  if bait-frequency = "custom*"
+    [
+      if year >= 11 and year < 17 and (week-of-year MOD 4 = 1) ; baiting at monthly intervals
+     [           
+        type "year " type year type " week " type week-of-year type " " type count bait-stations print " bait-stations"
+        lay-baits
+      ]
+      
+    ; then remove old bait stations
+   if year = 17; and week-of-year = 27
+      [
+        ask bait-stations [die]
+        
+        set baitsite-data gis:load-dataset "gis_layers/nedscrn/FoxStations_Total_30Jun2023_GDA94.shp"
+        
+         ask patches gis:intersecting baitsite-data  
+        [ 
+          sprout-bait-stations 1
+          [
+            set color white
+            set shape "square"
+            set size 4
+          ]
+        ]
+        
+        ask bait-stations with [available-to-foxes = false] ; removes any baitstations that might accidentally be in an ocean etc.
+        [die]
+            
+  	]
+
+      ; and begin fortnightly baiting from July at new set of bait sites
+   if year >= 17 and (week-of-year MOD 4 = 1); and week-of-year >= 27
+      [
+        type "year " type year type " week " type week-of-year type " " type count bait-stations print " bait-stations"
+        lay-baits
+      ]
+      
+      
+      
+    ]
+
+end
+
+
+to lay-baits
+
+ ask bait-stations
+   [
+     set color red
+     set bait-present true
+     set Pr-death-bait-scaled cell-relative-use * 100 * Pr-die-if-exposed-100ha; cell relative use is 0.01 if home range size is 100 ha; less if home range is larger, more if home range is smaller
+     ;print Pr-death-bait-scaled
+   ]
+
+ set count-baits-laid count bait-stations with [color = red]
+  print count-baits-laid
+ 
+ ifelse (year = commence-baiting-year and week-of-year >= commence-baiting-week) or (year > commence-baiting-year) 
+   [set baits-are-toxic true ]
+   [set baits-are-toxic false ]
+  
+ calculate-annual-cost
+   
+ ask bait-stations with [bait-present = true and fox-family-owner != nobody]
+   [
+     let baited-family [family-members] of fox-family-owner
+     let at-risk-family baited-family with [age >= age-at-independence] 
+     repeat count at-risk-family
+     [
+       ifelse bait-present = false
+       [;print "bait already eaten"
+         stop]
+       [ if random-float 1 < Pr-death-bait-scaled 
+         [
+           set bait-present false
+           set color white
+           if baits-are-toxic = true 
+           [ 
+             ask one-of at-risk-family 
+             [ ;type who print " died"
+               die]
+           ]
+         ]
+       ]
+     ]
+   ]
+     
+end
+
+
+to disperser-check-for-baits
+  
+  if any? bait-stations with [bait-present = true]
+  [   
+
+    let area-explored patches in-radius (territory-perception-radius * kms-to-cells ) 
+    let area-explored-km2 count area-explored * cells-to-km2
+   ; type "disperser"  type area-explored type area-explored-km2 type " " 
+    let baited-patches bait-stations-on area-explored
+
+    set poison baited-patches with [bait-present = true] 
+    ; ask poison [ask patches in-radius 10 [set pcolor pink]]
+    set Pr-death-disperser-scaled (1 / area-explored-km2 ) * Pr-die-if-exposed-100ha ; scale by 100 ha (i.e. 1 km2) 
+                                                                                         ;print (1 - (1 - Pr-death-disperser-scaled) ^ count poison)
+    check-if-poisoned
+    
+    set poison nobody;  ; reset globals to null
+    set Pr-death-disperser-scaled 0;
+  ]
+end
+
+to check-if-poisoned
+    
+   let this-cell patch-here
+  
+    if any? poison
+    [
+      ifelse barrier-exists = false 
+      
+      [ 
+        if random-float 1 < (1 - (1 - Pr-death-disperser-scaled) ^ count poison)
+        [
+          move-to one-of poison
+          ask bait-stations-here [set bait-present false set color white]
+          
+          ifelse baits-are-toxic = true 
+          [ 
+           set poison nobody;  ; reset globals to null 
+           set Pr-death-disperser-scaled 0;
+            die]
+          [move-to this-cell]
+        ]
+      ]
+      
+      [ ; if a barrier exists
+        let chosen-bait-station one-of poison
+        set barrier-xy-from patch-here
+        set barrier-xy-to chosen-bait-station
+        test-barrier
+       ; type who type "_" type barrier-can-cross type barrier-not-crossing type " " print Pr-death-disperser-scaled 
+
+        ifelse barrier-can-cross = true or barrier-not-crossing = true
+        
+        [ ; if barrier isn't a problem, fox could be exposed to this bait
+          reset-barrier-globals
+          if random-float 1 <  Pr-death-disperser-scaled ; note that this is quite a small number, even if per bait probability is high
+           [
+            move-to chosen-bait-station
+            ask chosen-bait-station 
+            [
+              ;ask patches in-radius 10 [set pcolor pink]
+              set bait-present false 
+              set color white
+            ]
+          
+            ifelse baits-are-toxic = true 
+            [ ;type " Disperser " type who print " ate a bait despite the barrier"
+              set poison nobody;  ; reset globals to null 
+              set Pr-death-disperser-scaled 0;
+              die
+            ]
+            [ move-to this-cell ]
+          ]
+        ]
+        
+        [ ; if barrier is in the way, fox can't be exposed to the bait
+          reset-barrier-globals
+        ; type who print poison
+          set poison poison with [self != chosen-bait-station ]
+        ; type who print poison
+          check-if-poisoned
+        ]
+        
+
+      ] 
+  ]
+      
+end
+
+
+
+    
+to remove-all-baits
+
+  ask bait-stations [set bait-present false set color white set Pr-death-bait-scaled 0] ; remove all poison baits at end of month
+  set count-baits-laid 0
+  
+
+end
+
+
+
+to calculate-annual-cost
+  if week-of-year = 1
+  [set bait-cost annual-baseline-cost]
+  
+  set bait-cost ( bait-cost + count-baits-laid * price-per-bait + person-days-per-baiting-round * cost-per-person-day + km-per-baiting-round * cost-per-km-travel)
+  
+end
+
