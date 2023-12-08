@@ -1,28 +1,23 @@
 ---
-title: "FoxNet User Guide V2.0.0"
-author: "Dr Bronwyn Hradsky, Quantitative and Applied Ecology, University of Melbourne"
-date: "Last compiled on `r format(Sys.time(), '%B %d, %Y')`"
+title: |
+  | FoxNet User Guide V 2.0.1
+  | 
+author: |
+  | Dr Bronwyn Hradsky
+  | Quantitative and Applied Ecology, University of Melbourne
+date: "Last compiled `r format(Sys.time(), '%B %d, %Y')`"
 header-includes:
   - \usepackage{float}
-  # - \usepackage{titling}
-  # - \pretitle{\begin{center}
-  #   \includegraphics[width=7in,height=4in]{figures/density_averaged_smooth15.png}\LARGE\\}
-  # - \posttitle{\end{center}}
   - \floatplacement{figure}{H} 
   - \floatplacement{table}{H} 
+  - \usepackage[singlelinecheck=false]{caption}
 output:
-  pdf_document:
-    number_sections: yes
+  bookdown::pdf_document2:
     toc: yes
     toc_depth: 2
-  html_vignette:
-    number_sections: yes
-    toc: yes
-    toc_depth: 2
-  output: null
-  html_document:
-    toc: yes
-    toc_depth: '2'
+    fig_caption: yes
+    number_sections: no
+  
 vignette: |
   %\VignetteIndexEntry{FoxNet User Guide V2.0} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
@@ -35,8 +30,10 @@ knitr::opts_chunk$set(
 library(knitr)
 library(kableExtra)
 library(png)
-setwd("C:/Users/hradskyb/FoxControlPatrol/Dropbox/personal/bron/ibm/foxnet_github/user_guide")
+library(pander)
+setwd("C:/Users/hradskyb/Dropbox/personal/bron/ibm/foxnet_github/user_guide")
 ```
+
 
 \pagebreak
 
@@ -635,9 +632,9 @@ Then adjust the following parameters and click "setup":
 inputs.glenelg.table <- read.csv("tables/inputs_glenelg.csv")
 
 
-kableExtra::kable(inputs.glenelg.table) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "responsive")) %>%
-  group_rows(index = c(" " = 1, "Landscape setup" = 6, "Fox parameters" = 1, "Baiting parameters" = 1))
+ kableExtra::kable(inputs.glenelg.table) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "responsive")) %>%
+   group_rows(index = c(" " = 1, "Landscape setup" = 6, "Fox parameters" = 1, "Baiting parameters" = 1))
 
 ```
 
@@ -849,9 +846,10 @@ include_graphics("figures/FoxNet_glenelg_coastbarrier.png")
 
 The underlying landscape in FoxNet can be customised using a raster in ascii format (.asc).  This allows you to depict, for example, a rectangular landscape, different habitat types that support different densities of foxes, and/or areas that are inaccessible to *foxes* such as oceans, lakes or fenced reserves. 
 
-You can prepare your ascii file in any spatial software you like (e.g. ArcGIS, QGIS or R). 
 
 The usual procedure involves drawing a rectangle for your landscape, dividing it into polygons that represent each habitat type, and editing the attribute table so that each habitat type has a different number (e.g. 1 = ocean, 2 = forest, 3 = farmland).  You then convert the polygon to a raster, and the raster to an ascii.
+
+You can prepare your ascii file in any spatial software you like (e.g. ArcGIS, QGIS or R). A script for generating an ascii raster from a shapefile in R is provided as part of the FoxNet package - see `gis_layers/shp_to_ascii.R`
 
 The size of your landscape should reflect the likely dispersal distance of foxes into your management zone.  A simple calculator can be found in `foxnet/user_guide/Calculator_dispersaldistance.xlsx`.  You can use this to estimate the proportion of potential dispersers that would be captured by a given buffer size, based on the relationship between home range size and dispersal distance derived by Trewhella et al. (1988).
 
@@ -1345,12 +1343,12 @@ An initial number of *foxes* are created at the specified density, with `ages` r
 ## Customisable model parameters
 
 ```{r, echo=FALSE, results='asis'}
-parameter.table <- read.csv("tables/customisable_parameters.csv")
+#parameter.table <- read.csv("tables/customisable_parameters.csv")
 
-kableExtra::kable(parameter.table, longtable = TRUE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = T, 
-                latex_options = c("hold_position", "repeat_header")) %>%
-  group_rows(index = c("Working directory" = 1, "Landscape setup" = 13, "Fox parameters" = 17, "Baiting parameters" = 13, "Monitoring Parameters" = 9)) 
+# kableExtra::kable(parameter.table, longtable = TRUE) %>%
+#   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = T, 
+#                 latex_options = c("hold_position", "repeat_header")) %>%
+#   group_rows(index = c("Working directory" = 1, "Landscape setup" = 13, "Fox parameters" = 17, "Baiting parameters" = 13, "Monitoring Parameters" = 9)) 
 
 ```
 
