@@ -1,0 +1,14 @@
+{#
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Template for RStudio Server's rserver.conf
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+#}
+# {{ ansible_managed }}
+www-port={{ rstudio_port }}
+www-address={{ rstudio_address }}
+rsession-which-r=/usr/bin/R
+auth-required-user-group={{ rstudio_allowed_group }}
+auth-minimum-user-id=1000

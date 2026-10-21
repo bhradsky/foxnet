@@ -1,0 +1,10 @@
+{#
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Template for RStudio Server's rsession.conf
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+#}
+# {{ ansible_managed }}
+session-timeout-minutes={{ rstudio_session_timeout_minutes }}

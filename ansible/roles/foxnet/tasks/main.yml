@@ -1,0 +1,73 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Tasks to deploy the FoxNet model repository and wire it to NetLogo/R
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+- name: Create FoxNet directory (group-writable, setgid)
+  ansible.builtin.file:
+    path: "{{ foxnet_home }}"
+    state: directory
+    owner: root
+    group: "{{ foxnet_group }}"
+    mode: "2775"
+
+- name: Trust the shared checkout for all git users
+  community.general.git_config:
+    scope: system
+    name: safe.directory
+    value: "{{ foxnet_home }}"
+
+- name: Clone / update FoxNet repository
+  ansible.builtin.git:
+    repo: "{{ foxnet_repo_url }}"
+    dest: "{{ foxnet_home }}"
+    version: "{{ foxnet_repo_version }}"
+    force: "{{ foxnet_repo_force }}"
+    update: true
+  register: foxnet_git
+
+- name: Make checkout writable by the FoxNet group
+  ansible.builtin.file:
+    path: "{{ foxnet_home }}"
+    group: "{{ foxnet_group }}"
+    mode: "g+rwX"
+    recurse: true
+  when: foxnet_git is changed
+
+- name: Set default ACL so new files stay group-writable
+  ansible.posix.acl:
+    path: "{{ foxnet_home }}"
+    entity: "{{ foxnet_group }}"
+    etype: group
+    permissions: rwX
+    default: true
+    recursive: true
+    state: present
+
+- name: Export FoxNet paths to every R session (incl. RStudio)
+  ansible.builtin.blockinfile:
+    path: /etc/R/Renviron.site
+    marker: "## {mark} ANSIBLE MANAGED: foxnet"
+    block: |
+      FOXNET_HOME={{ foxnet_home }}
+      NETLOGO_HOME={{ foxnet_netlogo_home }}
+      NETLOGO_VERSION={{ foxnet_netlogo_version }}
+      JAVA_HOME={{ foxnet_java_home }}
+      # nlrx (Linux, NetLogo >= 6.3) overwrites JVM_OPTS in netlogo-headless.sh and drops
+      # -Dnetlogo.extensions.dir, so NetLogo can't find bundled extensions (gis, profiler).
+      # The java launcher reads JDK_JAVA_OPTIONS, which puts it back.
+      JDK_JAVA_OPTIONS=-Dnetlogo.extensions.dir={{ foxnet_netlogo_home }}/extensions
+
+# On Linux nlrx launches NetLogo via netlogo-headless.sh; the app/*.jar path is only used on Windows.
+- name: Smoke test - R can load nlrx and see NetLogo
+  ansible.builtin.command:
+    cmd: >-
+      Rscript -e 'library(nlrx);
+      sh <- file.path(Sys.getenv("NETLOGO_HOME"), "netlogo-headless.sh");
+      stopifnot(file.exists(sh), file.exists(file.path(Sys.getenv("FOXNET_HOME"), "foxnet_model", "foxnet.nlogo")));
+      cat("OK\n")'
+  changed_when: false
+  tags: [verify]

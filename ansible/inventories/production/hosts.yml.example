@@ -1,0 +1,15 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Production inventory defining the FoxNet server host(s)
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+all:
+  children:
+    foxnet:
+      hosts:
+        foxnet-01:
+          ansible_host: [host ip or domain]
+          ansible_user: [host user with sudo permissions]

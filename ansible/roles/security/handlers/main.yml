@@ -1,0 +1,17 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Handlers for the security role (service restarts)
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+- name: Restart ssh
+  ansible.builtin.systemd_service:
+    name: ssh
+    state: restarted
+
+- name: Restart fail2ban
+  ansible.builtin.systemd_service:
+    name: fail2ban
+    state: restarted

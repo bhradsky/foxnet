@@ -1,0 +1,66 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Tasks to install and configure Posit RStudio Server (open source)
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+- name: Check installed RStudio Server version
+  ansible.builtin.command: dpkg-query -W -f='${Version}' rstudio-server
+  register: rstudio_installed
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Install RStudio Server {{ rstudio_version }}
+  ansible.builtin.apt:
+    deb: "{{ rstudio_deb_url }}"
+    state: present
+  when: rstudio_installed.stdout != rstudio_version
+  notify: Restart rstudio-server
+
+- name: Configure rserver.conf
+  ansible.builtin.template:
+    src: rserver.conf.j2
+    dest: /etc/rstudio/rserver.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart rstudio-server
+
+- name: Configure rsession.conf
+  ansible.builtin.template:
+    src: rsession.conf.j2
+    dest: /etc/rstudio/rsession.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart rstudio-server
+
+- name: Ensure needrestart config directory exists
+  ansible.builtin.file:
+    path: /etc/needrestart/conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+# unattended-upgrades + needrestart restart rstudio-server after library
+# updates, which kills running R sessions (and any simulations in them).
+- name: Stop needrestart restarting RStudio Server automatically
+  ansible.builtin.copy:
+    dest: /etc/needrestart/conf.d/50-foxnet-rstudio.conf
+    content: |
+      # Managed by Ansible (rstudio_server role) - local changes will be overwritten
+      $nrconf{override_rc}{qr(^rstudio-server\.service$)} = 0;
+    owner: root
+    group: root
+    mode: "0644"
+    validate: perl -c %s
+
+- name: Ensure RStudio Server is running
+  ansible.builtin.systemd_service:
+    name: rstudio-server
+    state: started
+    enabled: true

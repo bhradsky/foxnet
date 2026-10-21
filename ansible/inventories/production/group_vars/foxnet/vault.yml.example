@@ -1,0 +1,14 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Example template for the Ansible Vault secrets file (vault.yml)
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+# Copy to vault.yml and encrypt:  ansible-vault encrypt vault.yml
+# Plain-text passwords (hashed by the playbook). Used for SSH/sudo and RStudio login.
+# One entry per user in foxnet_users (vars.yml).
+vault_foxnet_user_passwords:
+  user1: "change-me"
+  user2: "change-me"

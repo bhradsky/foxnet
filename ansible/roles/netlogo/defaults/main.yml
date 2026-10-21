@@ -1,0 +1,25 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Default variables for the netlogo role
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+# FoxNet v2 was developed against 6.2.2; 6.4.0 is used so newer site-specific models also run.
+netlogo_version: "6.4.0"
+# Archive page: https://www.netlogo.org/downloads/archive/{{ netlogo_version }}/
+netlogo_url: "https://downloads.netlogo.org/{{ netlogo_version }}/NetLogo-{{ netlogo_version }}-64.tgz"
+# Optional, e.g. "sha256:abcd..." - strongly recommended once known.
+netlogo_checksum: ""
+netlogo_base_dir: /opt/netlogo
+# The tarball's top folder is stripped on unpack, giving a space-free path
+# for R/nlrx regardless of how the tarball names it.
+netlogo_home: "{{ netlogo_base_dir }}/netlogo-{{ netlogo_version }}"
+
+# Extensions declared in foxnet_model/*.nlogo (extensions [profiler gis]).
+netlogo_required_extensions: [gis, profiler]
+
+# nlrx launches the NetLogo jar with the system JVM, so a JRE is still needed.
+netlogo_java_package: openjdk-17-jre-headless
+netlogo_java_home: /usr/lib/jvm/java-17-openjdk-amd64

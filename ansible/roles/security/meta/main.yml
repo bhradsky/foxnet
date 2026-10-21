@@ -1,0 +1,18 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Role metadata for the security role
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+galaxy_info:
+  role_name: security
+  author: Intersect Australia
+  description: Light baseline hardening - UFW, fail2ban, sshd drop-in
+  license: GPL-3.0-only
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [noble]
+dependencies: []

@@ -14,6 +14,10 @@ and
 
 You can download the latest release of FoxNet from https://doi.org/10.5281/zenodo.2572045.  The release package includes a User Guide.
 
+## Using foxnet on Linux
+
+See README in the `ansible` directory 
+
 ### Prerequisites
 
 Netlogo can be freely downloaded from https://ccl.northwestern.edu/netlogo/. 
@@ -37,7 +41,7 @@ FoxNet v 2.0.0 was updated using Netlogo v 6.2.2, R v 4.1.3 and the nlrx package
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the LICENSE.md file for details.
+This project is licensed under the GNU General Public License v3.0 - see the LICENCE.md file for details.
 
 ## Acknowledgments
 

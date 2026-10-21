@@ -1,0 +1,13 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Ansible Galaxy collections required by the playbook
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+collections:
+  - name: community.general
+    version: ">=9.0.0"
+  - name: ansible.posix
+    version: ">=1.5.0"

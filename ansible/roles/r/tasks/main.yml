@@ -1,0 +1,57 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Tasks to install R from the CRAN apt repo and FoxNet R package dependencies
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+- name: Add CRAN apt repository
+  ansible.builtin.deb822_repository:
+    name: cran
+    types: [deb]
+    uris: "{{ r_cran_apt_repo }}"
+    suites: ["{{ ansible_facts['distribution_release'] }}-cran40/"]
+    signed_by: "{{ r_cran_apt_key_url }}"
+    state: present
+  register: r_cran_repo
+
+- name: Refresh apt cache after adding CRAN
+  ansible.builtin.apt:
+    update_cache: true
+  when: r_cran_repo is changed
+
+- name: Install R and system libraries
+  ansible.builtin.apt:
+    name: "{{ ['r-base', 'r-base-dev'] + r_system_deps }}"
+    state: present
+
+- name: Point R at Posit Package Manager binaries
+  ansible.builtin.blockinfile:
+    path: /etc/R/Rprofile.site
+    marker: "## {mark} ANSIBLE MANAGED: package repository"
+    block: |
+      local({
+        options(repos = c(CRAN = "{{ r_package_repo }}"))
+        # Required for Package Manager to serve Linux binaries
+        options(HTTPUserAgent = sprintf("R/%s R (%s)", getRversion(),
+          paste(getRversion(), R.version["platform"], R.version["arch"], R.version["os"])))
+      })
+
+- name: Install R packages
+  ansible.builtin.command:
+    cmd: >-
+      Rscript --vanilla -e '
+      options(repos = c(CRAN = "{{ r_package_repo }}"),
+              HTTPUserAgent = sprintf("R/%s R (%s)", getRversion(),
+                paste(getRversion(), R.version["platform"], R.version["arch"], R.version["os"])));
+      pkgs <- c({{ r_packages | map("to_json") | join(", ") }});
+      missing <- setdiff(pkgs, rownames(installed.packages()));
+      if (length(missing)) {
+        install.packages(missing, lib = "{{ r_site_library }}", Ncpus = parallel::detectCores());
+        still <- setdiff(missing, rownames(installed.packages()));
+        if (length(still)) stop("Failed to install: ", paste(still, collapse = ", "));
+        cat("CHANGED:", missing, "\n")
+      }'
+  register: r_pkg_install
+  changed_when: "'CHANGED:' in r_pkg_install.stdout"

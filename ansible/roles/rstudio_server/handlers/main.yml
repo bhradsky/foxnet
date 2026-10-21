@@ -1,0 +1,12 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Handlers for the rstudio_server role (service restart)
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+- name: Restart rstudio-server
+  ansible.builtin.systemd_service:
+    name: rstudio-server
+    state: restarted
