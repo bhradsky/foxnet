@@ -1,0 +1,18 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Role metadata for the rstudio_server role
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+galaxy_info:
+  role_name: rstudio_server
+  author: Intersect Australia
+  description: Install and configure Posit RStudio Server (open source)
+  license: GPL-3.0-only
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [noble]
+dependencies: []  # ordering is handled in deploy.yml

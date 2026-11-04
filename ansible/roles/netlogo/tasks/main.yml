@@ -1,0 +1,77 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Tasks to install NetLogo (headless-capable) and a Java runtime
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+- name: Install Java runtime for nlrx
+  ansible.builtin.apt:
+    name: "{{ netlogo_java_package }}"
+    state: present
+
+- name: Create NetLogo base directory
+  ansible.builtin.file:
+    path: "{{ netlogo_base_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Download NetLogo {{ netlogo_version }}
+  ansible.builtin.get_url:
+    url: "{{ netlogo_url }}"
+    dest: "{{ netlogo_base_dir }}/NetLogo-{{ netlogo_version }}-64.tgz"
+    checksum: "{{ netlogo_checksum | default(omit, true) }}"
+    mode: "0644"
+  register: netlogo_download
+
+- name: Create NetLogo {{ netlogo_version }} directory
+  ansible.builtin.file:
+    path: "{{ netlogo_home }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Unpack NetLogo {{ netlogo_version }}
+  ansible.builtin.unarchive:
+    src: "{{ netlogo_download.dest }}"
+    dest: "{{ netlogo_home }}"
+    remote_src: true
+    owner: root
+    group: root
+    extra_opts: [--strip-components=1]
+    creates: "{{ netlogo_home }}/netlogo-headless.sh"
+
+- name: Symlink current NetLogo
+  ansible.builtin.file:
+    src: "{{ netlogo_home }}"
+    dest: "{{ netlogo_base_dir }}/current"
+    state: link
+
+- name: Find bundled extensions required by FoxNet
+  ansible.builtin.find:
+    paths: "{{ netlogo_home }}"
+    patterns: "{{ netlogo_required_extensions }}"
+    file_type: directory
+    recurse: true
+    hidden: true          # 6.x may keep bundled extensions under a .bundled/ dir
+    depth: 4
+  register: netlogo_ext
+
+- name: Fail if a required extension is missing
+  ansible.builtin.assert:
+    that: item in (netlogo_ext.files | map(attribute='path') | map('basename') | list)
+    fail_msg: "NetLogo extension '{{ item }}' not found under {{ netlogo_home }}"
+    quiet: true
+  loop: "{{ netlogo_required_extensions }}"
+
+- name: Export NetLogo / Java environment for login shells
+  ansible.builtin.template:
+    src: netlogo.sh.j2
+    dest: /etc/profile.d/netlogo.sh
+    owner: root
+    group: root
+    mode: "0644"

@@ -1,0 +1,20 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Default variables for the security role
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+security_ufw_enabled: true
+# Used for UFW/fail2ban only. Ubuntu 24.04 uses ssh.socket, so changing the
+# listen port also needs a systemd socket override (not managed here).
+security_ssh_port: 22
+security_fail2ban_enabled: true
+security_ssh_disable_root_login: true
+# Opt-in: only enable after confirming key-based SSH works for all admins.
+security_ssh_disable_password_auth: false
+
+# Consumed here to open the RStudio port; defined in rstudio_server defaults too.
+rstudio_port: 8787
+rstudio_allowed_cidrs: []

@@ -1,0 +1,11 @@
+{#
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Template for the NetLogo/Java environment variables shell profile
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+#}
+# {{ ansible_managed }}
+export NETLOGO_HOME="{{ netlogo_home }}"
+export JAVA_HOME="{{ netlogo_java_home }}"

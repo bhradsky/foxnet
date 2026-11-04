@@ -1,0 +1,84 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Tasks for base packages, timezone, auto-updates and FoxNet user accounts
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install base packages
+  ansible.builtin.apt:
+    name: "{{ common_packages }}"
+    state: present
+
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ common_timezone }}"
+
+- name: Install unattended-upgrades
+  ansible.builtin.apt:
+    name: unattended-upgrades
+    state: present
+  when: common_unattended_upgrades
+
+- name: Enable automatic security updates
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+    owner: root
+    group: root
+    mode: "0644"
+  when: common_unattended_upgrades
+
+- name: Create shared FoxNet group
+  ansible.builtin.group:
+    name: "{{ foxnet_group }}"
+    state: present
+
+- name: Look up existing accounts
+  ansible.builtin.getent:
+    database: passwd
+
+# Only adds the group; never creates the account or changes anything else.
+- name: Add existing system accounts to the FoxNet group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: "{{ foxnet_group }}"
+    append: true
+  loop: "{{ foxnet_group_extra_members }}"
+  when: item in ansible_facts.getent_passwd
+
+- name: Create researcher accounts
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    comment: "{{ item.comment | default(omit) }}"
+    # item.password is plain text from the vault; hash it here. The salt is derived
+    # from user + host so the hash is stable and re-runs only change on a new password.
+    password: >-
+      {{ item.password | password_hash('sha512', ((item.name ~ inventory_hostname) | hash('sha1'))[:16])
+         if item.password is defined else omit }}
+    update_password: "{{ common_update_password }}"
+    groups: "{{ foxnet_group }}"
+    append: true
+    shell: /bin/bash
+    create_home: true
+  loop: "{{ foxnet_users }}"
+  loop_control:
+    label: "{{ item.name }}"
+  no_log: true
+
+- name: Install researcher SSH keys
+  ansible.posix.authorized_key:
+    user: "{{ item.0.name }}"
+    key: "{{ item.1 }}"
+    state: present
+  loop: "{{ foxnet_users | subelements('ssh_keys', skip_missing=True) }}"
+  loop_control:
+    label: "{{ item.0.name }}"

@@ -1,0 +1,49 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Default variables for the r role
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+# CRAN's own apt repo gives current R 4.x for noble.
+r_cran_apt_repo: https://cloud.r-project.org/bin/linux/ubuntu
+r_cran_apt_key_url: https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc
+
+# Posit Public Package Manager serves pre-built Linux binaries -> much faster installs.
+r_package_repo: "https://packagemanager.posit.co/cran/__linux__/{{ ansible_facts['distribution_release'] }}/latest"
+
+# Build/runtime libraries needed by the R packages below (raster/terra, xml, curl, graphics).
+r_system_deps:
+  - build-essential
+  - gfortran
+  - libcurl4-openssl-dev
+  - libssl-dev
+  - libxml2-dev
+  - libgdal-dev
+  - libgeos-dev
+  - libproj-dev
+  - libudunits2-dev
+  - libfontconfig1-dev
+  - libfreetype6-dev
+  - libharfbuzz-dev
+  - libfribidi-dev
+  - libpng-dev
+  - libjpeg-dev
+  - libtiff5-dev
+
+# Packages used by r_scripts/ for the nlrx (NetLogo 6.x) workflow.
+# Legacy RNetLogo/rJava are intentionally excluded (incompatible with NetLogo 6.1+).
+r_packages:
+  - nlrx
+  - ggplot2
+  - dplyr
+  - plyr
+  - gridExtra
+  - stringr
+  - reshape
+  - reshape2
+  - raster
+  - snowfall
+  - progressr
+r_site_library: /usr/local/lib/R/site-library

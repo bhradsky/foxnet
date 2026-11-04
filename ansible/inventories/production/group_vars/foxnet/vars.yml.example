@@ -1,0 +1,30 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Site-specific variables for the production FoxNet host group
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+# Site-specific overrides. Role defaults live in roles/<role>/defaults/main.yml.
+
+# Researchers who get a shell + RStudio Server login (PAM).
+# Plain-text passwords go in the ansible-vault encrypted group_vars/foxnet/vault.yml.
+foxnet_users:
+  - name: user1
+    comment: "First Last"
+    password: "{{ vault_foxnet_user_passwords['user1'] }}"
+    ssh_keys:
+      - "[public key for user1]"
+  - name: user2
+    comment: "First Last"
+    password: "{{ vault_foxnet_user_passwords['user2'] }}"
+    ssh_keys:
+      - "[public key for user2]"
+
+# Networks allowed to reach RStudio Server (port 8787). Empty = SSH tunnel only.
+rstudio_allowed_cidrs: []
+#  - 10.0.0.0/8
+
+# Set true only once key-based SSH login is confirmed working for every admin.
+security_ssh_disable_password_auth: false

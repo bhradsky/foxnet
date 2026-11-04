@@ -1,0 +1,18 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Default variables for the foxnet role
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+foxnet_repo_url: https://github.com/bhradsky/foxnet.git
+foxnet_repo_version: master
+foxnet_home: /opt/foxnet
+foxnet_group: foxnet
+# Leave false so researchers' local edits / outputs in the checkout aren't clobbered.
+foxnet_repo_force: false
+# Exported to R sessions via Renviron.site; default to the netlogo role's values.
+foxnet_netlogo_home: "{{ netlogo_home | default('/opt/netlogo/current') }}"
+foxnet_netlogo_version: "{{ netlogo_version | default('6.4.0') }}"
+foxnet_java_home: "{{ netlogo_java_home | default('/usr/lib/jvm/java-17-openjdk-amd64') }}"

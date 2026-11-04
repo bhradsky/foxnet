@@ -1,0 +1,32 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Default variables for the common role
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+common_timezone: Australia/Sydney
+common_packages:
+  - acl
+  - ca-certificates
+  - curl
+  - git
+  - gnupg
+  - htop
+  - tmux
+  - unzip
+  - rsync
+common_unattended_upgrades: true
+
+# Shared group for everyone who runs FoxNet (owns the repo / outputs).
+foxnet_group: foxnet
+foxnet_users: []
+# Existing system accounts (not managed as researchers) added to the group,
+# e.g. so the admin account can upload files to /opt/foxnet via SFTP.
+foxnet_group_extra_members:
+  - ubuntu
+
+# "always": the vault is the source of truth; changing a vault password changes the login.
+# Set to "on_create" to let users manage their own password with `passwd` after creation.
+common_update_password: always

@@ -1,0 +1,34 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Main playbook that provisions the FoxNet modelling server (Ubuntu 24.04)
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+- name: Provision FoxNet modelling server (Ubuntu 24.04)
+  hosts: foxnet
+  become: true
+
+  pre_tasks:
+    - name: Assert supported platform
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['distribution'] == 'Ubuntu'
+          - ansible_facts['distribution_version'] is version('24.04', '>=')
+        fail_msg: "This playbook targets Ubuntu 24.04 (noble); found {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+      tags: [always]
+
+  roles:
+    - role: common
+      tags: [common]
+    - role: security
+      tags: [security]
+    - role: netlogo
+      tags: [netlogo]
+    - role: r
+      tags: [r]
+    - role: rstudio_server
+      tags: [rstudio]
+    - role: foxnet
+      tags: [foxnet]

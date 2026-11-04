@@ -1,0 +1,17 @@
+#  Infrastructure as Code (Ansible) deployment for Foxnet
+#  Description:      Default variables for the rstudio_server role
+#  Author:           Glen Charlton
+#  Source:           https://github.com/bhradsky/foxnet
+#  License:          See LICENCE.md in repository root
+#  Use of AI:        Claude Opus 5.5 was used to assist the development of this code
+
+---
+# Check https://posit.co/download/rstudio-server/ for the current release.
+# Posit publishes the "jammy" build for Ubuntu 22.04+ (incl. 24.04).
+rstudio_version: "2024.12.1-563"
+rstudio_deb_url: "https://download2.rstudio.org/server/jammy/amd64/rstudio-server-{{ rstudio_version }}-amd64.deb"
+rstudio_port: 8787
+rstudio_address: 0.0.0.0
+# Only members of this group may log in to RStudio.
+rstudio_allowed_group: "{{ foxnet_group | default('foxnet') }}"
+rstudio_session_timeout_minutes: 120
